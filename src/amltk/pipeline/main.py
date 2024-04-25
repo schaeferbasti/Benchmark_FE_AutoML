@@ -17,6 +17,8 @@ from amltk.pipeline import Choice, Component, Node, Sequential, Split, request
 from amltk.sklearn import CVEvaluation
 
 from openfe import OpenFE, transform
+from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split
 
 
 def get_fold(
@@ -50,6 +52,40 @@ def get_fold(
     X_train, y_train = X.iloc[train_idx], y.iloc[train_idx]
     X_test, y_test = X.iloc[test_idx], y.iloc[test_idx]
     return X_train, X_test, y_train, y_test
+
+
+def get_dataset(option, openml_task_id, outer_fold_number) -> tuple[
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame | pd.Series,
+    pd.DataFrame | pd.Series,
+]:
+    """Get the data from OpenFE.
+
+    Args:
+        openml_task_id: The OpenML task id.
+        fold: The fold number.
+        n_splits: The number of splits that will be applied. This is used
+            to resample training data such that enough at least instance for each class is present for
+            every stratified split.
+        seed: The random seed to use for reproducibility of resampling if necessary.
+    """
+    # california-housing dataset from OpenFE example
+    if option == 1:
+        data = fetch_california_housing(as_frame=True).frame
+        label = data[['MedHouseVal']]
+        train_x, test_x, train_y, test_y = train_test_split(data, label, test_size=0.2, random_state=1)
+        return train_x, test_x, train_y, test_y
+    # cylinder-bands dataset from OpenFE benchmark
+    elif option == 2:
+        return get_fold(openml_task_id=openml_task_id, fold=outer_fold_number)
+    # balance-scale dataset from OpenFE benchmark
+    elif option == 3:
+        df = pd.read_csv(r'datasets/balance-scale.csv')
+        y = df[['Class']]
+        X = df.drop(['Class'], axis=1)
+        train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=20)
+        return train_X, test_X, train_y, test_y
 
 def get_openFE_features(train_x, test_x, train_y, n_jobs):
     openFE = OpenFE()
@@ -149,17 +185,9 @@ def do_something_after_a_complete_trial_was_evaluated(
 
 
 def main() -> None:
-    random_seed = 42
-    openml_task_id = 31  # Adult dataset, classification
-    task_hint = "classification"
-    outer_fold_number = (
-        0  # Only run the first outer fold, wrap this in a loop if needs be, with a unique history file
-        # for each one
-    )
     optimizer_cls = RandomSearch
     working_dir = Path("example-sklearn-hpo-cv").absolute()
     results_to = working_dir / "results.parquet"
-    inner_fold_seed = random_seed + outer_fold_number
     metric_definition = Metric(
         "accuracy",
         minimize=False,
@@ -188,10 +216,13 @@ def main() -> None:
         display = True
         wait_for_all_workers_to_finish = False
 
-    X, X_test, y, y_test = get_fold(
-        openml_task_id=openml_task_id,
-        fold=outer_fold_number,
-    )
+    random_seed = 42
+    openml_task_id = 6332
+    task_hint = "classification"
+    outer_fold_number = 0  # Only run the first outer fold, wrap this in a loop if needs be, with a unique history file for each one)
+    inner_fold_seed = random_seed + outer_fold_number
+
+    X, X_test, y, y_test = get_dataset(1, openml_task_id, outer_fold_number)
 
     X, X_test = get_openFE_features(X, X_test, y, 1)
 
