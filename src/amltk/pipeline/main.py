@@ -16,6 +16,8 @@ from amltk.optimization.trial import Metric, Trial
 from amltk.pipeline import Choice, Component, Node, Sequential, Split, request
 from amltk.sklearn import CVEvaluation
 
+from openfe import OpenFE, transform
+
 
 def get_fold(
     openml_task_id: int,
@@ -49,6 +51,11 @@ def get_fold(
     X_test, y_test = X.iloc[test_idx], y.iloc[test_idx]
     return X_train, X_test, y_train, y_test
 
+def get_openFE_features(train_x, test_x, train_y, n_jobs):
+    openFE = OpenFE()
+    features = openFE.fit(data=train_x, label=train_y, n_jobs=n_jobs)  # generate new features
+    train_x, test_x = transform(train_x, test_x, features, n_jobs=n_jobs)
+    return train_x, test_x
 
 preprocessing = Split(
     {
@@ -186,6 +193,8 @@ def main() -> None:
         fold=outer_fold_number,
     )
 
+    X, X_test = get_openFE_features(X, X_test, y, 1)
+
     # This object below is a highly customizable class to create a function that we can use for
     # evaluating pipelines.
     evaluator = CVEvaluation(
@@ -203,7 +212,7 @@ def main() -> None:
         # Record training scores
         train_score=True,
         # Where to store things
-        working_dir=working_dir,
+        working_dir="logs/log.txt",
         # What to do when something goes wrong.
         on_error="raise" if on_trial_exception == "raise" else "fail",
         # Whether you want models to be store on disk under working_dir
@@ -218,7 +227,7 @@ def main() -> None:
         post_processing_requires_models=False,
         # This handles edge cases related to stratified splitting when there are too
         # few instances of a specific class. May wish to disable if your passing extra fit params
-        rebalance_if_required_for_stratified_splitting=True,
+        #rebalance_if_required_for_stratified_splitting=True,
         # Extra parameters requested by sklearn models/group splitters or metrics,
         # such as `sample_weight`
         params=None,
