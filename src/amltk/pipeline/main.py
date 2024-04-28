@@ -20,10 +20,12 @@ from openfe import OpenFE, transform
 from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 
+from ucimlrepo import fetch_ucirepo
+
 
 def get_fold(
-    openml_task_id: int,
-    fold: int,
+        openml_task_id: int,
+        fold: int,
 ) -> tuple[
     pd.DataFrame,
     pd.DataFrame,
@@ -81,17 +83,34 @@ def get_dataset(option, openml_task_id, outer_fold_number) -> tuple[
         return get_fold(openml_task_id=openml_task_id, fold=outer_fold_number)
     # balance-scale dataset from OpenFE benchmark
     elif option == 3:
-        df = pd.read_csv(r'datasets/balance-scale.csv')
-        y = df[['Class']]
-        X = df.drop(['Class'], axis=1)
+        balance_scale = fetch_ucirepo(id=12)
+        X = balance_scale.data.features
+        y = balance_scale.data.targets
         train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=20)
         return train_X, test_X, train_y, test_y
+    # black-friday
+    elif option == 4:
+        train = pd.read_csv(r'datasets/black-friday/train.csv', delimiter=',', header=None, skiprows=1,
+                            names=['User_ID', 'Product_ID', 'Gender', 'Age', 'Occupation', 'City_Category',
+                                   'Stay_In_Current_City_Years', 'Marital_Status', 'Product_Category_1',
+                                   'Product_Category_2', 'Product_Category_3', 'Purchase'])
+        train_y = train[['Purchase']]
+        train_X = train.drop(['Purchase'], axis=1)
+        test = pd.read_csv(r'datasets/black-friday/test.csv', delimiter=',', header=None, skiprows=1,
+                            names=['User_ID', 'Product_ID', 'Gender', 'Age', 'Occupation', 'City_Category',
+                                   'Stay_In_Current_City_Years', 'Marital_Status', 'Product_Category_1',
+                                   'Product_Category_2', 'Product_Category_3', 'Purchase'])
+        test_y = test[['Purchase']]
+        test_X = test.drop(['Purchase'], axis=1)
+        return train_X, test_X, train_y, test_y
+
 
 def get_openFE_features(train_x, test_x, train_y, n_jobs):
     openFE = OpenFE()
     features = openFE.fit(data=train_x, label=train_y, n_jobs=n_jobs)  # generate new features
     train_x, test_x = transform(train_x, test_x, features, n_jobs=n_jobs)
     return train_x, test_x
+
 
 preprocessing = Split(
     {
@@ -169,17 +188,17 @@ rf_pipeline = Sequential(preprocessing, rf_classifier, name="rf_pipeline")
 
 
 def do_something_after_a_split_was_evaluated(
-    trial: Trial,
-    fold: int,
-    info: CVEvaluation.PostSplitInfo,
+        trial: Trial,
+        fold: int,
+        info: CVEvaluation.PostSplitInfo,
 ) -> CVEvaluation.PostSplitInfo:
     return info
 
 
 def do_something_after_a_complete_trial_was_evaluated(
-    report: Trial.Report,
-    pipeline: Node,
-    info: CVEvaluation.CompleteEvalInfo,
+        report: Trial.Report,
+        pipeline: Node,
+        info: CVEvaluation.CompleteEvalInfo,
 ) -> Trial.Report:
     return report
 
@@ -222,7 +241,7 @@ def main() -> None:
     outer_fold_number = 0  # Only run the first outer fold, wrap this in a loop if needs be, with a unique history file for each one)
     inner_fold_seed = random_seed + outer_fold_number
 
-    X, X_test, y, y_test = get_dataset(2, openml_task_id, outer_fold_number)
+    X, X_test, y, y_test = get_dataset(4, openml_task_id, outer_fold_number)
 
     X, X_test = get_openFE_features(X, X_test, y, 1)
 

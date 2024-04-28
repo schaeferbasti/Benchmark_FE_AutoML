@@ -11,6 +11,9 @@ import lightgbm as lgb
 
 import pandas as pd
 
+from ucimlrepo import fetch_ucirepo
+
+
 def get_openFE_features(train_x, test_x, train_y, n_jobs):
     openFE = OpenFE()
     features = openFE.fit(data=train_x, label=train_y, n_jobs=n_jobs)  # generate new features
@@ -29,18 +32,12 @@ def calc_openFE_score(train_x, test_x, train_y, test_y):
 
 def get_data(option):
     if option == 1:
-        # OpenFE with OpenML Dataset
-        dataset = openml.datasets.get_dataset(31, download_data=True, download_features_meta_data=False,
-                                              download_qualities=False, )
-        target_name = dataset.default_target_attribute
-        X, y, _, _ = dataset.get_data(dataset_format="dataframe", target=target_name)
-        _y = LabelEncoder().fit_transform(y)
-        data = split_data(X, _y, splits={"train": 0.6, "val": 0.2, "test": 0.2}, seed=42)  # type: ignore
-        train_x, train_y = data["train"]
-        val_x, val_y = data["val"]
-        test_x, test_y = data["test"]
-        print(len(train_x), len(test_x), len(train_y), len(test_y))
-        return train_x, train_y, test_x, test_y
+        # OpenFE with balance-scales
+        balance_scale = fetch_ucirepo(id=12)
+        X = balance_scale.data.features
+        y = balance_scale.data.targets
+        train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=20)
+        return train_X, test_X, train_y, test_y
     elif option == 2:
         # OpenFE with Iris Plants Dataset
         data = load_iris(as_frame=True).frame
