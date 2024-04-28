@@ -81,14 +81,14 @@ def get_dataset(option, openml_task_id, outer_fold_number) -> tuple[
     # cylinder-bands dataset from OpenFE benchmark
     elif option == 2:
         return get_fold(openml_task_id=openml_task_id, fold=outer_fold_number)
-    # balance-scale dataset from OpenFE benchmark
+    # balance-scale dataset from OpenFE benchmark (not working)
     elif option == 3:
         balance_scale = fetch_ucirepo(id=12)
         X = balance_scale.data.features
         y = balance_scale.data.targets
         train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=20)
         return train_X, test_X, train_y, test_y
-    # black-friday
+    # black-friday (long execution time!!)
     elif option == 4:
         train = pd.read_csv(r'datasets/black-friday/train.csv', delimiter=',', header=None, skiprows=1,
                             names=['User_ID', 'Product_ID', 'Gender', 'Age', 'Occupation', 'City_Category',
