@@ -217,12 +217,12 @@ def main() -> None:
         wait_for_all_workers_to_finish = False
 
     random_seed = 42
-    openml_task_id = 6332
+    openml_task_id = 1797
     task_hint = "classification"
     outer_fold_number = 0  # Only run the first outer fold, wrap this in a loop if needs be, with a unique history file for each one)
     inner_fold_seed = random_seed + outer_fold_number
 
-    X, X_test, y, y_test = get_dataset(1, openml_task_id, outer_fold_number)
+    X, X_test, y, y_test = get_dataset(2, openml_task_id, outer_fold_number)
 
     X, X_test = get_openFE_features(X, X_test, y, 1)
 
@@ -254,7 +254,7 @@ def main() -> None:
         post_processing=do_something_after_a_complete_trial_was_evaluated,
         # Whether the post_processing callback requires models will required models, i.e.
         # to compute some bagged average over all fold models. If `False` will discard models eagerly
-        # to sasve sapce.
+        # to save space.
         post_processing_requires_models=False,
         # This handles edge cases related to stratified splitting when there are too
         # few instances of a specific class. May wish to disable if your passing extra fit params
@@ -264,10 +264,10 @@ def main() -> None:
         params=None,
     )
 
-    # Here we just use the `optimize` method to setup and run an optimization loop
+    # Here we just use the `optimize` method to set up and run an optimization loop
     # with `n_workers`. Please either look at the source code for `optimize` or
-    # refer to the `Scheduler` and `Optimizer` guide if you need more fine grained control.
-    # If you need to evaluate a certain configuraiton, you can create your own `Trial` object.
+    # refer to the `Scheduler` and `Optimizer` guide if you need more fine-grained control.
+    # If you need to evaluate a certain configuration, you can create your own `Trial` object.
 
     # trial = Trial.create(name=...., info=None, config=..., bucket=..., seed=..., metrics=metric_def)
     # report = evaluator.evaluate(trial, rf_pipeline)
