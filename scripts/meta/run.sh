@@ -4,7 +4,7 @@
 #SBATCH --partition mlhiwidlc_gpu-rtx2080    # short: -p <partition_name>
 
 # Define a name for your job
-#SBATCH --job-name AMLTK Pipeline             # short: -J <job name>
+#SBATCH --job-name AMLTK_Pipeline             # short: -J <job name>
 
 # Define the files to write the outputs of the job to.
 # Please note the SLURM will not create this directory for you, and if it is missing, no logs will be saved.
