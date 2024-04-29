@@ -30,7 +30,7 @@ conda activate amltk_env
 # Running the job
 start=`date +%s`
 
-python src/amltk/pipeline/main.py #--cuda --wait-time 5
+python3 src/amltk/pipeline/main.py #--cuda --wait-time 5
 
 end=`date +%s`
 runtime=$((end-start))
