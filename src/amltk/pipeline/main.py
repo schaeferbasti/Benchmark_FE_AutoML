@@ -10,7 +10,7 @@ from ConfigSpace import Categorical, Integer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import get_scorer
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import *
 
 from amltk.pipeline import Choice, Component, Sequential, Split, request
 from amltk.sklearn import CVEvaluation
@@ -126,6 +126,25 @@ def get_openFE_features(train_x, test_x, train_y, n_jobs):
     openFE = OpenFE()
     features = openFE.fit(data=train_x, label=train_y, n_jobs=n_jobs)  # generate new features
     train_x, test_x = transform(train_x, test_x, features, n_jobs=n_jobs)
+    return train_x, test_x
+
+
+def get_sklearn_features(train_x, test_x):
+    """Works only with numerical data"""
+    # Normalize
+    # train_x = normalize(train_x, axis=0)
+    # test_x = normalize(test_x, axis=0)
+    # Binarize
+    # train_x = binarize(train_x)
+    # test_x = binarize(test_x)
+    # Kernel Center
+    # kc = KernelCenterer()
+    # train_x = kc.fit_transform(train_x)
+    # test_x = kc.fit_transform(test_x)
+    # Quantile Transformer
+    qt = QuantileTransformer(random_state=0)
+    train_x = qt.fit_transform(train_x)
+    test_x = qt.fit_transform(test_x)
     return train_x, test_x
 
 
@@ -388,7 +407,7 @@ def main() -> None:
     inner_fold_seed = random_seed + outer_fold_number
 
     # Evaluation of the original data
-    X_original, X_test_original, y, y_test = get_dataset(option=2, openml_task_id=openml_task_id, outer_fold_number=outer_fold_number)
+    X_original, X_test_original, y, y_test = get_dataset(option=1, openml_task_id=openml_task_id, outer_fold_number=outer_fold_number)
     evaluator = CVEvaluation(
         # Provide data, number of times to split, cross-validation and a hint of the task type
         X_original,
@@ -451,7 +470,10 @@ def main() -> None:
     )
 
     # Evaluation of the feature engineered data from OpenFE
-    X_openFE, X_test_openFE = get_openFE_features(X_original, X_test_original, y, 1)
+    #X_openFE, X_test_openFE = get_openFE_features(X_original, X_test_original, y, 1)
+
+    """Works only with numerical data"""
+    X_openFE, X_test_openFE = get_sklearn_features(X_original, X_test_original)
     evaluator = CVEvaluation(
         # Provide data, number of times to split, cross-validation and a hint of the task type
         X_openFE,
