@@ -241,15 +241,11 @@ def main() -> None:
     outer_fold_number = 0  # Only run the first outer fold, wrap this in a loop if needs be, with a unique history file for each one)
     inner_fold_seed = random_seed + outer_fold_number
 
-    X, X_test, y, y_test = get_dataset(4, openml_task_id, outer_fold_number)
-
-    X, X_test = get_openFE_features(X, X_test, y, 1)
-
-    # This object below is a highly customizable class to create a function that we can use for
-    # evaluating pipelines.
+    # Evaluation of the original data
+    X_original, X_test_original, y, y_test = get_dataset(2, openml_task_id, outer_fold_number)
     evaluator = CVEvaluation(
         # Provide data, number of times to split, cross-validation and a hint of the task type
-        X,
+        X_original,
         y,
         splitter="cv",
         n_splits=8,
@@ -257,7 +253,7 @@ def main() -> None:
         # Seeding for reproducibility
         random_state=inner_fold_seed,
         # Provide test data to get test scores
-        X_test=X_test,
+        X_test=X_test_original,
         y_test=y_test,
         # Record training scores
         train_score=True,
@@ -292,7 +288,7 @@ def main() -> None:
     # report = evaluator.evaluate(trial, rf_pipeline)
     # print(report)
 
-    history = rf_pipeline.optimize(
+    history_original = rf_pipeline.optimize(
         target=evaluator.fn,
         metric=metric_definition,
         optimizer=optimizer_cls,
@@ -308,8 +304,73 @@ def main() -> None:
         on_trial_exception=on_trial_exception,
     )
 
-    df = history.df()
+    # Evaluation of the feature engineered data from OpenFE
+    X_openFE, X_test_openFE = get_openFE_features(X_original, X_test_original, y, 1)
+    evaluator = CVEvaluation(
+        # Provide data, number of times to split, cross-validation and a hint of the task type
+        X_openFE,
+        y,
+        splitter="cv",
+        n_splits=8,
+        task_hint=task_hint,
+        # Seeding for reproducibility
+        random_state=inner_fold_seed,
+        # Provide test data to get test scores
+        X_test=X_test_openFE,
+        y_test=y_test,
+        # Record training scores
+        train_score=True,
+        # Where to store things
+        working_dir="logs/log.txt",
+        # What to do when something goes wrong.
+        on_error="raise" if on_trial_exception == "raise" else "fail",
+        # Whether you want models to be store on disk under working_dir
+        store_models=False,
+        # A callback to be called at the end of each split
+        post_split=do_something_after_a_split_was_evaluated,
+        # Some callback that is called at the end of all fold evaluations
+        post_processing=do_something_after_a_complete_trial_was_evaluated,
+        # Whether the post_processing callback requires models will required models, i.e.
+        # to compute some bagged average over all fold models. If `False` will discard models eagerly
+        # to save space.
+        post_processing_requires_models=False,
+        # This handles edge cases related to stratified splitting when there are too
+        # few instances of a specific class. May wish to disable if your passing extra fit params
+        # rebalance_if_required_for_stratified_splitting=True,
+        # Extra parameters requested by sklearn models/group splitters or metrics,
+        # such as `sample_weight`
+        params=None,
+    )
 
+    # Here we just use the `optimize` method to set up and run an optimization loop
+    # with `n_workers`. Please either look at the source code for `optimize` or
+    # refer to the `Scheduler` and `Optimizer` guide if you need more fine-grained control.
+    # If you need to evaluate a certain configuration, you can create your own `Trial` object.
+
+    # trial = Trial.create(name=...., info=None, config=..., bucket=..., seed=..., metrics=metric_def)
+    # report = evaluator.evaluate(trial, rf_pipeline)
+    # print(report)
+
+    history_openFE = rf_pipeline.optimize(
+        target=evaluator.fn,
+        metric=metric_definition,
+        optimizer=optimizer_cls,
+        seed=inner_fold_seed,
+        process_memory_limit=per_process_memory_limit,
+        process_walltime_limit=per_process_walltime_limit,
+        working_dir=working_dir,
+        max_trials=max_trials,
+        timeout=max_time,
+        display=display,
+        wait=wait_for_all_workers_to_finish,
+        n_workers=n_workers,
+        on_trial_exception=on_trial_exception,
+    )
+
+    df_original = history_original.df()
+    df_openFE = history_openFE.df()
+
+    df = pd.concat([df_original, df_openFE], axis=0)
     # Assign some new information to the dataframe
     df.assign(
         outer_fold=outer_fold_number,
