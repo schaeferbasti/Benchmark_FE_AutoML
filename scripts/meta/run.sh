@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the partition on which the job shall run.
-#SBATCH --partition <your_partition>    # short: -p <partition_name>
+#SBATCH --partition mlhiwidlc_gpu-rtx2080    # short: -p <partition_name>
 
 # Define a name for your job
 #SBATCH --job-name AMLTK Pipeline             # short: -J <job name>
