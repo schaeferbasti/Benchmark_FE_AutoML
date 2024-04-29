@@ -3,6 +3,7 @@ This is the Version Control of the code for the Masterthesis of Bastian Schäfer
 
 The Masterthesis is conducted on the topic of Feature Engineering in the context of AutoML.
 
+## Get it Running:
 #### Installation:
 `pip install -r requirements.txt`
 
@@ -20,3 +21,10 @@ The Masterthesis is conducted on the topic of Feature Engineering in the context
 1. Choose option (see above)
 2. `sbatch scripts/meta/run.sh`
 <br>&rarr; See results in logs/AMLTK_Pipeline-_BatchJobID_.out
+
+## Explanation of the Results:
+- The first 10 lines of the table are the results of 10 proposed models of the AutoML Pipeline on the original data (without Feature Engineering).
+- The last 10 lines of the table are the results of 10 proposed models of the AutoML Pipeline with feature engineered data conducted by OpenFE.
+
+#### First Insights
+The test accuracy of the best performing model of the different splits is usually better on the original data.
