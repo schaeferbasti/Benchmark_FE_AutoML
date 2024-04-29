@@ -27,4 +27,8 @@ The Masterthesis is conducted on the topic of Feature Engineering in the context
 - The last 10 lines of the table are the results of 10 proposed models of the AutoML Pipeline with feature engineered data conducted by OpenFE.
 
 #### First Insights
-The test accuracy of the best performing model of the different splits is usually better on the original data.
+- The test accuracy of the best performing model of the different splits is usually better on the original data.
+- The mean of the training accuracy is usually higher over all the 10 models for the feature-engineered data
+- The mean of the validation accuracy is usually higher over all the 10 models for the feature-engineered data
+- The mean of the test accuracy is usually higher over all the 10 models for the feature-engineered data
+
