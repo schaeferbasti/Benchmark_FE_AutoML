@@ -10,8 +10,8 @@
 # Please note the SLURM will not create this directory for you, and if it is missing, no logs will be saved.
 # You must create the directory yourself. In this case, that means you have to create the "logs" directory yourself.
 
-#SBATCH --output logs/%x-%A-AMLTK_Pipeline.out   # STDOUT  %x and %A will be replaced by the job name and job id, respectively. short: -o logs/%x-%A-job_name.out
-#SBATCH --error logs/%x-%A-AMLTK_Pipeline.err    # STDERR  short: -e logs/%x-%A-job_name.out
+#SBATCH --output logs/%x-%A.out   # STDOUT  %x and %A will be replaced by the job name and job id, respectively. short: -o logs/%x-%A.out
+#SBATCH --error logs/%x-%A.err    # STDERR  short: -e logs/%x-%A.out
 
 # Define the amount of memory required per node
 #SBATCH --mem 8GB
@@ -25,7 +25,13 @@ echo "Running job $SLURM_JOB_NAME using $SLURM_JOB_CPUS_PER_NODE cpus per node w
 # Activate your environment
 # You can also comment out this line, and activate your environment in the login node before submitting the job
 source ~/miniconda3/bin/activate # Adjust to your path of Miniconda installation
+if conda info --envs | grep -q amltk_env; then echo "amltk_env already exists"; else conda create -y -n amltk_env; fi
 conda activate amltk_env
+echo "conda amltk_env activated"
+
+# Install requirements
+pip install -r requirements.txt
+echo "Requirements installed"
 
 # Running the job
 start=`date +%s`
