@@ -205,7 +205,7 @@ def do_something_after_a_complete_trial_was_evaluated(
 
 def main() -> None:
     optimizer_cls = RandomSearch
-    working_dir = Path("example-sklearn-hpo-cv").absolute()
+    working_dir = Path("results").absolute()
     results_to = working_dir / "results.parquet"
     metric_definition = Metric(
         "accuracy",
