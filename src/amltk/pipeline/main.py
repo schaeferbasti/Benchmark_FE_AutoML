@@ -105,7 +105,7 @@ def get_dataset(option, openml_task_id, outer_fold_number) -> tuple[
         y = balance_scale.data.targets
         train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=20)
         return train_X, test_X, train_y, test_y
-    # black-friday (long execution time!!)
+    # black-friday dataset from AMLB (long execution time)
     elif option == 4:
         train = pd.read_csv(r'datasets/black-friday/train.csv', delimiter=',', header=None, skiprows=1,
                             names=['User_ID', 'Product_ID', 'Gender', 'Age', 'Occupation', 'City_Category',
@@ -388,7 +388,7 @@ def main() -> None:
     inner_fold_seed = random_seed + outer_fold_number
 
     # Evaluation of the original data
-    X_original, X_test_original, y, y_test = get_dataset(2, openml_task_id, outer_fold_number)
+    X_original, X_test_original, y, y_test = get_dataset(option=2, openml_task_id=openml_task_id, outer_fold_number=outer_fold_number)
     evaluator = CVEvaluation(
         # Provide data, number of times to split, cross-validation and a hint of the task type
         X_original,
