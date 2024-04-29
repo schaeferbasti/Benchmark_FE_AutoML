@@ -527,6 +527,8 @@ def main() -> None:
         optimizer=optimizer_cls.__name__,
         n_workers=n_workers,
     )
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
     print(df)
     print(f"Saving dataframe of results to path: {results_to}")
     df.to_parquet(results_to)
