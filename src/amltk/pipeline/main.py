@@ -4,17 +4,19 @@ from pathlib import Path
 from collections.abc import Mapping, Iterable, Sequence
 from typing import Any, Literal, overload
 
+from sklearn.compose import ColumnTransformer
 from sklearn.neighbors import KNeighborsClassifier
 from typing_extensions import override, Self
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_string_dtype, is_numeric_dtype
 
 from ConfigSpace import Categorical, Integer, ConfigurationSpace
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
-from sklearn.svm import SVR, SVC
+from sklearn.svm import SVC
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import get_scorer
 from sklearn.preprocessing import *
@@ -115,20 +117,38 @@ def get_sklearn_features(train_x, test_x) -> tuple[
     pd.DataFrame
 ]:
     """Works only with numerical data sets"""
+    # ****** APPLY FE ON WHOLE DATASET ******
     # Normalize
     # train_x = normalize(train_x, axis=0)
     # test_x = normalize(test_x, axis=0)
+
     # Binarize
     # train_x = binarize(train_x)
     # test_x = binarize(test_x)
+
     # Kernel Center
     # kc = KernelCenterer()
     # train_x = kc.fit_transform(train_x)
     # test_x = kc.fit_transform(test_x)
+
     # Quantile Transformer
-    qt = QuantileTransformer(random_state=0)
-    train_x = qt.fit_transform(train_x)
-    test_x = qt.fit_transform(test_x)
+    # qt = QuantileTransformer(random_state=0)
+    # train_x = qt.fit_transform(train_x)
+    # test_x = qt.fit_transform(test_x)
+
+    # ****** COMBINE TWO FEATURES ******
+    for idx in range(len(train_x.columns) - 1):
+        print(train_x.iloc[idx])
+        if is_numeric_dtype(train_x.iloc[idx]):
+            print("numeric")
+            random_idx = np.random.randint(0, train_x.size)
+            train_x.iloc[idx] = train_x.iloc[idx] + train_x.iloc[random_idx]
+        elif is_string_dtype(train_x.iloc[idx]):
+            print("categorical")
+            ohe = OneHotEncoder()
+            preprocessor_a = ColumnTransformer(transformers=[('cat', ohe, train_x.iloc[idx])])
+            train_x.iloc[idx] = preprocessor_a.fit_transform(train_x.iloc[idx])
+            train_x.iloc[idx] = train_x.iloc[idx]
     return train_x, test_x
 
 
@@ -312,7 +332,7 @@ def main() -> None:
     random_seed = 42
     openml_task_id = 1797
     task_hint = "classification"
-    outer_fold_number = 0  # Only run the first outer fold, wrap this in a loop if needs be, with a unique history file for each one)
+    outer_fold_number = 0  # Only run the first outer fold, wrap this in a loop if needs be, with a unique history file for each one
     inner_fold_seed = random_seed + outer_fold_number
 
     # Evaluation of the original data
@@ -348,7 +368,7 @@ def main() -> None:
         post_processing_requires_models=False,
         # This handles edge cases related to stratified splitting when there are too
         # few instances of a specific class. May wish to disable if your passing extra fit params
-        #rebalance_if_required_for_stratified_splitting=True,
+        # rebalance_if_required_for_stratified_splitting=True,
         # Extra parameters requested by sklearn models/group splitters or metrics,
         # such as `sample_weight`
         params=None,
@@ -363,7 +383,7 @@ def main() -> None:
     # report = evaluator.evaluate(trial, rf_pipeline)
     # print(report)
 
-    history_original = knn_pipeline.optimize(
+    history_original = rf_pipeline.optimize(
         target=evaluator.fn,
         metric=metric_definition,
         optimizer=optimizer_cls,
@@ -412,7 +432,7 @@ def main() -> None:
         post_split=do_something_after_a_split_was_evaluated,
         # Some callback that is called at the end of all fold evaluations
         post_processing=do_something_after_a_complete_trial_was_evaluated,
-        # Whether the post_processing callback requires models will required models, i.e.
+        # Whether the post_processing callback requires models will require models, i.e.
         # to compute some bagged average over all fold models. If `False` will discard models eagerly
         # to save space.
         post_processing_requires_models=False,
@@ -433,7 +453,7 @@ def main() -> None:
     # report = evaluator.evaluate(trial, rf_pipeline)
     # print(report)
 
-    history_openFE = knn_pipeline.optimize(
+    history_openFE = rf_pipeline.optimize(
         target=evaluator.fn,
         metric=metric_definition,
         optimizer=optimizer_cls,
