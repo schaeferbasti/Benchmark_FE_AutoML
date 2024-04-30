@@ -2,7 +2,9 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from collections.abc import Mapping, Iterable, Sequence
-from typing import Any, TYPE_CHECKING, Literal, overload
+from typing import Any, Literal, overload
+
+from sklearn.neighbors import KNeighborsClassifier
 from typing_extensions import override, Self
 
 import numpy as np
@@ -243,6 +245,21 @@ svc_classifier = Component(
 )
 svc_pipeline = Sequential(preprocessing, svc_classifier, name="svc_pipeline")
 
+# works on dataset 2 (not on continuous data)
+knn_classifier = Component(
+    item=KNeighborsClassifier,
+    space={
+        "n_neighbors": (2, 8),
+        "weights": ["uniform", "distance"],
+        "algorithm": ["auto", "ball_tree", "kd_tree", "brute"],
+    },
+    config={
+        "leaf_size": 30,
+        "metric": "minkowski",
+        "n_jobs": 1,
+    }
+)
+knn_pipeline = Sequential(preprocessing, knn_classifier, name="knn_pipeline")
 
 def do_something_after_a_split_was_evaluated(
         trial: Trial,
@@ -346,7 +363,7 @@ def main() -> None:
     # report = evaluator.evaluate(trial, rf_pipeline)
     # print(report)
 
-    history_original = svc_pipeline.optimize(
+    history_original = knn_pipeline.optimize(
         target=evaluator.fn,
         metric=metric_definition,
         optimizer=optimizer_cls,
@@ -416,7 +433,7 @@ def main() -> None:
     # report = evaluator.evaluate(trial, rf_pipeline)
     # print(report)
 
-    history_openFE = svc_pipeline.optimize(
+    history_openFE = knn_pipeline.optimize(
         target=evaluator.fn,
         metric=metric_definition,
         optimizer=optimizer_cls,
