@@ -11,6 +11,8 @@ import pandas as pd
 from ConfigSpace import Categorical, Integer, ConfigurationSpace
 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVR, SVC
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import get_scorer
 from sklearn.preprocessing import *
@@ -29,6 +31,9 @@ import openml
 from openfe import OpenFE, transform
 
 from ucimlrepo import fetch_ucirepo
+
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def get_fold(
@@ -85,9 +90,9 @@ def get_dataset(option, openml_task_id, outer_fold_number) -> tuple[
         train_y = train[['Purchase']]
         train_X = train.drop(['Purchase'], axis=1)
         test = pd.read_csv(r'datasets/black-friday/test.csv', delimiter=',', header=None, skiprows=1,
-                            names=['User_ID', 'Product_ID', 'Gender', 'Age', 'Occupation', 'City_Category',
-                                   'Stay_In_Current_City_Years', 'Marital_Status', 'Product_Category_1',
-                                   'Product_Category_2', 'Product_Category_3', 'Purchase'])
+                           names=['User_ID', 'Product_ID', 'Gender', 'Age', 'Occupation', 'City_Category',
+                                  'Stay_In_Current_City_Years', 'Marital_Status', 'Product_Category_1',
+                                  'Product_Category_2', 'Product_Category_3', 'Purchase'])
         test_y = test[['Purchase']]
         test_X = test.drop(['Purchase'], axis=1)
         return train_X, test_X, train_y, test_y
@@ -197,6 +202,47 @@ rf_classifier = Component(
 
 rf_pipeline = Sequential(preprocessing, rf_classifier, name="rf_pipeline")
 
+# works on dataset 2 (not for continuous data)
+mlp_classifier = Component(
+    item=MLPClassifier,
+    space={
+        "activation": ["identity", "logistic", "relu"],
+        "alpha": (0.0001, 0.1),
+        "learning_rate": ["constant", "invscaling", "adaptive"],
+        "epsilon": (1e-9, 1e-3),
+        "momentum": (0.0, 1.0)
+    },
+    config={
+        "random_state": request(
+            "random_state",
+            default=None,
+        )
+    }
+)
+
+mlp_pipeline = Sequential(preprocessing, mlp_classifier, name="mlp_pipeline")
+
+# works on dataset 2 (not on continuous data)
+svc_classifier = Component(
+    item=SVC,
+    config_transform=rf_config_transform,
+    space={
+        "C": (0.1, 10.0),
+        "gamma": ["scale", "auto"],
+        "kernel": ["linear", "poly", "rbf", "sigmoid"],
+    },
+    config={
+        "class_weight": "balanced",
+        "degree": 3,
+        "probability": True,
+        "random_state": request(
+            "random_state",
+            default=None,
+        ),
+    }
+)
+svc_pipeline = Sequential(preprocessing, svc_classifier, name="svc_pipeline")
+
 
 def do_something_after_a_split_was_evaluated(
         trial: Trial,
@@ -212,7 +258,6 @@ def do_something_after_a_complete_trial_was_evaluated(
         info: CVEvaluation.CompleteEvalInfo,
 ) -> Trial.Report:
     return report
-
 
 
 def main() -> None:
@@ -254,7 +299,8 @@ def main() -> None:
     inner_fold_seed = random_seed + outer_fold_number
 
     # Evaluation of the original data
-    X_original, X_test_original, y, y_test = get_dataset(option=1, openml_task_id=openml_task_id, outer_fold_number=outer_fold_number)
+    X_original, X_test_original, y, y_test = get_dataset(option=2, openml_task_id=openml_task_id,
+                                                         outer_fold_number=outer_fold_number)
     evaluator = CVEvaluation(
         # Provide data, number of times to split, cross-validation and a hint of the task type
         X_original,
@@ -300,7 +346,7 @@ def main() -> None:
     # report = evaluator.evaluate(trial, rf_pipeline)
     # print(report)
 
-    history_original = rf_pipeline.optimize(
+    history_original = svc_pipeline.optimize(
         target=evaluator.fn,
         metric=metric_definition,
         optimizer=optimizer_cls,
@@ -370,7 +416,7 @@ def main() -> None:
     # report = evaluator.evaluate(trial, rf_pipeline)
     # print(report)
 
-    history_openFE = rf_pipeline.optimize(
+    history_openFE = svc_pipeline.optimize(
         target=evaluator.fn,
         metric=metric_definition,
         optimizer=optimizer_cls,
@@ -411,12 +457,12 @@ class RandomSearch(Optimizer[None]):
     """An optimizer that uses ConfigSpace for random search."""
 
     def __init__(
-        self,
-        *,
-        space: ConfigurationSpace,
-        bucket: PathBucket | None = None,
-        metrics: Metric | Sequence[Metric],
-        seed: Seed | None = None,
+            self,
+            *,
+            space: ConfigurationSpace,
+            bucket: PathBucket | None = None,
+            metrics: Metric | Sequence[Metric],
+            seed: Seed | None = None,
     ) -> None:
         """Initialize the optimizer.
 
@@ -437,12 +483,12 @@ class RandomSearch(Optimizer[None]):
     @override
     @classmethod
     def create(
-        cls,
-        *,
-        space: ConfigurationSpace | Node,
-        metrics: Metric | Sequence[Metric],
-        bucket: PathBucket | str | Path | None = None,
-        seed: Seed | None = None,
+            cls,
+            *,
+            space: ConfigurationSpace | Node,
+            metrics: Metric | Sequence[Metric],
+            bucket: PathBucket | str | Path | None = None,
+            seed: Seed | None = None,
     ) -> Self:
         """Create a random search optimizer.
 
@@ -483,8 +529,8 @@ class RandomSearch(Optimizer[None]):
 
     @override
     def ask(
-        self,
-        n: int | None = None,
+            self,
+            n: int | None = None,
     ) -> Trial[None] | Iterable[Trial[None]]:
         """Ask the optimizer for a new config.
 
@@ -535,6 +581,7 @@ class RandomSearch(Optimizer[None]):
     def preferred_parser(cls) -> Literal["configspace"]:
         """The preferred parser for this optimizer."""
         return "configspace"
+
 
 if __name__ == "__main__":
     main()
