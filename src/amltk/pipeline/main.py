@@ -4,13 +4,13 @@ from pathlib import Path
 from collections.abc import Mapping, Iterable, Sequence
 from typing import Any, Literal, overload
 
-from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.neighbors import KNeighborsClassifier
 from typing_extensions import override, Self
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_string_dtype, is_numeric_dtype
 
 from ConfigSpace import Categorical, Integer, ConfigurationSpace
 
@@ -112,15 +112,51 @@ def get_openFE_features(train_x, test_x, train_y, n_jobs) -> tuple[
     return train_x, test_x
 
 
-def get_sklearn_features(train_x, test_x) -> tuple[
+def get_sklearn_features(train_x, test_x, train_y, test_y) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
-    """Works only with numerical data sets"""
-    # ****** APPLY FE ON WHOLE DATASET ******
+    # ****** COMBINE TWO FEATURES (following the Expand & Reduce Strategy) ******
+    # 1. Feature Generation
+    #   a. Create Polynomial Features (PolynomialFeatures)
+    #   b. Dimensionality Reduction (PCA, TruncatedSVD)
+    #   c. Custom Feature Engineering (FunctionTransformer, TransformerMixin)
+    # 2. Feature Selection
+    #   a. SelectKBest
+    #   b. SelectPercentile
+
+    columns_train_x = train_x.columns
+    columns_test_x = test_x.columns
+
+    # Preprocessing
+    # Numerize categorical columns
+    cat_columns = train_x.select_dtypes(['category']).columns
+    train_x[cat_columns] = train_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+    cat_columns = test_x.select_dtypes(['category']).columns
+    test_x[cat_columns] = test_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+
+    # Replace NaN and negative values by mean
+    imp1 = SimpleImputer(missing_values=np.nan, strategy='mean')
+    imp1.fit(train_x)
+    train_x = imp1.transform(train_x)
+    imp2 = SimpleImputer(missing_values=-1, strategy='mean')
+    imp2.fit(train_x)
+    train_x = imp2.transform(train_x)
+    imp3 = SimpleImputer(missing_values=np.nan, strategy='mean')
+    imp3.fit(test_x)
+    test_x = imp3.transform(test_x)
+    imp4 = SimpleImputer(missing_values=-1, strategy='mean')
+    imp4.fit(test_x)
+    test_x = imp4.transform(test_x)
+
+    # Generate Polynomial features
+    # pf = PolynomialFeatures(degree=2, interaction_only=True)
+    # train_x = pf.fit_transform(train_x)
+    # test_x = pf.fit_transform(test_x)
+
     # Normalize
-    # train_x = normalize(train_x, axis=0)
-    # test_x = normalize(test_x, axis=0)
+    train_x = normalize(train_x, axis=0)
+    test_x = normalize(test_x, axis=0)
 
     # Binarize
     # train_x = binarize(train_x)
@@ -136,19 +172,14 @@ def get_sklearn_features(train_x, test_x) -> tuple[
     # train_x = qt.fit_transform(train_x)
     # test_x = qt.fit_transform(test_x)
 
-    # ****** COMBINE TWO FEATURES ******
-    for idx in range(len(train_x.columns) - 1):
-        print(train_x.iloc[idx])
-        if is_numeric_dtype(train_x.iloc[idx]):
-            print("numeric")
-            random_idx = np.random.randint(0, train_x.size)
-            train_x.iloc[idx] = train_x.iloc[idx] + train_x.iloc[random_idx]
-        elif is_string_dtype(train_x.iloc[idx]):
-            print("categorical")
-            ohe = OneHotEncoder()
-            preprocessor_a = ColumnTransformer(transformers=[('cat', ohe, train_x.iloc[idx])])
-            train_x.iloc[idx] = preprocessor_a.fit_transform(train_x.iloc[idx])
-            train_x.iloc[idx] = train_x.iloc[idx]
+    # Transform to DataFrame again
+    train_x = pd.DataFrame(train_x, columns=columns_train_x)
+    test_x = pd.DataFrame(test_x, columns=columns_test_x)
+
+    # Select Best Features
+    # train_x = SelectKBest(chi2).fit_transform(train_x, train_y)
+    # test_x = SelectKBest(chi2).fit_transform(test_x, test_y)
+
     return train_x, test_x
 
 
@@ -402,11 +433,11 @@ def main() -> None:
     # Evaluation of the feature engineered data from OpenFE
 
     # Feature Engineering with OpenFE
-    X_openFE, X_test_openFE = get_openFE_features(X_original, X_test_original, y, 1)
+    # X_openFE, X_test_openFE = get_openFE_features(X_original, X_test_original, y, 1)
 
     # Feature Engineering with sklearn
     """Works only with numerical data sets"""
-    # X_openFE, X_test_openFE = get_sklearn_features(X_original, X_test_original)
+    X_openFE, X_test_openFE = get_sklearn_features(X_original, X_test_original, y, y_test)
 
     evaluator = CVEvaluation(
         # Provide data, number of times to split, cross-validation and a hint of the task type
