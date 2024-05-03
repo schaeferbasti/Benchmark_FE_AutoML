@@ -159,13 +159,13 @@ def get_sklearn_features(train_x, test_x, train_y, test_y) -> tuple[
     # test_x = normalize(test_x, axis=0)
 
     # Binarize
-    # train_x = binarize(train_x)
-    # test_x = binarize(test_x)
+    train_x = binarize(train_x)
+    test_x = binarize(test_x)
 
     # Quantile Transformer
     qt = QuantileTransformer(random_state=0)
-    train_x = qt.fit_transform(train_x)
-    test_x = qt.fit_transform(test_x)
+    # train_x = qt.fit_transform(train_x)
+    # test_x = qt.fit_transform(test_x)
 
     # Transform to DataFrame again
     train_x = pd.DataFrame(train_x, columns=columns_train_x)
