@@ -150,30 +150,30 @@ def get_sklearn_features(train_x, test_x, train_y, test_y) -> tuple[
     test_x = imp4.transform(test_x)
 
     # Generate Polynomial features
-    # pf = PolynomialFeatures(degree=2, interaction_only=True)
-    # train_x = pf.fit_transform(train_x)
-    # test_x = pf.fit_transform(test_x)
+    pf = PolynomialFeatures(degree=2, interaction_only=True)
+    train_x = pf.fit_transform(train_x)
+    test_x = pf.fit_transform(test_x)
 
     # Normalize
-    train_x = normalize(train_x, axis=0)
-    test_x = normalize(test_x, axis=0)
+    # train_x = normalize(train_x, axis=0)
+    # test_x = normalize(test_x, axis=0)
 
     # Binarize
     # train_x = binarize(train_x)
     # test_x = binarize(test_x)
 
     # Quantile Transformer
-    qt = QuantileTransformer(random_state=0)
+    # qt = QuantileTransformer(random_state=0)
     # train_x = qt.fit_transform(train_x)
     # test_x = qt.fit_transform(test_x)
+
+    # Select Best Features
+    train_x = SelectKBest(chi2, k=38).fit_transform(train_x, train_y)
+    test_x = SelectKBest(chi2, k=38).fit_transform(test_x, test_y)
 
     # Transform to DataFrame again
     train_x = pd.DataFrame(train_x, columns=columns_train_x)
     test_x = pd.DataFrame(test_x, columns=columns_test_x)
-
-    # Select Best Features
-    # train_x = SelectKBest(chi2).fit_transform(train_x, train_y)
-    # test_x = SelectKBest(chi2).fit_transform(test_x, test_y)
 
     return train_x, test_x
 
