@@ -155,12 +155,12 @@ def get_sklearn_features(train_x, test_x, train_y, test_y) -> tuple[
     # test_x = pf.fit_transform(test_x)
 
     # Normalize
-    # train_x = normalize(train_x, axis=0)
-    # test_x = normalize(test_x, axis=0)
+    train_x = normalize(train_x, axis=0)
+    test_x = normalize(test_x, axis=0)
 
     # Binarize
-    train_x = binarize(train_x)
-    test_x = binarize(test_x)
+    # train_x = binarize(train_x)
+    # test_x = binarize(test_x)
 
     # Quantile Transformer
     qt = QuantileTransformer(random_state=0)
