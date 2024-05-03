@@ -26,9 +26,14 @@ The Masterthesis is conducted on the topic of Feature Engineering in the context
 - The first 10 lines of the table are the results of 10 proposed models of the AutoML Pipeline on the original data (without Feature Engineering).
 - The last 10 lines of the table are the results of 10 proposed models of the AutoML Pipeline with feature engineered data conducted by OpenFE.
 
-#### First Insights
+### First Insights
+#### OpenFE 
 - The test accuracy of the best performing model of the different splits is usually better on the original data.
-- The mean of the training accuracy is usually higher over all the 10 models for the feature-engineered data
-- The mean of the validation accuracy is usually higher over all the 10 models for the feature-engineered data
-- The mean of the test accuracy is usually higher over all the 10 models for the feature-engineered data
-
+- The mean of the training accuracy is usually higher over all the 10 models for the feature-engineered data.
+- The mean of the validation accuracy is usually higher over all the 10 models for the feature-engineered data.
+- The mean of the test accuracy is usually higher over all the 10 models for the feature-engineered data.
+#### sklearn FE
+- The data with the sklearn FE has a very high mean accuracy, while the std accuracy is slightly lower in comparison to the original data.
+- The metric accuracy is much higher for the sklearn FE data than for the original data.
+- The std accuracy is very low for both, original and FE data in all dataset splits.
+- Regarding the test data, the original data outperforms the FE data.
