@@ -130,6 +130,7 @@ def get_sklearn_features(train_x, test_x, train_y, test_y) -> tuple[
 
     # Preprocessing
     # Numerize categorical columns
+    print("Preprocess categorical values, NaN and negative values")
     cat_columns = train_x.select_dtypes(['category']).columns
     train_x[cat_columns] = train_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
     cat_columns = test_x.select_dtypes(['category']).columns
@@ -150,6 +151,7 @@ def get_sklearn_features(train_x, test_x, train_y, test_y) -> tuple[
     test_x = imp4.transform(test_x)
 
     # Generate Polynomial features
+    print("Generate new features")
     pf = PolynomialFeatures(degree=2, interaction_only=True)
     train_x = pf.fit_transform(train_x)
     test_x = pf.fit_transform(test_x)
@@ -168,6 +170,7 @@ def get_sklearn_features(train_x, test_x, train_y, test_y) -> tuple[
     # test_x = qt.fit_transform(test_x)
 
     # Select Best Features
+    print("Select best features")
     train_x = SelectKBest(chi2, k=38).fit_transform(train_x, train_y)
     test_x = SelectKBest(chi2, k=38).fit_transform(test_x, test_y)
 
@@ -428,11 +431,10 @@ def main() -> None:
     # Evaluation of the feature engineered data from OpenFE
 
     # Feature Engineering with OpenFE
-    # X_openFE, X_test_openFE = get_openFE_features(X_original, X_test_original, y, 1)
+    X_openFE, X_test_openFE = get_openFE_features(X_original, X_test_original, y, 1)
 
     # Feature Engineering with sklearn
-    """Works only with numerical data sets"""
-    X_openFE, X_test_openFE = get_sklearn_features(X_original, X_test_original, y, y_test)
+    # X_openFE, X_test_openFE = get_sklearn_features(X_original, X_test_original, y, y_test)
 
     evaluator = CVEvaluation(
         # Provide data, number of times to split, cross-validation and a hint of the task type
