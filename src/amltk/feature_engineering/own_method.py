@@ -29,7 +29,7 @@ def preprocess_data(test_x, train_x):
     return test_x, train_x
 
 
-def get_sklearn_features(train_x, test_x, train_y) -> tuple[
+def get_sklearn_features(train_x, test_x, train_y, test_y) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
@@ -41,7 +41,7 @@ def get_sklearn_features(train_x, test_x, train_y) -> tuple[
     # 2. Feature Selection
     #   a. SelectKBest
     #   b. SelectPercentile
-    "Only do transform for test data, no fit_transform --> No learning from test data"
+    """ Only do transform for test data, no fit_transform --> No learning from test data """
 
     columns_train_x = train_x.columns
     columns_test_x = test_x.columns
@@ -70,7 +70,7 @@ def get_sklearn_features(train_x, test_x, train_y) -> tuple[
     # Select Best Features
     print("Select best features")
     train_x = SelectKBest(chi2, k=38).fit_transform(train_x, train_y)
-    test_x = SelectKBest(chi2, k=38).transform(test_x)
+    test_x = SelectKBest(chi2, k=38).fit_transform(test_x, test_y)
 
     # Transform to DataFrame again
     train_x = pd.DataFrame(train_x, columns=columns_train_x)
