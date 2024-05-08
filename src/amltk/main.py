@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import warnings
 from pathlib import Path
+from typing import Literal
 
 from amltk.optimization import Metric, Trial
 from amltk.pipeline import Choice, Sequential, Split, Node
@@ -13,6 +14,8 @@ from sklearn.preprocessing import *
 from src.amltk.classifiers.get_classifiers import *
 from src.amltk.datasets.get_datasets import *
 from src.amltk.evaluation.get_evaluator import get_cv_evaluator
+from src.amltk.feature_engineering.autofeat import get_autofeat_features
+from src.amltk.feature_engineering.h2o import get_h2o_features
 from src.amltk.feature_engineering.open_fe import get_openFE_features
 from src.amltk.feature_engineering.own_method import get_sklearn_features
 from src.amltk.optimizer.random_search import RandomSearch
@@ -20,27 +23,35 @@ from src.amltk.optimizer.random_search import RandomSearch
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
-def get_dataset(option, openml_task_id, outer_fold_number) -> tuple[
+def get_dataset(option) -> tuple[
     pd.DataFrame,
     pd.DataFrame,
     pd.DataFrame | pd.Series,
     pd.DataFrame | pd.Series,
+    str
 ]:
     # california-housing dataset from OpenFE example
     if option == 1:
-        test_x, test_y, train_x, train_y = get_california_housing_dataset()
-        return train_x, test_x, train_y, test_y
+        task_hint = "regression"
+        train_x, train_y, test_x, test_y = get_california_housing_dataset()
+        return train_x, train_y, test_x, test_y, task_hint
     # cylinder-bands dataset from OpenFE benchmark
     elif option == 2:
-        return get_cylinder_folds_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
+        task_hint = "classification"
+        openml_task_id = 1797
+        outer_fold_number = 0
+        train_x, train_y, test_x, test_y = get_cylinder_bands_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
+        return train_x, train_y, test_x, test_y, task_hint
     # balance-scale dataset from OpenFE benchmark (not working)
     elif option == 3:
-        test_X, test_y, train_X, train_y = get_balance_scale_dataset()
-        return train_X, test_X, train_y, test_y
+        task_hint = "classification"
+        train_x, train_y, test_x, test_y = get_balance_scale_dataset()
+        return train_x, train_y, test_x, test_y, task_hint
     # black-friday dataset from AMLB (long execution time)
     elif option == 4:
-        test_X, test_y, train_X, train_y = get_black_friday_dataset()
-        return train_X, test_X, train_y, test_y
+        task_hint = "classification"
+        train_x, train_y, test_x, test_y = get_black_friday_dataset()
+        return train_x, train_y, test_x, test_y, task_hint
 
 
 preprocessing = Split(
@@ -124,8 +135,6 @@ def main() -> None:
         wait_for_all_workers_to_finish = False
 
     random_seed = 42
-    openml_task_id = 1797
-    task_hint = "classification"
     outer_fold_number = 0  # Only run the first outer fold, wrap this in a loop if needs be, with a unique history file for each one
     inner_fold_seed = random_seed + outer_fold_number
 
@@ -136,11 +145,11 @@ def main() -> None:
     Use original data without feature engineering
 
     """
-    # Get original data
-    X_original, X_test_original, y, y_test = get_dataset(option=2, openml_task_id=openml_task_id,
-                                                         outer_fold_number=outer_fold_number)
+    print("Original Data")
+    # Get original train-test split dataset
+    X_original, y_original, X_test_original, y_test_original, task_hint = get_dataset(option=2)
 
-    evaluator = get_cv_evaluator(X_original, X_test_original, inner_fold_seed, on_trial_exception, task_hint, y, y_test)
+    evaluator = get_cv_evaluator(X_original, X_test_original, inner_fold_seed, on_trial_exception, task_hint, y_original, y_test_original)
 
     history_original = pipeline.optimize(
         target=evaluator.fn,
@@ -159,38 +168,14 @@ def main() -> None:
     )
 
     """
-    ############## Feature Engineering with OpenFE ##############
-    Use Feature Generation and Selection implemented by the OpenFE paper
-
-    """
-    X_openFE, X_test_openFE = get_openFE_features(X_original, X_test_original, y, 1)
-
-    evaluator = get_cv_evaluator(X_openFE, X_test_openFE, inner_fold_seed, on_trial_exception, task_hint, y, y_test)
-
-    history_openFE = pipeline.optimize(
-        target=evaluator.fn,
-        metric=metric_definition,
-        optimizer=optimizer_cls,
-        seed=inner_fold_seed,
-        process_memory_limit=per_process_memory_limit,
-        process_walltime_limit=per_process_walltime_limit,
-        working_dir=working_dir,
-        max_trials=max_trials,
-        timeout=max_time,
-        display=display,
-        wait=wait_for_all_workers_to_finish,
-        n_workers=n_workers,
-        on_trial_exception=on_trial_exception,
-    )
-
-    """
     ############## Feature Engineering with sklearn ##############
     Use self-implemented Feature Generation and Selection with the usage of the sklearn library
-
+    
     """
-    X_sklearn, X_test_sklearn = get_sklearn_features(X_original, X_test_original, y, y_test)
+    print("Sklearn Data")
+    X_sklearn, X_test_sklearn = get_sklearn_features(X_original, y_original, X_test_original, y_test_original)
 
-    evaluator = get_cv_evaluator(X_sklearn, X_test_sklearn, inner_fold_seed, on_trial_exception, task_hint, y, y_test)
+    evaluator = get_cv_evaluator(X_sklearn, X_test_sklearn, inner_fold_seed, on_trial_exception, task_hint, y_original, y_test_original)
 
     history_sklearn = pipeline.optimize(
         target=evaluator.fn,
@@ -208,17 +193,99 @@ def main() -> None:
         on_trial_exception=on_trial_exception,
     )
 
+    """
+    ############## Feature Engineering with autofeat ##############
+    Use Feature Engineering from autofeat
+
+    """
+    print("autofeat Data")
+    X_autofeat, X_test_autofeat = get_autofeat_features(X_original, y_original, X_test_original, task_hint)
+
+    evaluator = get_cv_evaluator(X_autofeat, X_test_autofeat, inner_fold_seed, on_trial_exception, task_hint, y_original, y_test_original)
+
+    history_autofeat = pipeline.optimize(
+        target=evaluator.fn,
+        metric=metric_definition,
+        optimizer=optimizer_cls,
+        seed=inner_fold_seed,
+        process_memory_limit=per_process_memory_limit,
+        process_walltime_limit=per_process_walltime_limit,
+        working_dir=working_dir,
+        max_trials=max_trials,
+        timeout=max_time,
+        display=display,
+        wait=wait_for_all_workers_to_finish,
+        n_workers=n_workers,
+        on_trial_exception=on_trial_exception,
+    )
+
+    """
+    ############## Feature Engineering with h2o ##############
+    Use h2o Feature Generation and Selection
+
+    """
+    """
+    print("H2O Data")
+    X_h2o, X_test_h2o = get_h2o_features(X_original, y_original, X_test_original, )
+
+    evaluator = get_cv_evaluator(X_h2o, X_test_h2o, inner_fold_seed, on_trial_exception, task_hint, y, y_test)
+
+    history_h2o = pipeline.optimize(
+        target=evaluator.fn,
+        metric=metric_definition,
+        optimizer=optimizer_cls,
+        seed=inner_fold_seed,
+        process_memory_limit=per_process_memory_limit,
+        process_walltime_limit=per_process_walltime_limit,
+        working_dir=working_dir,
+        max_trials=max_trials,
+        timeout=max_time,
+        display=display,
+        wait=wait_for_all_workers_to_finish,
+        n_workers=n_workers,
+        on_trial_exception=on_trial_exception,
+    )
+    """
+
+    """
+    ############## Feature Engineering with OpenFE ##############
+    Use Feature Generation and Selection implemented by the OpenFE paper
+
+    """
+    print("OpenFE Data")
+    X_openFE, X_test_openFE = get_openFE_features(X_original, y_original, X_test_original, 1)
+
+    evaluator = get_cv_evaluator(X_openFE, X_test_openFE, inner_fold_seed, on_trial_exception, task_hint, y_original, y_test_original)
+
+    history_openFE = pipeline.optimize(
+        target=evaluator.fn,
+        metric=metric_definition,
+        optimizer=optimizer_cls,
+        seed=inner_fold_seed,
+        process_memory_limit=per_process_memory_limit,
+        process_walltime_limit=per_process_walltime_limit,
+        working_dir=working_dir,
+        max_trials=max_trials,
+        timeout=max_time,
+        display=display,
+        wait=wait_for_all_workers_to_finish,
+        n_workers=n_workers,
+        on_trial_exception=on_trial_exception,
+    )
+
+
     # Append Dataframes to one + print and save it to parquet
     df_original = history_original.df()
-    df_openFE = history_openFE.df()
     df_sklearn = history_sklearn.df()
+    df_autofeat = history_autofeat.df()
+    # df_h2o = history_h2o.df()
+    df_openFE = history_openFE.df()
 
-    df = pd.concat([df_original, df_openFE, df_sklearn], axis=0)
+    df = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE], axis=0)
     # Assign some new information to the dataframe
     df.assign(
         outer_fold=outer_fold_number,
         inner_fold_seed=inner_fold_seed,
-        task_id=openml_task_id,
         max_trials=max_trials,
         max_time=max_time,
         optimizer=optimizer_cls.__name__,
