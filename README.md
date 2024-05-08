@@ -21,7 +21,7 @@ The Masterthesis is conducted on the topic of Feature Engineering in the context
    5. Append the dataframe with the history to one as done in line `df = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE], axis=0)`
 3. Execute `python3 src/amltk/pipeline/main.py`
 <br>&rarr; See results in src/amltk/results/results.parquet
-4. Adapt the third codeblock in the src/amltk/results/analysis.ipynb file in the following way:
+4. Adapt the first codeblock in the src/amltk/results/analysis.ipynb file in the following way:
    1. Make sure, that the number of max_trials (src/amltk/main.py) still equals 10 and set the `part_size = 10` value to exactly the same value
    2. Add all labels for all the methods used
 5. Execute the file analysis.ipynb and receive all plots from the different accuracy metrics in case the runs were successful
