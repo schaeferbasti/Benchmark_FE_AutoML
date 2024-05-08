@@ -36,7 +36,7 @@ def get_dataset(option) -> tuple[
         task_hint = "classification"
         openml_task_id = 1797
         outer_fold_number = 0
-        train_x, train_y, test_x, test_y = get_cylinder_bands_dataset(openml_task_id=openml_task_id,
+        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id,
                                                                       fold=outer_fold_number)
         return train_x, train_y, test_x, test_y, task_hint
     # balance-scale dataset from OpenFE benchmark (not working)
@@ -48,6 +48,54 @@ def get_dataset(option) -> tuple[
     elif option == 4:
         task_hint = "classification"
         train_x, train_y, test_x, test_y = get_black_friday_dataset()
+        return train_x, train_y, test_x, test_y, task_hint
+    # boston dataset
+    elif option == 5:
+        task_hint = "regression"
+        openml_task_id = 359950
+        outer_fold_number = 0
+        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id,
+                                                                      fold=outer_fold_number)
+        return train_x, train_y, test_x, test_y, task_hint
+    # sensory dataset
+    elif option == 6:
+        task_hint = "regression"
+        openml_task_id = 359931
+        outer_fold_number = 0
+        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id,
+                                                                      fold=outer_fold_number)
+        return train_x, train_y, test_x, test_y, task_hint
+    # australian dataset
+    elif option == 7:
+        task_hint = "classification"
+        openml_task_id = 146818
+        outer_fold_number = 0
+        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id,
+                                                                      fold=outer_fold_number)
+        return train_x, train_y, test_x, test_y, task_hint
+    # blood transfusion service center dataset
+    elif option == 8:
+        task_hint = "classification"
+        openml_task_id = 359955
+        outer_fold_number = 0
+        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id,
+                                                                      fold=outer_fold_number)
+        return train_x, train_y, test_x, test_y, task_hint
+    # credit g dataset
+    elif option == 9:
+        task_hint = "classification"
+        openml_task_id = 168757
+        outer_fold_number = 0
+        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id,
+                                                                      fold=outer_fold_number)
+        return train_x, train_y, test_x, test_y, task_hint
+    # eucalyptus dataset
+    elif option == 10:
+        task_hint = "classification"
+        openml_task_id = 359954
+        outer_fold_number = 0
+        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id,
+                                                                      fold=outer_fold_number)
         return train_x, train_y, test_x, test_y, task_hint
 
 

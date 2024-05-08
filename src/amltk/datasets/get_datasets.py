@@ -19,7 +19,7 @@ def get_california_housing_dataset() -> tuple[
     return train_x, train_y, test_x, test_y
 
 
-def get_cylinder_bands_dataset(
+def get_openml_dataset(
         openml_task_id: int,
         fold: int,
 ) -> tuple[
