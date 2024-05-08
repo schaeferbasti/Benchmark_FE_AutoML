@@ -2,12 +2,9 @@ from __future__ import annotations
 
 import warnings
 from pathlib import Path
-from typing import Literal
 
-from amltk.optimization import Metric, Trial
-from amltk.pipeline import Choice, Sequential, Split, Node
-from amltk.sklearn import CVEvaluation
-from sklearn.impute import SimpleImputer
+from amltk.optimization import Metric
+from amltk.pipeline import Choice, Sequential, Split
 from sklearn.metrics import get_scorer
 from sklearn.preprocessing import *
 
@@ -15,7 +12,6 @@ from src.amltk.classifiers.get_classifiers import *
 from src.amltk.datasets.get_datasets import *
 from src.amltk.evaluation.get_evaluator import get_cv_evaluator
 from src.amltk.feature_engineering.autofeat import get_autofeat_features
-from src.amltk.feature_engineering.h2o import get_h2o_features
 from src.amltk.feature_engineering.open_fe import get_openFE_features
 from src.amltk.feature_engineering.own_method import get_sklearn_features
 from src.amltk.optimizer.random_search import RandomSearch
@@ -40,7 +36,8 @@ def get_dataset(option) -> tuple[
         task_hint = "classification"
         openml_task_id = 1797
         outer_fold_number = 0
-        train_x, train_y, test_x, test_y = get_cylinder_bands_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
+        train_x, train_y, test_x, test_y = get_cylinder_bands_dataset(openml_task_id=openml_task_id,
+                                                                      fold=outer_fold_number)
         return train_x, train_y, test_x, test_y, task_hint
     # balance-scale dataset from OpenFE benchmark (not working)
     elif option == 3:
@@ -149,7 +146,8 @@ def main() -> None:
     # Get original train-test split dataset
     X_original, y_original, X_test_original, y_test_original, task_hint = get_dataset(option=2)
 
-    evaluator = get_cv_evaluator(X_original, X_test_original, inner_fold_seed, on_trial_exception, task_hint, y_original, y_test_original)
+    evaluator = get_cv_evaluator(X_original, X_test_original, inner_fold_seed, on_trial_exception, task_hint,
+                                 y_original, y_test_original)
 
     history_original = pipeline.optimize(
         target=evaluator.fn,
@@ -175,7 +173,8 @@ def main() -> None:
     print("Sklearn Data")
     X_sklearn, X_test_sklearn = get_sklearn_features(X_original, y_original, X_test_original, y_test_original)
 
-    evaluator = get_cv_evaluator(X_sklearn, X_test_sklearn, inner_fold_seed, on_trial_exception, task_hint, y_original, y_test_original)
+    evaluator = get_cv_evaluator(X_sklearn, X_test_sklearn, inner_fold_seed, on_trial_exception, task_hint, y_original,
+                                 y_test_original)
 
     history_sklearn = pipeline.optimize(
         target=evaluator.fn,
@@ -201,7 +200,8 @@ def main() -> None:
     print("autofeat Data")
     X_autofeat, X_test_autofeat = get_autofeat_features(X_original, y_original, X_test_original, task_hint)
 
-    evaluator = get_cv_evaluator(X_autofeat, X_test_autofeat, inner_fold_seed, on_trial_exception, task_hint, y_original, y_test_original)
+    evaluator = get_cv_evaluator(X_autofeat, X_test_autofeat, inner_fold_seed, on_trial_exception, task_hint,
+                                 y_original, y_test_original)
 
     history_autofeat = pipeline.optimize(
         target=evaluator.fn,
@@ -255,7 +255,8 @@ def main() -> None:
     print("OpenFE Data")
     X_openFE, X_test_openFE = get_openFE_features(X_original, y_original, X_test_original, 1)
 
-    evaluator = get_cv_evaluator(X_openFE, X_test_openFE, inner_fold_seed, on_trial_exception, task_hint, y_original, y_test_original)
+    evaluator = get_cv_evaluator(X_openFE, X_test_openFE, inner_fold_seed, on_trial_exception, task_hint, y_original,
+                                 y_test_original)
 
     history_openFE = pipeline.optimize(
         target=evaluator.fn,
@@ -272,7 +273,6 @@ def main() -> None:
         n_workers=n_workers,
         on_trial_exception=on_trial_exception,
     )
-
 
     # Append Dataframes to one + print and save it to parquet
     df_original = history_original.df()
