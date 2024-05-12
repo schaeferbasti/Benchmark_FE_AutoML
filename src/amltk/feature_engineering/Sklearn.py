@@ -2,10 +2,10 @@ import pandas as pd
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.preprocessing import PolynomialFeatures
 
-from src.amltk.datasets.get_datasets import preprocess_dataframe
+from src.amltk.datasets.Datasets import preprocess_data, preprocess_target
 
 
-def get_sklearn_features(train_x, train_y, test_x, test_y) -> tuple[
+def get_sklearn_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
@@ -19,17 +19,24 @@ def get_sklearn_features(train_x, train_y, test_x, test_y) -> tuple[
     #   b. SelectPercentile
     """ Only do transform for test data, no fit_transform --> No learning from test data """
 
-    columns_train_x = train_x.columns
-    columns_test_x = test_x.columns
+    train_x = preprocess_data(train_x)
+    train_y = preprocess_target(train_y)
+    test_x = preprocess_data(test_x)
 
-    train_x = preprocess_dataframe(train_x)
-    test_x = preprocess_dataframe(test_x)
+    k = len(train_x.columns)
+    columns = train_x.columns
 
     # Generate Polynomial features
     print("Generate new features")
     pf = PolynomialFeatures(degree=2, interaction_only=True)
     train_x = pf.fit_transform(train_x)
-    test_x = pf.fit_transform(test_x)
+    test_x = pf.transform(test_x)
+
+    print(train_x.shape)
+    print(test_x.shape)
+
+    train_x = pd.DataFrame(train_x)
+    test_x = pd.DataFrame(test_x)
 
     # Normalize
     # train_x = normalize(train_x, axis=0)
@@ -46,11 +53,15 @@ def get_sklearn_features(train_x, train_y, test_x, test_y) -> tuple[
 
     # Select Best Features
     print("Select best features")
-    train_x = SelectKBest(chi2, k=38).fit_transform(train_x, train_y)
-    test_x = SelectKBest(chi2, k=38).fit_transform(test_x, test_y)
+    sel = SelectKBest(score_func=chi2, k=k)
+    train_x = sel.fit_transform(train_x, train_y)
+    test_x = sel.transform(test_x)
+
+    print(train_x.shape)
+    print(test_x.shape)
 
     # Transform to DataFrame again
-    train_x = pd.DataFrame(train_x, columns=columns_train_x)
-    test_x = pd.DataFrame(test_x, columns=columns_test_x)
+    train_x = pd.DataFrame(train_x)
+    test_x = pd.DataFrame(test_x)
 
     return train_x, test_x

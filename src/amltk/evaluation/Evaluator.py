@@ -2,19 +2,18 @@ from amltk import Trial, Node
 from amltk.sklearn import CVEvaluation
 
 
-def get_cv_evaluator(X, X_test, inner_fold_seed, on_trial_exception, task_hint, y, y_test):
+def get_cv_evaluator(X, y, X_test, y_test, inner_fold_seed, on_trial_exception, task_hint,):
     return CVEvaluation(
         # Provide data, number of times to split, cross-validation and a hint of the task type
-        X,
-        y,
+        X=X,
+        y=y,
+        X_test=X_test,
+        y_test=y_test,
         splitter="cv",
         n_splits=8,
         task_hint=task_hint,
         # Seeding for reproducibility
         random_state=inner_fold_seed,
-        # Provide test data to get test scores
-        X_test=X_test,
-        y_test=y_test,
         # Record training scores
         train_score=True,
         # Where to store things
