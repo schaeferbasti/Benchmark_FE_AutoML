@@ -1,6 +1,6 @@
 import pandas as pd
 
-from Autofeat.autofeat import AutoFeatRegressor, AutoFeatClassifier
+from autofeat.autofeat import AutoFeatRegressor, AutoFeatClassifier
 from src.amltk.datasets.Datasets import preprocess_data, preprocess_target
 
 
