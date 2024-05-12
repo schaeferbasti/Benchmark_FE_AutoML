@@ -8,26 +8,24 @@ The Masterthesis is conducted on the topic of Feature Engineering in the context
 `pip install -r requirements.txt`
 
 #### Execution:
-1. Choose option for dataset in the line `X_original, X_test_original, y, y_test = get_dataset(option=2)` in file src/amltk/main.py
-   - Option 1: california-housing dataset from OpenFE example
-   - Option 2: cylinder-bands dataset from OpenFE benchmark
-   - Option 3: balance-scale dataset from OpenFE benchmark (not working)
-   - Option 4: black-friday dataset from AMLB (long execution time)
-2. Choose feature engineering methods and add them to the final dataframe in order to see the results:
+1. Set the variable to True if you want to rerun methods on datasets with existing results `rerun = True`
+2. Choose set of datasets in the line `for option in smallest_datasets:` (replace smallest_datasets by your desired set) in file src/amltk/main.py
+3. Choose feature engineering methods and add them to the final dataframe in order to see the results:
    1. Get feature-engineered features by using the method from the corresponding file. Example: get_openFE_features from file src/amltk/feature_engineering/open_fe.py
    2. Get Cross-validation evaluator by calling get_cv_evaluator() method from the file src/amltk/evaluation/get_evaluator.py
    3. Optimize the pipeline and receive the history by calling e.g. history_openfe = pipeline.optimize(...)
    4. Convert history to a pandas dataframe: df_openFE = history_openFE.df()
    5. Append the dataframe with the history to one as done in line `df = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE], axis=0)`
-3. Execute `python3 src/amltk/pipeline/main.py`
+4. Execute `python3 src/amltk/pipeline/main.py`
 <br>&rarr; See results in src/amltk/results/results.parquet
-4. Adapt the first codeblock in the src/amltk/results/analysis.ipynb file in the following way:
+5. Adapt the first codeblock in the src/amltk/results/analysis.ipynb file in the following way:
    1. Make sure, that the number of max_trials (src/amltk/main.py) still equals 10 and set the `part_size = 10` value to exactly the same value
    2. Add all labels for all the methods used
-5. Execute the file analysis.ipynb and receive all plots from the different accuracy metrics in case the runs were successful
+   3. Add the names of all datasets
+6. Execute the file analysis.ipynb and receive all plots from the different accuracy metrics in case the runs were successful
 
 #### Execution on MetaCluster:
-1. Choose option (see above)
+1. Choose options (see above)
 2. `sbatch scripts/meta/run.sh`
 <br>&rarr; See results in logs/AMLTK_Pipeline-_BatchJobID_.out
 
