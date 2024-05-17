@@ -8,12 +8,13 @@ def get_autofeat_features(train_x, train_y, test_x, task_hint) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
+
     train_x = preprocess_data(train_x)
     train_y = preprocess_target(train_y)
     test_x = preprocess_data(test_x)
 
-    feateng_steps = 1
-    featsel_runs = 1
+    feateng_steps = 3
+    featsel_runs = 3
     transformations = ("1/", "exp", "log", "abs", "sqrt", "^2", "^3")
 
     if task_hint == 'regression':
@@ -26,6 +27,7 @@ def get_autofeat_features(train_x, train_y, test_x, task_hint) -> tuple[
             transformations=transformations
         )
         train_x = autofeat_regression.fit_transform(train_x, train_y)
+        test_x = autofeat_regression.transform(test_x)
     elif task_hint == "classification":
         autofeat_classification = AutoFeatClassifier(
             verbose=1,
@@ -36,4 +38,5 @@ def get_autofeat_features(train_x, train_y, test_x, task_hint) -> tuple[
             transformations=transformations
         )
         train_x = autofeat_classification.fit_transform(train_x, train_y)
+        test_x = autofeat_classification.transform(test_x)
     return train_x, test_x

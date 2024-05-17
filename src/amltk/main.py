@@ -4,7 +4,6 @@ import warnings
 from pathlib import Path
 import os.path
 
-import pandas as pd
 from amltk.optimization import Metric
 from amltk.pipeline import Choice, Sequential, Split
 from sklearn.metrics import get_scorer
@@ -80,7 +79,6 @@ knn_pipeline = Sequential(preprocessing, knn_classifier, name="knn_pipeline")
 
 
 def main() -> None:
-    rerun = False
     optimizer_cls = RandomSearch
     working_dir = Path("results").absolute()
     metric_definition = Metric(
@@ -93,15 +91,17 @@ def main() -> None:
     per_process_memory_limit = None  # (4, "GB")  # NOTE: May have issues on Mac
     per_process_walltime_limit = None  # (60, "s")
 
+    rerun = True
     debugging = False
+
     if debugging:
-        max_trials = 1
-        max_time = 30
-        n_workers = 1
+        max_trials = 10
+        max_time = 600
+        n_workers = 4
         # raise an error with traceback, something went wrong
         on_trial_exception = "raise"
         display = True
-        wait_for_all_workers_to_finish = True
+        wait_for_all_workers_to_finish = False
     else:
         max_trials = 10
         max_time = 600
