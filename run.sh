@@ -1,6 +1,3 @@
-#!/bin/bash
-
-# Define the partition on which the job shall run.
 #SBATCH --partition mlhiwidlc_gpu-rtx2080    # short: -p <partition_name>
 
 # Define a name for your job
@@ -34,10 +31,14 @@ python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 echo "Requirements installed"
 
+# Set the PYTHONPATH to include the src directory
+export PYTHONPATH=$PWD/src/amltk:$PYTHONPATH
+echo "PYTHONPATH set to $PYTHONPATH"
+
 # Running the job
 start=`date +%s`
 
-python3 src/amltk/main.py #--cuda --wait-time 5
+python3 src/amltk/main.py #--cuda --wait-time 55
 
 end=`date +%s`
 runtime=$((end-start))
