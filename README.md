@@ -16,13 +16,15 @@ The Masterthesis is conducted on the topic of Feature Engineering in the context
    3. Optimize the pipeline and receive the history by calling e.g. history_openfe = pipeline.optimize(...)
    4. Convert history to a pandas dataframe: df_openFE = history_openFE.df()
    5. Append the dataframe with the history to one as done in line `df = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE], axis=0)`
-4. Execute `python3 src/amltk/pipeline/main.py`
+4. Choose the variable `working_dir = Path("src/amltk/results")` accordingly, depending on you execute your code locally or in the cluster (see comments)
+5. Set the variable `steps = 1`to the value of feature engineering and selection steps you want for autofeat
+6. Execute `python3 src/amltk/pipeline/main.py`
 <br>&rarr; See results in src/amltk/results/results.parquet
-5. Adapt the first codeblock in the src/amltk/results/analysis.ipynb file in the following way:
+7. Adapt the first codeblock in the src/amltk/results/analysis.ipynb file in the following way:
    1. Make sure, that the number of max_trials (src/amltk/main.py) still equals 10 and set the `part_size = 10` value to exactly the same value
    2. Add all labels for all the methods used
    3. Add the names of all datasets
-6. Execute the file analysis.ipynb and receive all plots from the different accuracy metrics in case the runs were successful
+8. Execute the file analysis.ipynb and receive all plots from the different accuracy metrics in case the runs were successful
 
 #### Execution on MetaCluster:
 1. Choose options (see above)
