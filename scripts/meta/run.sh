@@ -37,7 +37,7 @@ echo "Requirements installed"
 # Running the job
 start=`date +%s`
 
-python3 src/amltk/pipeline/main.py #--cuda --wait-time 5
+python3 src/amltk/main.py #--cuda --wait-time 5
 
 end=`date +%s`
 runtime=$((end-start))
