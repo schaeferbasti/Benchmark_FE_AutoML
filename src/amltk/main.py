@@ -13,6 +13,8 @@ from src.amltk.classifiers.Classifiers import *
 from src.amltk.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
 from src.amltk.feature_engineering.Autofeat import get_autofeat_features
+from src.amltk.feature_engineering.H2O import get_h2o_features
+from src.amltk.feature_engineering.LightAutoML import get_lightAutoML_features
 from src.amltk.feature_engineering.OpenFE import get_openFE_features
 from src.amltk.feature_engineering.Sklearn import get_sklearn_features
 from src.amltk.optimizer.RandomSearch import RandomSearch
@@ -80,7 +82,10 @@ knn_pipeline = Sequential(preprocessing, knn_classifier, name="knn_pipeline")
 
 def main() -> None:
     optimizer_cls = RandomSearch
-    working_dir = Path("results").absolute()
+    # Cluster
+    working_dir = Path("src/amltk/results")
+    # Local
+    working_dir = Path("results")
     metric_definition = Metric(
         "accuracy",
         minimize=False,
@@ -91,8 +96,9 @@ def main() -> None:
     per_process_memory_limit = None  # (4, "GB")  # NOTE: May have issues on Mac
     per_process_walltime_limit = None  # (60, "s")
 
-    rerun = True
-    debugging = False
+    steps = 1           # Number of steps for autofeat
+    rerun = True        # Decide if you want to reexecute the methods on a dataset or use the existing files
+    debugging = False   # Decide if you want ot raise trial exceptions
 
     if debugging:
         max_trials = 10
@@ -125,7 +131,7 @@ def main() -> None:
     df_collection = pd.DataFrame()
 
     #Iterate over all chosen datasets
-    for option in smallest_datasets:
+    for option in test_new_method_datasets:
         # Get train test split dataset
         train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
 
@@ -193,7 +199,7 @@ def main() -> None:
         
             """
             print("\n\nautofeat Data")
-            train_x_autofeat, test_x_autofeat = get_autofeat_features(train_x, train_y, test_x, task_hint)
+            train_x_autofeat, test_x_autofeat = get_autofeat_features(train_x, train_y, test_x, task_hint, steps)
 
             evaluator = get_cv_evaluator(train_x_autofeat, train_y, test_x_autofeat, test_y, inner_fold_seed,
                                          on_trial_exception, task_hint)
@@ -213,34 +219,6 @@ def main() -> None:
                 n_workers=n_workers,
                 on_trial_exception=on_trial_exception,
             )
-
-            """
-            ############## Feature Engineering with h2o ##############
-            Use h2o Feature Generation and Selection
-        
-            """
-            """
-            print("\n\nH2O Data")
-            train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x, test_y )
-        
-            evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y, inner_fold_seed, on_trial_exception, task_hint)
-        
-            history_h2o = pipeline.optimize(
-                target=evaluator.fn,
-                metric=metric_definition,
-                optimizer=optimizer_cls,
-                seed=inner_fold_seed,
-                process_memory_limit=per_process_memory_limit,
-                process_walltime_limit=per_process_walltime_limit,
-                working_dir=working_dir,
-                max_trials=max_trials,
-                timeout=max_time,
-                display=display,
-                wait=wait_for_all_workers_to_finish,
-                n_workers=n_workers,
-                on_trial_exception=on_trial_exception,
-            )
-            """
 
             """
             ############## Feature Engineering with OpenFE ##############
@@ -268,6 +246,64 @@ def main() -> None:
                 n_workers=n_workers,
                 on_trial_exception=on_trial_exception,
             )
+
+            """
+                        ############## Feature Engineering with h2o ##############
+                        Use h2o Feature Generation and Selection
+
+                        """
+
+            print("\n\nH2O Data")
+            train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
+
+            evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y, inner_fold_seed, on_trial_exception,
+                                         task_hint)
+
+            history_h2o = pipeline.optimize(
+                target=evaluator.fn,
+                metric=metric_definition,
+                optimizer=optimizer_cls,
+                seed=inner_fold_seed,
+                process_memory_limit=per_process_memory_limit,
+                process_walltime_limit=per_process_walltime_limit,
+                working_dir=working_dir,
+                max_trials=max_trials,
+                timeout=max_time,
+                display=display,
+                wait=wait_for_all_workers_to_finish,
+                n_workers=n_workers,
+                on_trial_exception=on_trial_exception,
+            )
+
+            """
+            ############## Feature Engineering with LightAutoML ##############
+            Use LightAutoML Feature Generation and Selection
+
+            """
+            """
+            print("\n\nLightAutoML Data")
+            train_x_lightAutoML, test_x_lightAutoML = get_lightAutoML_features(train_x, train_y, test_x)
+
+            evaluator = get_cv_evaluator(train_x_lightAutoML, train_y, test_x_lightAutoML, test_y, inner_fold_seed, on_trial_exception,
+                                         task_hint)
+
+            history_lightAutoML = pipeline.optimize(
+                target=evaluator.fn,
+                metric=metric_definition,
+                optimizer=optimizer_cls,
+                seed=inner_fold_seed,
+                process_memory_limit=per_process_memory_limit,
+                process_walltime_limit=per_process_walltime_limit,
+                working_dir=working_dir,
+                max_trials=max_trials,
+                timeout=max_time,
+                display=display,
+                wait=wait_for_all_workers_to_finish,
+                n_workers=n_workers,
+                on_trial_exception=on_trial_exception,
+            )
+            """
+
             df_collection.assign(
                 outer_fold=outer_fold_number,
                 inner_fold_seed=inner_fold_seed,
@@ -281,9 +317,10 @@ def main() -> None:
             df_original = history_original.df()
             df_sklearn = history_sklearn.df()
             df_autofeat = history_autofeat.df()
-            # df_h2o = history_h2o.df()
             df_openFE = history_openFE.df()
-            df_option = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE], axis=0)
+            df_h2o = history_h2o.df()
+            #df_lightAutoML = history_lightAutoML.df()
+            df_option = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE, df_h2o], axis=0)
             # Safe Dataframe for dataset
             safe_dataframe(df_option, working_dir, name)
         else:

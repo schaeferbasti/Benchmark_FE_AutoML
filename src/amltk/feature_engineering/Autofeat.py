@@ -4,7 +4,7 @@ from autofeat.autofeat import AutoFeatRegressor, AutoFeatClassifier
 from src.amltk.datasets.Datasets import preprocess_data, preprocess_target
 
 
-def get_autofeat_features(train_x, train_y, test_x, task_hint) -> tuple[
+def get_autofeat_features(train_x, train_y, test_x, task_hint, steps) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
@@ -13,8 +13,8 @@ def get_autofeat_features(train_x, train_y, test_x, task_hint) -> tuple[
     train_y = preprocess_target(train_y)
     test_x = preprocess_data(test_x)
 
-    feateng_steps = 3
-    featsel_runs = 3
+    feateng_steps = steps
+    featsel_runs = steps
     transformations = ("1/", "exp", "log", "abs", "sqrt", "^2", "^3")
 
     if task_hint == 'regression':
