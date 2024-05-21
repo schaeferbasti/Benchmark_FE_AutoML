@@ -116,7 +116,7 @@ openml==0.14.2
 optree==0.11.0
 overrides==7.7.0
 packaging==24.0
-pandas==2.2.1
+pandas~=2.2.2
 pandocfilters==1.5.1
 parso==0.8.3
 partd==1.4.1
@@ -202,5 +202,5 @@ openfe~=0.0.12
 autofeat~=2.1.2
 lightgbm~=4.3.0
 fastparquet
-
-
+autogluon
+mljar-supervised
