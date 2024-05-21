@@ -15,6 +15,7 @@ from src.amltk.evaluation.Evaluator import get_cv_evaluator
 from src.amltk.feature_engineering.Autofeat import get_autofeat_features
 from src.amltk.feature_engineering.H2O import get_h2o_features
 from src.amltk.feature_engineering.LightAutoML import get_lightAutoML_features
+from src.amltk.feature_engineering.MLJAR import get_mljar_features
 from src.amltk.feature_engineering.OpenFE import get_openFE_features
 from src.amltk.feature_engineering.Sklearn import get_sklearn_features
 from src.amltk.optimizer.RandomSearch import RandomSearch
@@ -167,6 +168,62 @@ def main() -> None:
             )
 
             """
+            ############## Feature Engineering with MLJAR ##############
+            Use MLJAR Feature Generation and Selection
+
+            """
+
+            print("\n\nMLJAR Data")
+            train_x_mljar, test_x_mljar = get_mljar_features(train_x, train_y, test_x, test_y)
+
+            evaluator = get_cv_evaluator(train_x_mljar, train_y, test_x_mljar, test_y, inner_fold_seed, on_trial_exception,
+                                         task_hint)
+
+            history_mljar = pipeline.optimize(
+                target=evaluator.fn,
+                metric=metric_definition,
+                optimizer=optimizer_cls,
+                seed=inner_fold_seed,
+                process_memory_limit=per_process_memory_limit,
+                process_walltime_limit=per_process_walltime_limit,
+                working_dir=working_dir,
+                max_trials=max_trials,
+                timeout=max_time,
+                display=display,
+                wait=wait_for_all_workers_to_finish,
+                n_workers=n_workers,
+                on_trial_exception=on_trial_exception,
+            )
+
+            """
+            ############## Feature Engineering with h2o ##############
+            Use h2o Feature Generation and Selection
+
+            """
+
+            print("\n\nH2O Data")
+            train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
+
+            evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y, inner_fold_seed, on_trial_exception,
+                                         task_hint)
+
+            history_h2o = pipeline.optimize(
+                target=evaluator.fn,
+                metric=metric_definition,
+                optimizer=optimizer_cls,
+                seed=inner_fold_seed,
+                process_memory_limit=per_process_memory_limit,
+                process_walltime_limit=per_process_walltime_limit,
+                working_dir=working_dir,
+                max_trials=max_trials,
+                timeout=max_time,
+                display=display,
+                wait=wait_for_all_workers_to_finish,
+                n_workers=n_workers,
+                on_trial_exception=on_trial_exception,
+            )
+
+            """
             ############## Feature Engineering with sklearn ##############
             Use self-implemented Feature Generation and Selection with the usage of the sklearn library
             
@@ -248,34 +305,6 @@ def main() -> None:
             )
 
             """
-                        ############## Feature Engineering with h2o ##############
-                        Use h2o Feature Generation and Selection
-
-                        """
-
-            print("\n\nH2O Data")
-            train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
-
-            evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y, inner_fold_seed, on_trial_exception,
-                                         task_hint)
-
-            history_h2o = pipeline.optimize(
-                target=evaluator.fn,
-                metric=metric_definition,
-                optimizer=optimizer_cls,
-                seed=inner_fold_seed,
-                process_memory_limit=per_process_memory_limit,
-                process_walltime_limit=per_process_walltime_limit,
-                working_dir=working_dir,
-                max_trials=max_trials,
-                timeout=max_time,
-                display=display,
-                wait=wait_for_all_workers_to_finish,
-                n_workers=n_workers,
-                on_trial_exception=on_trial_exception,
-            )
-
-            """
             ############## Feature Engineering with LightAutoML ##############
             Use LightAutoML Feature Generation and Selection
 
@@ -319,8 +348,8 @@ def main() -> None:
             df_autofeat = history_autofeat.df()
             df_openFE = history_openFE.df()
             df_h2o = history_h2o.df()
-            #df_lightAutoML = history_lightAutoML.df()
-            df_option = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE, df_h2o], axis=0)
+            df_mljar = history_mljar.df()
+            df_option = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE, df_h2o, df_mljar], axis=0)
             # Safe Dataframe for dataset
             safe_dataframe(df_option, working_dir, name)
         else:

@@ -218,7 +218,7 @@ def get_dataset(option) -> tuple[
         outer_fold_number = 0
         train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
         return train_x, train_y, test_x, test_y, task_hint, name
-    # Bioresponse (n = 3751, p = 1777) (yes, too many features)
+    # bioresponse (n = 3751, p = 1777) (yes, too many features)
     elif option == 15:
         name = "bioresponse_dataset"
         task_hint = "classification"
