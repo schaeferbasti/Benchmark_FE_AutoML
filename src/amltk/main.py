@@ -12,6 +12,7 @@ from sklearn.preprocessing import *
 from src.amltk.classifiers.Classifiers import *
 from src.amltk.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
+from src.amltk.feature_engineering.AutoGluon import get_autogluon_features
 from src.amltk.feature_engineering.Autofeat import get_autofeat_features
 from src.amltk.feature_engineering.H2O import get_h2o_features
 from src.amltk.feature_engineering.LightAutoML import get_lightAutoML_features
@@ -306,18 +307,18 @@ def main() -> None:
             )
 
             """
-            ############## Feature Engineering with LightAutoML ##############
-            Use LightAutoML Feature Generation and Selection
+            ############## Feature Engineering with AutoGluon ##############
+            Use AutoGluon Feature Generation and Selection
 
             """
-            """
-            print("\n\nLightAutoML Data")
-            train_x_lightAutoML, test_x_lightAutoML = get_lightAutoML_features(train_x, train_y, test_x)
 
-            evaluator = get_cv_evaluator(train_x_lightAutoML, train_y, test_x_lightAutoML, test_y, inner_fold_seed, on_trial_exception,
+            print("\n\nAutoGluon Data")
+            train_x_autogluon, test_x_autogluon = get_autogluon_features(train_x, train_y, test_x)
+
+            evaluator = get_cv_evaluator(train_x_autogluon, train_y, test_x_autogluon, test_y, inner_fold_seed, on_trial_exception,
                                          task_hint)
 
-            history_lightAutoML = pipeline.optimize(
+            history_autogluon = pipeline.optimize(
                 target=evaluator.fn,
                 metric=metric_definition,
                 optimizer=optimizer_cls,
@@ -332,7 +333,6 @@ def main() -> None:
                 n_workers=n_workers,
                 on_trial_exception=on_trial_exception,
             )
-            """
 
             df_collection.assign(
                 outer_fold=outer_fold_number,
@@ -350,7 +350,8 @@ def main() -> None:
             df_openFE = history_openFE.df()
             df_h2o = history_h2o.df()
             df_mljar = history_mljar.df()
-            df_option = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE, df_h2o, df_mljar], axis=0)
+            df_autogluon = history_autogluon.df()
+            df_option = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE, df_h2o, df_mljar, df_autogluon], axis=0)
             # Safe Dataframe for dataset
             safe_dataframe(df_option, working_dir, name)
         else:
