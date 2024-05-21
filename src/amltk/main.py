@@ -168,62 +168,6 @@ def main() -> None:
             )
 
             """
-            ############## Feature Engineering with MLJAR ##############
-            Use MLJAR Feature Generation and Selection
-
-            """
-
-            print("\n\nMLJAR Data")
-            train_x_mljar, test_x_mljar = get_mljar_features(train_x, train_y, test_x, test_y)
-
-            evaluator = get_cv_evaluator(train_x_mljar, train_y, test_x_mljar, test_y, inner_fold_seed, on_trial_exception,
-                                         task_hint)
-
-            history_mljar = pipeline.optimize(
-                target=evaluator.fn,
-                metric=metric_definition,
-                optimizer=optimizer_cls,
-                seed=inner_fold_seed,
-                process_memory_limit=per_process_memory_limit,
-                process_walltime_limit=per_process_walltime_limit,
-                working_dir=working_dir,
-                max_trials=max_trials,
-                timeout=max_time,
-                display=display,
-                wait=wait_for_all_workers_to_finish,
-                n_workers=n_workers,
-                on_trial_exception=on_trial_exception,
-            )
-
-            """
-            ############## Feature Engineering with h2o ##############
-            Use h2o Feature Generation and Selection
-
-            """
-
-            print("\n\nH2O Data")
-            train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
-
-            evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y, inner_fold_seed, on_trial_exception,
-                                         task_hint)
-
-            history_h2o = pipeline.optimize(
-                target=evaluator.fn,
-                metric=metric_definition,
-                optimizer=optimizer_cls,
-                seed=inner_fold_seed,
-                process_memory_limit=per_process_memory_limit,
-                process_walltime_limit=per_process_walltime_limit,
-                working_dir=working_dir,
-                max_trials=max_trials,
-                timeout=max_time,
-                display=display,
-                wait=wait_for_all_workers_to_finish,
-                n_workers=n_workers,
-                on_trial_exception=on_trial_exception,
-            )
-
-            """
             ############## Feature Engineering with sklearn ##############
             Use self-implemented Feature Generation and Selection with the usage of the sklearn library
             
@@ -289,6 +233,63 @@ def main() -> None:
                                          on_trial_exception, task_hint)
 
             history_openFE = pipeline.optimize(
+                target=evaluator.fn,
+                metric=metric_definition,
+                optimizer=optimizer_cls,
+                seed=inner_fold_seed,
+                process_memory_limit=per_process_memory_limit,
+                process_walltime_limit=per_process_walltime_limit,
+                working_dir=working_dir,
+                max_trials=max_trials,
+                timeout=max_time,
+                display=display,
+                wait=wait_for_all_workers_to_finish,
+                n_workers=n_workers,
+                on_trial_exception=on_trial_exception,
+            )
+
+            """
+            ############## Feature Engineering with h2o ##############
+            Use h2o Feature Generation and Selection
+
+            """
+
+            print("\n\nH2O Data")
+            train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
+
+            evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y, inner_fold_seed, on_trial_exception,
+                                         task_hint)
+
+            history_h2o = pipeline.optimize(
+                target=evaluator.fn,
+                metric=metric_definition,
+                optimizer=optimizer_cls,
+                seed=inner_fold_seed,
+                process_memory_limit=per_process_memory_limit,
+                process_walltime_limit=per_process_walltime_limit,
+                working_dir=working_dir,
+                max_trials=max_trials,
+                timeout=max_time,
+                display=display,
+                wait=wait_for_all_workers_to_finish,
+                n_workers=n_workers,
+                on_trial_exception=on_trial_exception,
+            )
+
+            """
+            ############## Feature Engineering with MLJAR ##############
+            Use MLJAR Feature Generation and Selection
+
+            """
+
+            print("\n\nMLJAR Data")
+            train_x_mljar, test_x_mljar = get_mljar_features(train_x, train_y, test_x, test_y)
+
+            evaluator = get_cv_evaluator(train_x_mljar, train_y, test_x_mljar, test_y, inner_fold_seed,
+                                         on_trial_exception,
+                                         task_hint)
+
+            history_mljar = pipeline.optimize(
                 target=evaluator.fn,
                 metric=metric_definition,
                 optimizer=optimizer_cls,

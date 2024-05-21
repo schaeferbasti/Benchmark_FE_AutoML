@@ -32,8 +32,7 @@ def get_sklearn_features(train_x, train_y, test_x) -> tuple[
     train_x = pf.fit_transform(train_x)
     test_x = pf.transform(test_x)
 
-    print(train_x.shape)
-    print(test_x.shape)
+    print(train_x.shape, test_x.shape)
 
     train_x = pd.DataFrame(train_x)
     test_x = pd.DataFrame(test_x)
@@ -57,8 +56,7 @@ def get_sklearn_features(train_x, train_y, test_x) -> tuple[
     train_x = sel.fit_transform(train_x, train_y)
     test_x = sel.transform(test_x)
 
-    print(train_x.shape)
-    print(test_x.shape)
+    print(train_x.shape, test_x.shape)
 
     # Transform to DataFrame again
     train_x = pd.DataFrame(train_x)
