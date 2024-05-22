@@ -125,7 +125,7 @@ def main() -> None:
     pipeline = rf_pipeline
 
     # Choose set of datasets
-    all_datasets = [1, 5, 14, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 31, 35, 36]
+    all_datasets = [1, 5, 14, 16, 17, 18, 21, 22, 23, 27, 28, 29, 31, 35, 36]
     smallest_datasets = [14, 16, 17, 21, 35]  # n ~ 1000, p ~ 15
     big_datasets = [15, 22, 24]
     test_new_method_datasets = [16]
@@ -140,7 +140,7 @@ def main() -> None:
         file_name = "results_" + str(name) + ".parquet"
         file = working_dir / file_name
         # Execute all FE methods if the file doesn't exist or the user wants to rerun the process
-        if rerun & os.path.isfile(file):
+        if rerun or not os.path.isfile(file):
             print("Run FE methods on Dataset \n")
             """
             ############## Original Data ##############
