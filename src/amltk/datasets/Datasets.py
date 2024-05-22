@@ -78,6 +78,7 @@ def get_black_friday_dataset() -> tuple[
 
 
 def preprocess_data(df) -> pd.DataFrame:
+    cols = df.columns
     cat_columns = df.select_dtypes(['category']).columns
     obj_columns = df.select_dtypes(['object']).columns
     df[cat_columns] = df[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
@@ -87,6 +88,7 @@ def preprocess_data(df) -> pd.DataFrame:
     imp_m1 = SimpleImputer(missing_values=-1, strategy='mean')
     df = imp_m1.fit_transform(df)
     df = pd.DataFrame(df).fillna(0)
+    df.columns = cols
     return df
 
 

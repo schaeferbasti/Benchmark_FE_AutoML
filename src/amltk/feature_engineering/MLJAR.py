@@ -1,99 +1,53 @@
 import pandas as pd
-import json
-from sklearn.ensemble import RandomForestRegressor
-from supervised.automl import AutoML
-from supervised.preprocessing.kmeans_transformer import KMeansTransformer
-from supervised.preprocessing.preprocessing import Preprocessing
+import numpy as np
+import random
+
 from supervised.preprocessing.goldenfeatures_transformer import GoldenFeaturesTransformer
 
 from src.amltk.datasets.Datasets import preprocess_data, preprocess_target
 
 
-def get_mljar_features(train_x, train_y, test_x, test_y) -> tuple[
+def create_feature_list(cols, num_features):
+    feature_list = []
+    name_list = []
+    operator_list = ["multiply", "ratio", "sum"]
+    for i in range(num_features):
+        feature_1 = random.choice(cols)
+        feature_2 = random.choice(cols)
+        operation = random.choice(operator_list)
+        score = np.random.rand()
+        entry = {
+            "feature1": feature_1,
+            "feature2": feature_2,
+            "operation": operation,
+            "score": score
+        }
+        name_list.append(str(feature_1) + "_" + str(operation) + "_" + str(feature_2))
+        feature_list.append(entry)
+    return feature_list, name_list
+
+
+def get_mljar_features(train_x, train_y, test_x, num_features) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
-
     print(train_x.shape, test_x.shape)
     print("Generate Golden Features")
-    # Golden Features
-    preprocessor = GoldenFeaturesTransformer()
-    preprocessor._new_features = [
-        {
-            "feature1": "V1",
-            "feature2": "V3",
-            "operation": "ratio",
-            "score": 0.5143360052
-        },
-        {
-            "feature1": "V1",
-            "feature2": "V2",
-            "operation": "ratio",
-            "score": 0.5292468849
-        },
-        {
-            "feature1": "V3",
-            "feature2": "V2",
-            "operation": "ratio",
-            "score": 0.5488743845
-        },
-        {
-            "feature1": "V2",
-            "feature2": "V3",
-            "operation": "ratio",
-            "score": 0.5488743845
-        },
-        {
-            "feature1": "V4",
-            "feature2": "V1",
-            "operation": "sum",
-            "score": 0.6422473144
-        },
-        {
-            "feature1": "V3",
-            "feature2": "V1",
-            "operation": "sum",
-            "score": 0.6929436099
-        },
-        {
-            "feature1": "V2",
-            "feature2": "V3",
-            "operation": "diff",
-            "score": 0.7018018361
-        },
-        {
-            "feature1": "V3",
-            "feature2": "V2",
-            "operation": "multiply",
-            "score": 0.7080949868
-        },
-        {
-            "feature1": "V3",
-            "feature2": "V2",
-            "operation": "sum",
-            "score": 0.7080949868
-        },
-        {
-            "feature1": "V4",
-            "feature2": "V1",
-            "operation": "ratio",
-            "score": 0.7932164679
-        }
-    ]
-    preprocessor._new_columns = [
-        "V1_ratio_V3",
-        "V1_ratio_V2",
-        "V3_ratio_V2",
-        "V2_ratio_V3",
-        "V4_sum_V1",
-        "V3_sum_V1",
-        "V2_multiply_V3",
-        "V3_multiply_V2",
-        "V3_sum_V2",
-        "V4_ratio_V1"
-    ]
-    train_x, test_x = preprocess_with_preprocessor(preprocessor, train_x, train_y, test_x, test_y)
 
+    preprocessor = GoldenFeaturesTransformer()
+
+    train_x = preprocess_data(train_x)
+    train_y = preprocess_target(train_y)
+    test_x = preprocess_data(test_x)
+
+    cols = train_x.columns
+    feature_list, name_list = create_feature_list(cols, num_features)
+    preprocessor._new_features = feature_list
+    preprocessor._new_columns = name_list
+
+    preprocessor.fit(train_x, train_y)
+    train_x = preprocessor.transform(train_x)
+    test_x = preprocessor.transform(test_x)
     train_x = pd.DataFrame(train_x)
     test_x = pd.DataFrame(test_x)
 
@@ -107,12 +61,3 @@ def get_mljar_features(train_x, train_y, test_x, test_y) -> tuple[
 
     return train_x, test_x
 
-
-def preprocess_with_preprocessor(preprocessor, train_x, train_y, test_x, test_y):
-    # train_x = preprocessor.fit_transform(train_x, train_y)
-    preprocessor.fit(train_x, train_y)
-    train_x = preprocessor.transform(train_x)
-    test_x = preprocessor.transform(test_x)
-    train_x = pd.DataFrame(train_x)
-    test_x = pd.DataFrame(test_x)
-    return train_x, test_x
