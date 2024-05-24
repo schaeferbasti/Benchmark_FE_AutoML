@@ -56,7 +56,10 @@ preprocessing = Split(
 
 
 def safe_dataframe(df_collection, working_dir, dataset_name, fold):
-    file_string = "results_" + str(dataset_name) + "_fold_" + str(fold) + ".parquet"
+    if fold is None:
+        file_string = "results_" + str(dataset_name) + ".parquet"
+    else:
+        file_string = "results_" + str(dataset_name) + "_fold_" + str(fold) + ".parquet"
     results_to = working_dir / file_string
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
@@ -96,8 +99,15 @@ def main() -> None:
     random_seed = 42                            # Set seed
     folds = 10                                  # Set number of folds (normal 10, test 1)
 
+    # Choose set of datasets
+    all_datasets = [1, 5, 14, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 31, 35, 36]
+    small_datasets = [1, 5, 14, 16, 17, 18, 21, 27, 31, 35, 36]
+    smallest_datasets = [14, 16, 17, 21, 35]  # n ~ 1000, p ~ 15
+    big_datasets = [15, 22, 23, 24, 28, 29]
+    test_new_method_datasets = [16]
+
     optimizer_cls = RandomSearch
-    pipeline = lgbm_regressor_pipeline
+    pipeline = lgbm_classifier_pipeline
 
     metric_definition = Metric(
         "accuracy",
@@ -126,15 +136,11 @@ def main() -> None:
         display = True
         wait_for_all_workers_to_finish = False
 
-    # Choose set of datasets
-    all_datasets = [1, 5, 14, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 31, 35, 36]
-    small_datasets = [1, 5, 14, 16, 17, 18, 21, 27, 31, 35, 36]
-    smallest_datasets = [14, 16, 17, 21, 35]  # n ~ 1000, p ~ 15
-    big_datasets = [15, 22, 23, 24, 28, 29]
-    test_new_method_datasets = [16]
     df_collection = pd.DataFrame()
+    df_collection_fold = pd.DataFrame()
 
     for fold in range(folds):
+        print("\n\n\n*******************************\n Fold " + str(fold) + "\n*******************************\n")
         inner_fold_seed = random_seed + fold
         # Iterate over all chosen datasets
         for option in small_datasets:
@@ -339,7 +345,7 @@ def main() -> None:
                     on_trial_exception=on_trial_exception,
                 )
 
-                df_collection.assign(
+                df_collection_fold.assign(
                     outer_fold=fold,
                     inner_fold_seed=inner_fold_seed,
                     max_trials=max_trials,
@@ -365,9 +371,9 @@ def main() -> None:
                 print("Read from Parquet")
                 df_option = pd.read_parquet(file, engine='pyarrow')
             # Append frames from the datasets to one big frame
-            df_collection = df_collection._append(df_option)
-        # Safe big dataframe
-        df_collection.assign(
+            df_collection_fold = df_collection_fold._append(df_option)
+        # Safe fold dataframe
+        df_collection_fold.assign(
             outer_fold=fold,
             inner_fold_seed=inner_fold_seed,
             max_trials=max_trials,
@@ -375,7 +381,18 @@ def main() -> None:
             optimizer=optimizer_cls.__name__,
             n_workers=n_workers,
         )
-        safe_dataframe(df_collection, working_dir, "collection", fold)
+        safe_dataframe(df_collection_fold, working_dir, "collection", fold)
+        df_collection = df_collection._append(df_collection_fold)
+    # Safe big dataframe
+    df_collection.assign(
+        outer_fold=folds,
+        inner_fold_seed=random_seed,
+        max_trials=max_trials,
+        max_time=max_time,
+        optimizer=optimizer_cls.__name__,
+        n_workers=n_workers,
+    )
+    safe_dataframe(df_collection, working_dir, "collection", None)
 
 
 if __name__ == "__main__":
