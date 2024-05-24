@@ -8,13 +8,17 @@ from sklearn.svm import SVC
 
 from typing import Any
 from collections.abc import Mapping
-from ConfigSpace import Categorical, Integer
+from ConfigSpace import Categorical, Integer, Float
+
+from lightgbm import LGBMClassifier, LGBMRegressor
+
 
 def rf_config_transform(config: Mapping[str, Any], _: Any) -> dict[str, Any]:
     new_config = dict(config)
     if new_config["class_weight"] == "None":
         new_config["class_weight"] = None
     return new_config
+
 
 def get_rf_classifier():
     return Component(
@@ -101,4 +105,60 @@ def get_knn_classifier():
             "metric": "minkowski",
             "n_jobs": 1,
         }
+    )
+
+
+def get_lgbm_classifier():
+    return Component(
+        item=LGBMClassifier,
+        name="lgbm-classifier",
+        config={
+            "random_state": request("random_state"),
+            "n_jobs": 1,
+        },
+        space={
+            "n_estimators": Integer("n_estimators", (32, 512), default=128),
+            "learning_rate": Float(
+                "learning_rate",
+                (5e-3, 0.1),
+                default=0.05,
+                log=True,
+            ),
+            "feature_fraction": Float(
+                "feature_fraction",
+                (0.4, 1.0),
+                default=1.0,
+            ),
+            "min_data_in_leaf": Integer("min_data_in_leaf", (2, 60), default=20),
+            "num_leaves": Integer("num_leaves", (16, 255), default=31),
+            "extra_trees": Categorical("extra_trees", [False, True]),
+        },
+    )
+
+
+def get_lgbm_regressor():
+    return Component(
+        item=LGBMRegressor,
+        name="lgbm-regressor",
+        config={
+            "random_state": request("random_state"),
+            "n_jobs": 1,
+        },
+        space={
+            "n_estimators": Integer("n_estimators", (32, 512), default=128),
+            "learning_rate": Float(
+                "learning_rate",
+                (5e-3, 0.1),
+                default=0.05,
+                log=True,
+            ),
+            "feature_fraction": Float(
+                "feature_fraction",
+                (0.4, 1.0),
+                default=1.0,
+            ),
+            "min_data_in_leaf": Integer("min_data_in_leaf", (2, 60), default=20),
+            "num_leaves": Integer("num_leaves", (16, 255), default=31),
+            "extra_trees": Categorical("extra_trees", [False, True]),
+        },
     )
