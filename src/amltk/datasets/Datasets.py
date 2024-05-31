@@ -77,19 +77,25 @@ def get_black_friday_dataset() -> tuple[
     return train_x, train_y, test_x, test_y
 
 
-def preprocess_data(df) -> pd.DataFrame:
-    cols = df.columns
-    cat_columns = df.select_dtypes(['category']).columns
-    obj_columns = df.select_dtypes(['object']).columns
-    df[cat_columns] = df[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
-    df[obj_columns] = df[obj_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+def preprocess_data(train_x, test_x) -> (pd.DataFrame, pd.DataFrame):
+    cols = train_x.columns
+    cat_columns = train_x.select_dtypes(['category']).columns
+    obj_columns = train_x.select_dtypes(['object']).columns
+    train_x[cat_columns] = train_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+    test_x[cat_columns] = test_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+    train_x[obj_columns] = train_x[obj_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+    test_x[obj_columns] = test_x[obj_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
     imp_nan = SimpleImputer(missing_values=np.nan, strategy='mean')
-    df = imp_nan.fit_transform(df)
+    train_x = imp_nan.fit_transform(train_x)
+    test_x = imp_nan.transform(test_x)
     imp_m1 = SimpleImputer(missing_values=-1, strategy='mean')
-    df = imp_m1.fit_transform(df)
-    df = pd.DataFrame(df).fillna(0)
-    df.columns = cols
-    return df
+    train_x = imp_m1.fit_transform(train_x)
+    test_x = imp_m1.transform(test_x)
+    train_x = pd.DataFrame(train_x).fillna(0)
+    test_x = pd.DataFrame(test_x).fillna(0)
+    train_x.columns = cols
+    test_x.columns = cols
+    return train_x, test_x
 
 
 def preprocess_target(series) -> pd.DataFrame:

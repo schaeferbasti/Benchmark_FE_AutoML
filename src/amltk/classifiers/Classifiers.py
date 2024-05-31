@@ -117,7 +117,7 @@ def get_lgbm_classifier():
             "n_jobs": -1,
         },
         space={
-            "n_estimators": Integer("n_estimators", (32, 512), default=128),
+            "n_estimators": Integer("n_estimators", (200, 5000), default=200),
             "learning_rate": Float(
                 "learning_rate",
                 (5e-3, 0.1),

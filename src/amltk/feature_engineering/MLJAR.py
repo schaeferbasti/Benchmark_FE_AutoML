@@ -36,9 +36,8 @@ def get_mljar_features(train_x, train_y, test_x, num_features) -> tuple[
 
     preprocessor = GoldenFeaturesTransformer()
 
-    train_x = preprocess_data(train_x)
-    train_y = preprocess_target(train_y)
-    test_x = preprocess_data(test_x)
+    #train_x, test_x = preprocess_data(train_x, test_x)
+    #train_y = preprocess_target(train_y)
 
     cols = train_x.columns
     feature_list, name_list = create_feature_list(cols, num_features)

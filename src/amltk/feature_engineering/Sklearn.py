@@ -19,9 +19,8 @@ def get_sklearn_features(train_x, train_y, test_x) -> tuple[
     #   b. SelectPercentile
     """ Only do transform for test data, no fit_transform --> No learning from test data """
 
-    train_x = preprocess_data(train_x)
-    train_y = preprocess_target(train_y)
-    test_x = preprocess_data(test_x)
+    #train_x, test_x = preprocess_data(train_x, test_x)
+    #train_y = preprocess_target(train_y)
 
     k = len(train_x.columns)
     columns = train_x.columns

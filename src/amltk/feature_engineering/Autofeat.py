@@ -8,14 +8,12 @@ def get_autofeat_features(train_x, train_y, test_x, task_hint, steps) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
-
-    train_x = preprocess_data(train_x)
-    train_y = preprocess_target(train_y)
-    test_x = preprocess_data(test_x)
+    #train_x, test_x = preprocess_data(train_x, test_x)
+    #train_y = preprocess_target(train_y)
 
     feateng_steps = steps
     featsel_runs = steps
-    transformations = ("1/", "exp", "log", "abs", "sqrt", "^2", "^3")
+    transformations = ("1/", "exp", "log", "abs", "sqrt", "^2", "^3", "1+", "1-", "sin", "cos", "exp-", "2^")
 
     if task_hint == 'regression':
         autofeat_regression = AutoFeatRegressor(
