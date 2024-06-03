@@ -357,8 +357,8 @@ def main() -> None:
                 df_autofeat = history_autofeat.df()
                 df_openFE = history_openFE.df()
                 df_autogluon = history_autogluon.df()
-                df_mljar = history_mljar.df()
-                df_option = pd.concat([df_original, df_autofeat, df_openFE, df_mljar, df_autogluon],
+                # df_mljar = history_mljar.df()
+                df_option = pd.concat([df_original, df_autofeat, df_openFE, df_autogluon],
                                       axis=0)
                 # Safe Dataframe for dataset
                 safe_dataframe(df_option, working_dir, name, fold)
