@@ -8,6 +8,9 @@ def get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps, f
     pd.DataFrame,
     pd.DataFrame
 ]:
+    train_x, test_x = preprocess_data(train_x, test_x)
+    train_y = preprocess_target(train_y)
+
     transformations = ("1/", "exp", "log", "abs", "sqrt", "^2", "^3", "1+", "1-", "sin", "cos", "exp-", "2^")
 
     if task_hint == 'regression':

@@ -47,7 +47,7 @@ def get_rf_classifier():
             "min_weight_fraction_leaf": 0.0,
             "max_leaf_nodes": None,
             "warm_start": False,  # False due to no iterative fit used here
-            "n_jobs": -1,
+            "n_jobs": 1,
         },
     )
 
@@ -103,7 +103,7 @@ def get_knn_classifier():
         config={
             "leaf_size": 30,
             "metric": "minkowski",
-            "n_jobs": -1,
+            "n_jobs": 1,
         }
     )
 
@@ -114,7 +114,8 @@ def get_lgbm_classifier():
         name="lgbm-classifier",
         config={
             "random_state": request("random_state"),
-            "n_jobs": -1,
+            "n_jobs": 1,
+            "verbosity": -1,
         },
         space={
             "n_estimators": Integer("n_estimators", (200, 5000), default=200),
@@ -142,7 +143,9 @@ def get_lgbm_regressor():
         name="lgbm-regressor",
         config={
             "random_state": request("random_state"),
-            "n_jobs": -1,
+            "n_jobs": 1,
+            "verbosity": -1,
+
         },
         space={
             "n_estimators": Integer("n_estimators", (32, 512), default=128),
