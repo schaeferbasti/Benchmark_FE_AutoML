@@ -88,21 +88,9 @@ def objective_rf(space):
 
     """Automated Feature Engineering - Objective Function - Bayesian Optimization"""
 
-    index = list()
-    descriptors = {'NAC': list(range(0, 4)), 'DNC': list(range(4, 20)),
-                   'TNC': list(range(20, 84)), 'kGap_di': list(range(84, 148)),
-                   'kGap_tri': list(range(148, 404)), 'ORF': list(range(404, 414)),
-                   'Fickett': list(range(414, 416)), 'Shannon': list(range(416, 421)),
-                   'FourierBinary': list(range(421, 440)), 'FourierComplex': list(range(440, 459)),
-                   'Tsallis': list(range(459, 464))}
+    index = df_x.columns.tolist()
 
-    for descriptor, ind in descriptors.items():
-        if int(space[descriptor]) == 1:
-            index = index + ind
-
-    x = df_x.iloc[:, index]
-
-    # print(index)
+    x = df_x.iloc[:, range(len(index))]
 
     if int(space['Classifier']) == 0:
         if fasta_label_train > 2:
