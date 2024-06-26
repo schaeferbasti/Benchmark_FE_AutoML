@@ -62,18 +62,8 @@ def feature_engineering(estimations, train, train_labels, test):
                        max_evals=estimations,
                        trials=trials)
 
-    index = list()
-    descriptors = {'NAC': list(range(0, 4)), 'DNC': list(range(4, 20)),
-                   'TNC': list(range(20, 84)), 'kGap_di': list(range(84, 148)),
-                   'kGap_tri': list(range(148, 404)), 'ORF': list(range(404, 414)),
-                   'Fickett': list(range(414, 416)), 'Shannon': list(range(416, 421)),
-                   'FourierBinary': list(range(421, 440)), 'FourierComplex': list(range(440, 459)),
-                   'Tsallis': list(range(459, 464))}
+    index = range(len(df_x.columns.tolist()))
 
-    for descriptor, ind in descriptors.items():
-        result = param[descriptor][best_tuning[descriptor]]
-        if result == 1:
-            index = index + ind
 
     classifier = param['Classifier'][best_tuning['Classifier']]
 
@@ -83,14 +73,14 @@ def feature_engineering(estimations, train, train_labels, test):
     return btrain, btest
 
 def objective_rf(space):
-    fasta_label_train = 3
+    fasta_label_train = 2
     n_cpu = 1
 
     """Automated Feature Engineering - Objective Function - Bayesian Optimization"""
 
-    index = df_x.columns.tolist()
+    index = range(len(df_x.columns.tolist()))
 
-    x = df_x.iloc[:, range(len(index))]
+    x = df_x.iloc[:, index]
 
     if int(space['Classifier']) == 0:
         if fasta_label_train > 2:
@@ -103,8 +93,6 @@ def objective_rf(space):
         model = RandomForestClassifier(n_estimators=500, n_jobs=n_cpu, random_state=63)
     else:
         model = lgb.LGBMClassifier(n_estimators=500, n_jobs=n_cpu, random_state=63)
-
-    # print(model)
 
     if fasta_label_train > 2:
         score = make_scorer(f1_score, average='weighted')
