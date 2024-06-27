@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
-from src.amltk.feature_engineering.DIFER.utils.tools import log
+from src.amltk.feature_engineering.DIFER.method.utils.tools import log
 
 
 def sequence_mask(X, X_len, value=-1e6):

@@ -2,8 +2,8 @@ import torch
 from torch import nn
 from tqdm import tqdm
 from torch.utils.data import DataLoader
-from src.amltk.feature_engineering.DIFER.utils.tools import log
-from src.amltk.feature_engineering.DIFER.utils.torch_callback import EarlyStopping, Checkpoint, LossTradeOff, ValidLoss
+from src.amltk.feature_engineering.DIFER.method.utils.tools import log
+from src.amltk.feature_engineering.DIFER.method.utils.torch_callback import EarlyStopping, Checkpoint, LossTradeOff, ValidLoss
 
 
 def forward(x, y, model, loss_func, device, y_idx=None):

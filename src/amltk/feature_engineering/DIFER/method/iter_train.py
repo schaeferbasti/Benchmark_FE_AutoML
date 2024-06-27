@@ -8,7 +8,7 @@ import numpy as np
 
 from feat_tree import generate_tree_from_str, FeatureGenerator
 from src.amltk.datasets.Datasets import get_dataset
-from src.amltk.feature_engineering.DIFER.utils.train import multi_train
+from src.amltk.feature_engineering.DIFER.method.utils.train import multi_train
 from tokenizer import Tokenizer
 from controller import NFOController, Mode, load_nfo
 from env import SklearnEnv

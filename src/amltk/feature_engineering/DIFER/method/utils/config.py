@@ -2,7 +2,7 @@ import json
 import numpy as np
 from collections import defaultdict, ChainMap
 
-from src.amltk.feature_engineering.DIFER.utils.tools import log
+from src.amltk.feature_engineering.DIFER.method.utils.tools import log
 
 
 class Config:

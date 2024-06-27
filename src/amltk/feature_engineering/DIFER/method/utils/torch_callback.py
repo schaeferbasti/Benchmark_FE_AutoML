@@ -3,7 +3,7 @@ import torch
 import numpy as np
 from pathlib import Path
 from torch.utils.data import DataLoader
-from src.amltk.feature_engineering.DIFER.utils.tools import log
+from src.amltk.feature_engineering.DIFER.method.utils.tools import log
 
 
 class Callback:
