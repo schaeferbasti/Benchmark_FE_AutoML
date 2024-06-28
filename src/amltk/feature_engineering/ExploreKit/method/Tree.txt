@@ -1,0 +1,22 @@
+Main
+-ArffLoader
+    -Dataset
+-FilterWrapperHeuristicSearch
+    -MLFilterEvaluator
+    -MLAttributeManager
+        -Classifier
+        -DatasetBasedAttributes
+            -AucWrapperEvaluator
+            -IGScores
+            -InformationGainFilterEvaluator
+            -EqualRangeDiscretizerUnaryOperator
+            -ChiSquareTest/TTest
+        -OperatorsAssignmentsManager  (-> Run till here)
+            -UnaryOperator (e.g. Discretizer)
+            -BinaryOperator (e.g. Add)
+            -CombinationGenerator
+            -OperationAssignment
+
+    -FilterPreRankerEvaluator
+    -OperatorsAssignmentsManager
+    -AttributeRankerFilter (-> Code till here)
