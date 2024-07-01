@@ -7,7 +7,7 @@ import pandas as pd
 from src.amltk.feature_engineering.ExploreKit.method.main import main
 
 
-def get_xxx_features(train_x, train_y, test_x, test_y) -> tuple[
+def get_xxx_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
