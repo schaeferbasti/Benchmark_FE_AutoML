@@ -86,7 +86,7 @@ class FilterWrapperHeuristicSearch(Search):
         iterationsCounter = 1
         columnsAddedInthePreviousIteration = None
 
-        self.performIterativeSearch(originalDataset, runInfo,preRankerEvaluator, filterEvaluator, wrapperEvaluator, dataset, originalDatasetTrainingFolds, subFoldTrainingDatasets, currentClassificationProbs, oam, candidateAttributes, iterationsCounter, columnsAddedInthePreviousIteration);
+        self.performIterativeSearch(originalDataset, runInfo, preRankerEvaluator, filterEvaluator, wrapperEvaluator, dataset, originalDatasetTrainingFolds, subFoldTrainingDatasets, currentClassificationProbs, oam, candidateAttributes, iterationsCounter, columnsAddedInthePreviousIteration);
 
     '''
     Performs the iterative search - the selection of the candidate features and the generation of the additional candidates that are added to the pool
