@@ -13,7 +13,7 @@ from ..Properties import Properties
 from ..Evaluation.MLFilterEvaluator import MLFilterEvaluator
 from ..Data.Dataset import Dataset
 from ..Utils.Logger import Logger
-from ..Search import Search
+from ..Search.Search import Search
 
 
 class FilterWrapperHeuristicSearch(Search):
@@ -72,7 +72,7 @@ class FilterWrapperHeuristicSearch(Search):
         Logger.Info(f"Starting to apply unary operators: {date}")
         oam = OperatorsAssignmentsManager()
         candidateAttributes = oam.applyUnaryOperators(dataset, None, filterEvaluator, subFoldTrainingDatasets, currentClassificationProbs)
-        date = Date();
+        date = Date()
         Logger.Info("  .....done " + str(date))
 
         # Now we add the new attributes to the dataset (they are added even though they may not be included in the
@@ -86,7 +86,7 @@ class FilterWrapperHeuristicSearch(Search):
         iterationsCounter = 1
         columnsAddedInthePreviousIteration = None
 
-        self.performIterativeSearch(originalDataset, runInfo, preRankerEvaluator, filterEvaluator, wrapperEvaluator, dataset, originalDatasetTrainingFolds, subFoldTrainingDatasets, currentClassificationProbs, oam, candidateAttributes, iterationsCounter, columnsAddedInthePreviousIteration);
+        self.performIterativeSearch(originalDataset, runInfo, preRankerEvaluator, filterEvaluator, wrapperEvaluator, dataset, originalDatasetTrainingFolds, subFoldTrainingDatasets, currentClassificationProbs, oam, candidateAttributes, iterationsCounter, columnsAddedInthePreviousIteration)
 
     '''
     Performs the iterative search - the selection of the candidate features and the generation of the additional candidates that are added to the pool

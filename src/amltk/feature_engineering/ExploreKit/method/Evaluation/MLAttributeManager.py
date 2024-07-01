@@ -1,5 +1,6 @@
 import errno
 import os.path
+from pathlib import Path
 from typing import Dict, List
 
 from src.amltk.feature_engineering.ExploreKit.method.Utils import FileUtils
@@ -184,7 +185,7 @@ class MLAttributeManager:
                 return
 
         try:
-            os.mkdir(directoryForDataset)
+            os.makedirs(directoryForDataset)
         except OSError as ex:
             if ex.errno != errno.EEXIST:
                 Logger.Warn(f'getDatasetMetaFeaturesInstances -> Error creating directory {directoryForDataset}\nError: {ex}')

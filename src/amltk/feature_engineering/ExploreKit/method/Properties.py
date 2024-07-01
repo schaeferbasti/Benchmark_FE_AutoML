@@ -1,3 +1,5 @@
+import os
+
 
 class Properties:
     numOfFolds=4
@@ -23,12 +25,11 @@ class Properties:
     maxNumOfWrapperEvaluationsPerIteration=15000
     maxNumberOfDiscreteValuesForInclusionInSet=1000
     classifiersForMLAttributesGeneration='RandomForest'
-    #/home/itay/Documents/java/ExploreKit/AutomaticFeatureGeneration-master/ML_Background
-    # /home/itay/Documents/EKpy/ML_Background
-    DatasetInstancesFilesLocation='ML_Background/Candidate_attributes/'
-    backgroundClassifierLocation='ML_Background/Background_classifiers_and_arffs/'
-    originalBackgroundDatasetsLocation='/home/itay/Documents/EKpy/ML_Background/DatasetsForMetaModel/'
-    preRankedAttributesToGenerate=50000
+    script_dir = os.path.dirname(__file__)
+    DatasetInstancesFilesLocation = script_dir + '/ML_Background/Candidate_attributes/'
+    backgroundClassifierLocation = script_dir + '/ML_Background/Background_classifiers_and_arffs/'
+    originalBackgroundDatasetsLocation = script_dir + '/ML_Background/DatasetsForMetaModel/'
+    preRankedAttributesToGenerate = 50000
     usePreRanker=False
     # mySQLUrl=jdbc:mysql://localhost:3306/explorekit
     # mySQLUsername=java
