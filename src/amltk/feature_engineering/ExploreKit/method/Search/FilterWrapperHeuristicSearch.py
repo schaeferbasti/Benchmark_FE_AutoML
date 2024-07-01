@@ -27,9 +27,9 @@ class FilterWrapperHeuristicSearch(Search):
         evaluatedAttsCounter:int = 0
         super().__init__()
 
-    def run(self, originalDataset: Dataset, runInfo: str):
+    def run(self, originalDataset: Dataset, runInfo: str, name: str):
         Logger.Info('Initializing evaluators')
-        filterEvaluator = MLFilterEvaluator(originalDataset)
+        filterEvaluator = MLFilterEvaluator(originalDataset, name)
 
         preRankerEvaluator = None
         if bool(Properties.usePreRanker):
@@ -87,7 +87,7 @@ class FilterWrapperHeuristicSearch(Search):
         columnsAddedInthePreviousIteration = None
 
         self.performIterativeSearch(originalDataset, runInfo, preRankerEvaluator, filterEvaluator, wrapperEvaluator, dataset, originalDatasetTrainingFolds, subFoldTrainingDatasets, currentClassificationProbs, oam, candidateAttributes, iterationsCounter, columnsAddedInthePreviousIteration)
-
+        return dataset, candidateAttributes
     '''
     Performs the iterative search - the selection of the candidate features and the generation of the additional candidates that are added to the pool
     in the next round.

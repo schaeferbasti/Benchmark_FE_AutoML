@@ -15,7 +15,7 @@ class Search:
 
 
     # Begins the generation and evaluation of the candidate attributes
-    def run(self, dataset: Dataset, runInfo: str):
+    def run(self, dataset: Dataset, runInfo: str, name: str):
         raise NotImplementedError('Search is an abstract class')
 
     # Used to run Weka on the dataset and produce all relevant statistics.
