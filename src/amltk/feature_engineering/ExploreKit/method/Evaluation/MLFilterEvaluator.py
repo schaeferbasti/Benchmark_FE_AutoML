@@ -18,7 +18,7 @@ class MLFilterEvaluator(FilterEvaluator):
     # Used to create or load the data used by the background model - all the datasets that are evaluated "offline" to create
     # the meta-features classifier.
     def initializeBackgroundModel(self, dataset: Dataset, name: str):
-        Logger.Info('Initializing background model for dataset' + name)
+        Logger.Info('Initializing background model for dataset ' + name)
         mlam = MLAttributeManager()
         self.classifier = mlam.getBackgroundClassificationModel(dataset, name, True)
 

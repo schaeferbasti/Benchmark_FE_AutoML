@@ -61,7 +61,7 @@ class MLAttributeManager:
             self.generateMetaFeaturesInstances(includeValueBased)
 
             candidateAtrrDirectories = self.getDirectoriesInFolder(Properties.DatasetInstancesFilesLocation)
-            self.generateBackgroundARFFFileForDataset(dataset, backgroundFilePath, candidateAtrrDirectories,
+            self.generateBackgroundARFFFileForDataset(dataset, name, backgroundFilePath, candidateAtrrDirectories,
                                                       includeValueBased)
 
             # now we load the contents of the ARFF file into an Instances object and train the classifier
@@ -93,13 +93,13 @@ class MLAttributeManager:
         # now we write the classifier to file prior to returning the object
         Serializer.Serialize(backgroundFilePath, classifier)
 
-    def generateBackgroundARFFFileForDataset(self, dataset: Dataset, backgroundFilePath: str,
+    def generateBackgroundARFFFileForDataset(self, dataset: Dataset, name: str, backgroundFilePath: str,
                                              candidateAttrDirectories: list, includeValueBased: bool):
         addHeader = True
         for candidateAttrDirectory in candidateAttrDirectories:
 
-            if (not candidateAttrDirectory.__contains__(dataset.name)) and FileUtils.listFilesInDir(
-                    candidateAttrDirectory) != None:  #none means dir exist
+            if (not candidateAttrDirectory.__contains__(name)) and FileUtils.listFilesInDir(
+                    candidateAttrDirectory) is not None:  # none means dir exist
 
                 merged = self.getMergedFile(candidateAttrDirectory, includeValueBased)
                 if merged is not None:
@@ -309,6 +309,7 @@ class MLAttributeManager:
             # oaList.parallelStream().forEach(oa -> {
             # ReentrantLock wrapperResultsLock = new ReentrantLock();
             # for (OperatorAssignment oa : nonUnaryOperatorAssignments) {
+
             position = [0]  #new int[]{0};
 
             # TODO: keep it pararell, temporary changed to single thread
@@ -672,8 +673,8 @@ class MLAttributeManager:
             singleAttValues = [attValue.value for attValue in attValues.values()]
             attributesMatrix.append(singleAttValues)
         columns = [str(int(key) + startIndex) for key in datasetAttributeValues[0].keys()]
-        # df = pd.DataFrame(np.asarray(attributesMatrix, dtype="object"))  #, columns=columns)
-        df = pd.DataFrame(np.asarray(attributesMatrix), columns=columns)
+        df = pd.DataFrame(np.asarray(attributesMatrix, dtype=object))  #, columns=columns)
+        #df = pd.DataFrame(np.asarray(attributesMatrix), columns=columns)
         return df
         # Instances finalSet = new Instances("trainingSet", attributes, 0);
         # for (TreeMap<Integer,AttributeInfo> attValues : datasetAttributeValues) {
