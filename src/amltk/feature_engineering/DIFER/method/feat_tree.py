@@ -56,7 +56,6 @@ class FeatNode:
 
     def generate(self, env):
         # feature
-
         if self.arity == 0:
             return env.get_feat(self.attr)
         else:

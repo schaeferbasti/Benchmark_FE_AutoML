@@ -42,7 +42,7 @@ def return_num():
 
 
 class Environment:
-    def __init__(self, dataset_path, max_order=4, cv=5, parallel=True, use_cat_space=False):
+    def __init__(self, dataset_path, max_order=4, cv=5, parallel=True, use_cat_space=True):
         self.dataset_path = dataset_path
         self.dataset = Dataset(dataset_path)
         self.use_cat_space = use_cat_space

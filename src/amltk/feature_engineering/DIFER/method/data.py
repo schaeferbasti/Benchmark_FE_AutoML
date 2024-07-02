@@ -1,3 +1,4 @@
+import json
 import os
 import pandas as pd
 from pathlib import Path
@@ -14,17 +15,19 @@ class Dataset:
     }
 
     def __init__(self, name):
+        name = "pima"
         project_path = os.path.abspath(os.path.dirname(__file__))
-        data_path = f"{project_path[:project_path.find('autolearn')]}data"
+        data_path = f"{project_path[:project_path.find('DIFER')]}DIFER/method/data"
         path = Path(data_path)
-
-        """
+        # """
         self.data = pd.read_csv(
             path / f"{name}.csv",
             header=None
         )
+        self.data.columns = self.data.columns.astype(str)
         with open(path / f"{name}.json", 'r') as f:
             self.meta = json.load(f)
+        # """
         """
         x_train, y_train, x_valid, y_valid, task_hint, name = get_dataset(16)
         df_train = pd.concat([x_train, y_train], axis=1)
@@ -52,7 +55,7 @@ class Dataset:
         self.data = df
         print(metadata)
         self.meta = metadata
-
+        """
         self._x = None
         self._y = None
         self._label_encoder = LabelEncoder()
