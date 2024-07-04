@@ -268,7 +268,8 @@ class Pipeline(object):
 
     def select_c_features(self, c_cols):
         '''select continuous features due to RL agent'''
-        ori_mask = np.ones(c_cols.shape[1])
+        print(c_cols.shape)
+        ori_mask = np.ones(c_cols.shape[0])
         for index, mask in self.selector_c.items():
             ori_mask[index] = int(mask)
         selected_index = np.argwhere(ori_mask == 1).reshape(-1)

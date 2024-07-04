@@ -388,9 +388,12 @@ class AutoFE:
                              'memory': memory}
         pipline_test = Pipeline(pipline_args_test)
 
-        actions_c = pipline_train.select_c_features(actions_c)
-        actions_d = pipline_train.select_d_features()
-
+        actions_c = []
+        for worker in self.workers_top5:
+            actions_c.append(worker.actions)
+        actions_d = actions_c
+        x = None
+        x_test = None
         for step in range(len(actions_c)):
             action_c = actions_c[step]
             _, x_c = pipline_train.process_continuous(action_c)
@@ -419,7 +422,6 @@ class AutoFE:
 
                 x = np.concatenate((x_c, x_d), axis=1)
                 x_test = np.concatenate((x_test_c, x_test_d), axis=1)
-
         return x, x_test
 
     def save(self, file):

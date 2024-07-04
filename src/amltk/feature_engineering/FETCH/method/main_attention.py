@@ -6,6 +6,8 @@ from time import time
 import pandas as pd
 import warnings
 
+from sklearn.model_selection import train_test_split
+
 from src.amltk.feature_engineering.FETCH.method.autofe import AutoFE
 from src.amltk.feature_engineering.FETCH.method.config_pool import configs
 
@@ -82,8 +84,7 @@ def main(train_x, train_y, test_x):
     args.target = target
     print(args)
     df = pd.read_csv(dataset_path)
-    # df_train = pd.concat([train_x, train_y], axis=1)
-    # df_test = pd.concat([test_x], axis=1)
+
     # df = pd.concat([df_train, df_test], axis=0)
 
     start = time()
@@ -98,5 +99,7 @@ def main(train_x, train_y, test_x):
     # Operations: abs, square, inverse, log, sqrt, power3, addition, subtraction, multiplication, division
     actions_c = ['add', 'multiply']
     actions_d = ['two', 'three']
-    x_train, x_test = autofe.transform(train_x, test_x, args, actions_c=c_columns, actions_d=d_columns)
+
+    df_train, df_test = train_test_split(df, test_size=0.2, random_state=42)
+    x_train, x_test = autofe.transform(df_train, df_test, args, actions_c=c_columns, actions_d=d_columns)
     return x_train, x_test
