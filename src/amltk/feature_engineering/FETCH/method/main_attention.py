@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore")
 
 
 def main(train_x, train_y, test_x):
-    file_name = "adult"
+    file_name = "ionosphere"
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--cuda', type=str, default="0", help='which gpu to use')
@@ -95,5 +95,8 @@ def main(train_x, train_y, test_x):
         logging.info(traceback.format_exc())
     end = time()
     logging.info(f'Total cost time: {round((end - start), 4)} s.')
+    # Operations: abs, square, inverse, log, sqrt, power3, addition, subtraction, multiplication, division
+    actions_c = ['add', 'multiply']
+    actions_d = ['two', 'three']
     x_train, x_test = autofe.transform(train_x, test_x, args, actions_c=c_columns, actions_d=d_columns)
     return x_train, x_test

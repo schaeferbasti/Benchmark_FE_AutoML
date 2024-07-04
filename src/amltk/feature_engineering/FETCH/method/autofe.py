@@ -388,6 +388,9 @@ class AutoFE:
                              'memory': memory}
         pipline_test = Pipeline(pipline_args_test)
 
+        actions_c = pipline_train.select_c_features(actions_c)
+        actions_d = pipline_train.select_d_features()
+
         for step in range(len(actions_c)):
             action_c = actions_c[step]
             _, x_c = pipline_train.process_continuous(action_c)
@@ -401,7 +404,7 @@ class AutoFE:
             x_test_c = var_selector.transform(x_test_c)
             x = x_c
             x_test = x_test_c
-
+            # args.combine is a boolean deciding whether to combine discrete features or not
             if args.combine:
                 action_d = actions_d[step]
                 _, x_d = pipline_train.process_discrete(action_d)
