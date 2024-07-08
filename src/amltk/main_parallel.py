@@ -70,14 +70,21 @@ def main():
 
     method = args.method
 
-    rerun = True
-    debugging = True
-    feat_eng_steps = 2
-    feat_sel_steps = 5
-    working_dir = Path("results")
-    random_seed = 42
-    folds = 1
-    test_new_method_datasets = [18]
+    rerun = True  # Decide if you want to re-execute the methods on a dataset or use the existing files
+    debugging = False  # Decide if you want ot raise trial exceptions
+    feat_eng_steps = 2  # Number of feature engineering steps for autofeat
+    feat_sel_steps = 5  # Number of feature selection steps for autofeat
+    working_dir = Path("src/amltk/results")   # Path if running on Cluster
+    # working_dir = Path("results")  # Path for local execution
+    random_seed = 42  # Set seed
+    folds = 10  # Set number of folds (normal 10, test 1)
+
+    # Choose set of datasets
+    all_datasets = [1, 5, 14, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 31, 35, 36]  # 17
+    small_datasets = [1, 5, 14, 16, 17, 18, 21, 27, 31, 35, 36]
+    smallest_datasets = [14, 16, 17, 21, 35]  # n ~ 1000, p ~ 15
+    big_datasets = [15, 22, 23, 24, 28, 29]
+    test_new_method_datasets = [18]  # [16]
 
     optimizer_cls = RandomSearch
     pipeline = lgbm_classifier_pipeline
@@ -89,17 +96,22 @@ def main():
         fn=get_scorer("roc_auc_ovo")
     )
 
+    per_process_memory_limit = None  # (4, "GB")  # NOTE: May have issues on Mac
+    per_process_walltime_limit = None  # (60, "s")
+
     if debugging:
-        max_trials = 1
-        max_time = 600
+        max_trials = 1  # don't care about quality of the found model
+        max_time = 600  # 10 minutes
         n_workers = 20
+        # raise an error with traceback, something went wrong
         on_trial_exception = "raise"
         display = True
         wait_for_all_workers_to_finish = False
     else:
-        max_trials = 50
-        max_time = 3600
-        n_workers = 50
+        max_trials = 100000  # trade-off between exploration and resource usage
+        max_time = 3600  # one hour
+        n_workers = 4
+        # Just mark the trial as fail and move on to the next one
         on_trial_exception = "continue"
         display = True
         wait_for_all_workers_to_finish = False

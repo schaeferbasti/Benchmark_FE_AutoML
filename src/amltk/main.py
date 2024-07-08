@@ -133,9 +133,6 @@ def main() -> None:
         display = True
         wait_for_all_workers_to_finish = False
 
-    df_methods = pd.DataFrame()
-    df_methods_all_folds = pd.DataFrame()
-
     for fold in range(folds):
         print("\n\n\n*******************************\n Fold " + str(fold) + "\n*******************************\n")
         inner_fold_seed = random_seed + fold

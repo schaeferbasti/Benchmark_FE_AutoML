@@ -11,14 +11,14 @@
 #SBATCH --error logs/%x-%A_%a.err
 
 # Define the amount of memory required per node
-#SBATCH --mem 12GB
+#SBATCH --mem 48GB
 #SBATCH --cpus-per-task=1
-#SBATCH --gres=localtmp:20
+#SBATCH --gres=localtmp:100
 
 #SBATCH --propagate=NONE
 
 # Define job array
-#SBATCH --array=0-7  # Adjust based on the number of methods
+#SBATCH --array=0-1  # Adjust based on the number of methods
 
 echo "Workingdir: $PWD"
 echo "Started at $(date)"
@@ -33,7 +33,7 @@ echo "conda amltk_env activated"
 
 # Install requirements
 python3 -m pip install --upgrade pip
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 echo "Requirements installed"
 # shellcheck disable=SC1068
 
