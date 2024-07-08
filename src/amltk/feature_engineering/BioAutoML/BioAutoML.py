@@ -15,7 +15,7 @@ from sklearn.metrics import make_scorer
 global global_train_y
 
 
-def get_bioautoml_features(train_x, train_y, test_x, test_y) -> tuple[
+def get_bioautoml_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
