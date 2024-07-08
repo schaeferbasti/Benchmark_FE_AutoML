@@ -4,7 +4,7 @@ import pandas as pd
 from featurewiz import FeatureWiz
 
 
-def get_xxx_features(train_x, train_y, test_x) -> tuple[
+def get_featurewiz_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:

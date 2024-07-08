@@ -4,7 +4,7 @@ import pandas as pd
 import featuretools as ft
 
 
-def get_xxx_features(train_x, train_y, test_x, test_y, name) -> tuple[
+def get_featuretools_features(train_x, train_y, test_x, test_y, name) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:

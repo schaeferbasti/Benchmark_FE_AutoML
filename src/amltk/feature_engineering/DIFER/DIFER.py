@@ -3,7 +3,7 @@
 import pandas as pd
 
 
-def get_xxx_features(train_x, train_y, test_x) -> tuple[
+def get_difer_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:

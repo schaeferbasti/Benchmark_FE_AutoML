@@ -6,7 +6,7 @@ from scipy.io import arff
 from src.amltk.feature_engineering.CorrelationBasedFS.MUFS import MUFS
 
 
-def get_xxx_features(train_x, train_y, test_x) -> tuple[
+def get_correlationbased_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:

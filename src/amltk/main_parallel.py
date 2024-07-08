@@ -1,11 +1,16 @@
-import argparse
-import pandas as pd
-import os
+from __future__ import annotations
+
+import warnings
+import os.path
 from pathlib import Path
+import argparse
+import os
+
 from amltk.optimization import Metric
 from amltk.pipeline import Choice, Sequential, Split
 from sklearn.metrics import get_scorer
 from sklearn.preprocessing import *
+
 from src.amltk.classifiers.Classifiers import *
 from src.amltk.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
@@ -13,10 +18,19 @@ from src.amltk.optimizer.RandomSearch import RandomSearch
 
 from src.amltk.feature_engineering.autofeat.Autofeat import get_autofeat_features
 from src.amltk.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
-from src.amltk.feature_engineering.FETCH.FETCH import get_xxx_features
+from src.amltk.feature_engineering.BioAutoML.BioAutoML import get_bioautoml_features
+from src.amltk.feature_engineering.Boruta.Boruta import get_boruta_features
+# CAAFE
+from src.amltk.feature_engineering.CorrelationBasedFS.CorrelationBasedFS import get_correlationbased_features
+# DIFER
+# ExploreKit
+from src.amltk.feature_engineering.Featuretools.Featuretools import get_featuretools_features
+from src.amltk.feature_engineering.Featurewiz.Featurewiz import get_featurewiz_features
 from src.amltk.feature_engineering.H2O.H2O import get_h2o_features
+from src.amltk.feature_engineering.MLJAR.MLJAR import get_mljar_features
 from src.amltk.feature_engineering.OpenFE.OpenFE import get_openFE_features
 
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 preprocessing = Split(
     {
@@ -50,17 +64,19 @@ preprocessing = Split(
     name="preprocessing",
 )
 
-lgbm_classifier = get_lgbm_classifier()
-lgbm_classifier_pipeline = Sequential(preprocessing, lgbm_classifier, name="lgbm_classifier_pipeline")
 
 def safe_dataframe(df, working_dir, dataset_name, fold_number, method_name):
-    file_string = f"results_{dataset_name}_{method_name}_fold_{fold_number}.parquet"
+    file_string = f"results_{dataset_name}_{method_name}_{fold_number}.parquet"
     results_to = working_dir / file_string
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
     print(df)
     print(f"Saving dataframe of results to path: {results_to}")
     df.to_parquet(results_to)
+
+
+lgbm_classifier = get_lgbm_classifier()
+lgbm_classifier_pipeline = Sequential(preprocessing, lgbm_classifier, name="lgbm_classifier_pipeline")
 
 
 def main():
@@ -74,7 +90,7 @@ def main():
     debugging = False  # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2  # Number of feature engineering steps for autofeat
     feat_sel_steps = 5  # Number of feature selection steps for autofeat
-    working_dir = Path("src/amltk/results")   # Path if running on Cluster
+    working_dir = Path("src/amltk/results")  # Path if running on Cluster
     # working_dir = Path("results")  # Path for local execution
     random_seed = 42  # Set seed
     folds = 10  # Set number of folds (normal 10, test 1)
@@ -119,12 +135,12 @@ def main():
     for fold in range(folds):
         print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
         inner_fold_seed = random_seed + fold
-        for option in test_new_method_datasets:
+        for option in all_datasets:
             train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
 
             if method == "original":
                 print("Original Data")
-                file_name = f"results_{name}_original_fold_{fold}.parquet"
+                file_name = f"results_{name}_{method}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
                     evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed, on_trial_exception,
@@ -142,11 +158,11 @@ def main():
                         on_trial_exception=on_trial_exception
                     )
                     df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, "original")
+                    safe_dataframe(df, working_dir, option, fold, "original")
 
             elif method == "autofeat":
                 print("autofeat Data")
-                file_name = f"results_{name}_autofeat_fold_{fold}.parquet"
+                file_name = f"results_{name}_{method}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
                     train_x_autofeat, test_x_autofeat = get_autofeat_features(train_x, train_y, test_x, task_hint,
@@ -166,11 +182,11 @@ def main():
                         on_trial_exception=on_trial_exception
                     )
                     df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, "autofeat")
-            """
+                    safe_dataframe(df, working_dir, name, fold, option, "autofeat")
+
             elif method == "autogluon":
                 print("autogluon Data")
-                file_name = f"results_{name}_autogluon_fold_{fold}.parquet"
+                file_name = f"results_{name}_{method}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
                     train_x_autogluon, test_x_autogluon = get_autogluon_features(train_x, train_y, test_x)
@@ -191,4 +207,3 @@ def main():
                     )
                     df = history.df()
                     safe_dataframe(df, working_dir, name, fold, "autogluon")
-            """

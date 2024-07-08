@@ -12,9 +12,8 @@ from sklearn.preprocessing import *
 from src.amltk.classifiers.Classifiers import *
 from src.amltk.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
-from src.amltk.feature_engineering.FETCH.FETCH import get_xxx_features
-from src.amltk.feature_engineering.H2O.H2O import get_h2o_features
 from src.amltk.optimizer.RandomSearch import RandomSearch
+
 from src.amltk.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
 from src.amltk.feature_engineering.autofeat.Autofeat import get_autofeat_features
 from src.amltk.feature_engineering.OpenFE.OpenFE import get_openFE_features
@@ -125,9 +124,9 @@ def main() -> None:
         display = True
         wait_for_all_workers_to_finish = False
     else:
-        max_trials = 50  # trade-off between exploration and resource usage
+        max_trials = 100000  # trade-off between exploration and resource usage
         max_time = 3600  # one hour
-        n_workers = 50
+        n_workers = 4
         # Just mark the trial as fail and move on to the next one
         on_trial_exception = "continue"
         display = True
