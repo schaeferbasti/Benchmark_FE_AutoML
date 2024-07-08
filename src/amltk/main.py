@@ -12,14 +12,14 @@ from sklearn.preprocessing import *
 from src.amltk.classifiers.Classifiers import *
 from src.amltk.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
+from src.amltk.feature_engineering.FETCH.FETCH import get_xxx_features
+from src.amltk.feature_engineering.H2O.H2O import get_h2o_features
 from src.amltk.optimizer.RandomSearch import RandomSearch
-
-from src.amltk.feature_engineering.AutoGluon import get_autogluon_features
-from src.amltk.feature_engineering.Autofeat import get_autofeat_features
-from src.amltk.feature_engineering.OpenFE import get_openFE_features
+from src.amltk.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
+from src.amltk.feature_engineering.autofeat.Autofeat import get_autofeat_features
+from src.amltk.feature_engineering.OpenFE.OpenFE import get_openFE_features
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
 
 preprocessing = Split(
     {
@@ -87,30 +87,30 @@ lgbm_regressor_pipeline = Sequential(preprocessing, lgbm_regressor, name="lgbm_r
 
 
 def main() -> None:
-    rerun = False                               # Decide if you want to re-execute the methods on a dataset or use the existing files
-    debugging = False                           # Decide if you want ot raise trial exceptions
+    rerun = True                                # Decide if you want to re-execute the methods on a dataset or use the existing files
+    debugging = True                            # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2                          # Number of feature engineering steps for autofeat
     feat_sel_steps = 5                          # Number of feature selection steps for autofeat
     # working_dir = Path("src/amltk/results")   # Path if running on Cluster
     working_dir = Path("results")               # Path for local execution
     random_seed = 42                            # Set seed
-    folds = 10                                  # Set number of folds (normal 10, test 1)
+    folds = 1                                   # Set number of folds (normal 10, test 1)
 
     # Choose set of datasets
-    all_datasets = [1, 5, 14, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 31, 35, 36]
+    all_datasets = [1, 5, 14, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 31, 35, 36]  # 17
     small_datasets = [1, 5, 14, 16, 17, 18, 21, 27, 31, 35, 36]
     smallest_datasets = [14, 16, 17, 21, 35]  # n ~ 1000, p ~ 15
     big_datasets = [15, 22, 23, 24, 28, 29]
-    test_new_method_datasets = [16]
+    test_new_method_datasets = [18]  # [16]
 
     optimizer_cls = RandomSearch
     pipeline = lgbm_classifier_pipeline
 
     metric_definition = Metric(
-        "accuracy",
+        "roc_auc_ovo",
         minimize=False,
         bounds=(0, 1),
-        fn=get_scorer("accuracy")
+        fn=get_scorer("roc_auc_ovo")
     )
 
     per_process_memory_limit = None  # (4, "GB")  # NOTE: May have issues on Mac
@@ -119,7 +119,7 @@ def main() -> None:
     if debugging:
         max_trials = 1  # don't care about quality of the found model
         max_time = 600  # 10 minutes
-        n_workers = 4
+        n_workers = 20
         # raise an error with traceback, something went wrong
         on_trial_exception = "raise"
         display = True
@@ -134,21 +134,51 @@ def main() -> None:
         wait_for_all_workers_to_finish = False
 
     df_methods = pd.DataFrame()
-    df_methods_datasets = pd.DataFrame()
-    df_methods_datasets_folds = pd.DataFrame()
+    df_methods_all_folds = pd.DataFrame()
 
     for fold in range(folds):
         print("\n\n\n*******************************\n Fold " + str(fold) + "\n*******************************\n")
         inner_fold_seed = random_seed + fold
         # Iterate over all chosen datasets
-        for option in small_datasets:
+        for option in test_new_method_datasets:
             # Get train test split dataset
             train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-            """
-            ############## Original Data ##############
-            Use original data without feature engineering
 
-            """
+            ############## Feature Engineering with AdaFS ##############
+
+            print("\n\nxxx Data")
+            file_name = "results_" + str(name) + "_xxx_fold_" + str(fold) + ".parquet"
+            file = working_dir / file_name
+            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
+            if rerun or not os.path.isfile(file):
+                print("Run xxx Method on Dataset")
+                train_x_xxx, test_x_xxx = get_xxx_features(train_x, train_y, test_x)
+
+                evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
+                                             on_trial_exception, task_hint)
+
+                history_xxx = pipeline.optimize(
+                    target=evaluator.fn,
+                    metric=metric_definition,
+                    optimizer=optimizer_cls,
+                    seed=inner_fold_seed,
+                    process_memory_limit=per_process_memory_limit,
+                    process_walltime_limit=per_process_walltime_limit,
+                    working_dir=working_dir,
+                    max_trials=max_trials,
+                    timeout=max_time,
+                    display=display,
+                    wait=wait_for_all_workers_to_finish,
+                    n_workers=n_workers,
+                    on_trial_exception=on_trial_exception,
+                )
+                df_xxx = history_xxx.df()
+                safe_dataframe(df_xxx, working_dir, name, fold, "xxx")
+
+
+            ############## Original Data ##############
+            
+
             print("Original Data")
             file_name = "results_" + str(name) + "_original_fold_" + str(fold) + ".parquet"
             file = working_dir / file_name
@@ -174,19 +204,13 @@ def main() -> None:
                     on_trial_exception=on_trial_exception,
                 )
                 df_original = history_original.df()
-                df_methods = df_methods._append(df_original)
                 safe_dataframe(df_original, working_dir, name, fold, "original")
-            else:
-                # Read dataset from parquet (without executing all FE methods on the dataset)
-                print("Read from Parquet")
-                df_original = pd.read_parquet(file, engine='pyarrow')
-                df_methods = df_methods._append(df_original)
 
-            """
-            ############## Feature Engineering with autofeat ##############
-            Use Feature Engineering from autofeat
+
         
-            """
+            ############## Feature Engineering with autofeat ##############
+            
+
             print("\n\nautofeat Data")
             file_name = "results_" + str(name) + "_autofeat_fold_" + str(fold) + ".parquet"
             file = working_dir / file_name
@@ -215,19 +239,13 @@ def main() -> None:
                     on_trial_exception=on_trial_exception,
                 )
                 df_autofeat = history_autofeat.df()
-                df_methods = df_methods._append(df_autofeat)
                 safe_dataframe(df_autofeat, working_dir, name, fold, "autofeat")
-            else:
-                # Read dataset from parquet (without executing all FE methods on the dataset)
-                print("Read from Parquet")
-                df_autofeat = pd.read_parquet(file, engine='pyarrow')
-                df_methods = df_methods._append(df_autofeat)
 
-            """
+
+           
             ############## Feature Engineering with OpenFE ##############
-            Use Feature Generation and Selection implemented by the OpenFE paper
-        
-            """
+            
+
             print("\n\nOpenFE Data")
             file_name = "results_" + str(name) + "_openfe_fold_" + str(fold) + ".parquet"
             file = working_dir / file_name
@@ -255,19 +273,12 @@ def main() -> None:
                     on_trial_exception=on_trial_exception,
                 )
                 df_openFE = history_openFE.df()
-                df_methods = df_methods._append(df_openFE)
-                safe_dataframe(df_autofeat, working_dir, name, fold, "openfe")
-            else:
-                # Read dataset from parquet (without executing all FE methods on the dataset)
-                print("Read from Parquet")
-                df_openFE = pd.read_parquet(file, engine='pyarrow')
-                df_methods = df_methods._append(df_openFE)
+                safe_dataframe(df_openFE, working_dir, name, fold, "openfe")
 
-            """
+
+            
             ############## Feature Engineering with AutoGluon ##############
-            Use AutoGluon Feature Generation and Selection
-
-            """
+            
 
             print("\n\nAutoGluon Data")
             file_name = "results_" + str(name) + "_autogluon_fold_" + str(fold) + ".parquet"
@@ -297,21 +308,77 @@ def main() -> None:
                     on_trial_exception=on_trial_exception,
                 )
                 df_autogluon = history_autogluon.df()
-                df_methods = df_methods._append(df_autogluon)
                 safe_dataframe(df_autogluon, working_dir, name, fold, "autogluon")
-            else:
-                # Read dataset from parquet (without executing all FE methods on the dataset)
-                print("Read from Parquet")
-                df_autogluon = pd.read_parquet(file, engine='pyarrow')
-                df_methods = df_methods._append(df_autogluon)
-            # Append DF with all methods to methods_datasets and save it
-            df_methods_datasets = df_methods_datasets._append(df_methods)
-            safe_dataframe(df_methods, working_dir, name, fold, "all_methods")
-        # Append DF with all methods & datasets to methods_datasets_folds and save it
-        df_methods_datasets_folds = df_methods_datasets_folds._append(df_methods_datasets)
-        safe_dataframe(df_methods_datasets, working_dir, "all_datasets", fold, "all_methods")
-    # Safe dataframe containing results on all methods, datasets and over all folds
-    safe_dataframe(df_methods_datasets_folds, working_dir, "all_datasets", "all_folds", "all_methods")
+
+
+            
+            ############## Feature Engineering with H2O ##############
+            
+
+            print("\n\nH2O Data")
+            file_name = "results_" + str(name) + "_h2o_fold_" + str(fold) + ".parquet"
+            file = working_dir / file_name
+            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
+            if rerun or not os.path.isfile(file):
+                print("Run H2O Method on Dataset")
+                train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
+
+                evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y, inner_fold_seed,
+                                             on_trial_exception, task_hint)
+
+                history_h2o = pipeline.optimize(
+                    target=evaluator.fn,
+                    metric=metric_definition,
+                    optimizer=optimizer_cls,
+                    seed=inner_fold_seed,
+                    process_memory_limit=per_process_memory_limit,
+                    process_walltime_limit=per_process_walltime_limit,
+                    working_dir=working_dir,
+                    max_trials=max_trials,
+                    timeout=max_time,
+                    display=display,
+                    wait=wait_for_all_workers_to_finish,
+                    n_workers=n_workers,
+                    on_trial_exception=on_trial_exception,
+                )
+                df_h2o = history_h2o.df()
+                safe_dataframe(df_h2o, working_dir, name, fold, "h2o")
+
+
+            
+            ############## Feature Engineering with MLJAR ##############
+            
+
+            print("\n\nMLJAR Data")
+            file_name = "results_" + str(name) + "_mljar_fold_" + str(fold) + ".parquet"
+            file = working_dir / file_name
+            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
+            if rerun or not os.path.isfile(file):
+                print("Run MLJAR Method on Dataset")
+                train_x_mljar, test_x_mljar = get_autogluon_features(train_x, train_y, test_x)
+
+                evaluator = get_cv_evaluator(train_x_mljar, train_y, test_x_mljar, test_y, inner_fold_seed,
+                                             on_trial_exception,
+                                             task_hint)
+
+                history_mljar = pipeline.optimize(
+                    target=evaluator.fn,
+                    metric=metric_definition,
+                    optimizer=optimizer_cls,
+                    seed=inner_fold_seed,
+                    process_memory_limit=per_process_memory_limit,
+                    process_walltime_limit=per_process_walltime_limit,
+                    working_dir=working_dir,
+                    max_trials=max_trials,
+                    timeout=max_time,
+                    display=display,
+                    wait=wait_for_all_workers_to_finish,
+                    n_workers=n_workers,
+                    on_trial_exception=on_trial_exception,
+                )
+                df_mljar = history_mljar.df()
+                safe_dataframe(df_mljar, working_dir, name, fold, "mljar")
+
 
 
 if __name__ == "__main__":

@@ -1,10 +1,17 @@
 amltk
 autofeat
 autogluon
+# caafe
 configspace
+dask[complete]
+fastparquet
+featuretools
+# featurewiz
 h2o
 lightgbm
+mafese
 mljar-supervised
 openfe
-openml
+openml==0.14.2
+pyarrow
 ucimlrepo

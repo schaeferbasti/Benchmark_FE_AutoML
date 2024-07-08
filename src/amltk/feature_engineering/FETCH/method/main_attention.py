@@ -96,10 +96,11 @@ def main(train_x, train_y, test_x):
         logging.info(traceback.format_exc())
     end = time()
     logging.info(f'Total cost time: {round((end - start), 4)} s.')
-    # Operations: abs, square, inverse, log, sqrt, power3, addition, subtraction, multiplication, division
-    actions_c = ['add', 'multiply']
-    actions_d = ['two', 'three']
 
-    df_train, df_test = train_test_split(df, test_size=0.2, random_state=42)
-    x_train, x_test = autofe.transform(df_train, df_test, args, actions_c=c_columns, actions_d=d_columns)
-    return x_train, x_test
+    # Operations: abs, square, inverse, log, sqrt, power3, addition, subtraction, multiplication, division
+    #actions_c = ['add', 'multiply']
+    #actions_d = ['two', 'three']
+
+    #df_train, df_test = train_test_split(df, test_size=0.2, random_state=42)
+    #x_train, x_test = autofe.transform(df_train, df_test, args, actions_c=c_columns, actions_d=d_columns)
+    return train_x, test_x
