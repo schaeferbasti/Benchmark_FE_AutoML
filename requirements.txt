@@ -1,12 +1,13 @@
 amltk
 autofeat
 autogluon
+boruta
 # caafe
 configspace
 dask[complete]
 fastparquet
 featuretools
-# featurewiz
+#featurewiz
 h2o
 lightgbm
 mafese

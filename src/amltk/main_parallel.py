@@ -25,7 +25,7 @@ from src.amltk.feature_engineering.CorrelationBasedFS.CorrelationBasedFS import 
 # DIFER
 # ExploreKit
 from src.amltk.feature_engineering.Featuretools.Featuretools import get_featuretools_features
-from src.amltk.feature_engineering.Featurewiz.Featurewiz import get_featurewiz_features
+# from src.amltk.feature_engineering.Featurewiz.Featurewiz import get_featurewiz_features
 from src.amltk.feature_engineering.H2O.H2O import get_h2o_features
 from src.amltk.feature_engineering.MLJAR.MLJAR import get_mljar_features
 from src.amltk.feature_engineering.OpenFE.OpenFE import get_openFE_features
