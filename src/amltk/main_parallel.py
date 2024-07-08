@@ -90,6 +90,8 @@ def main():
     debugging = False  # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2  # Number of feature engineering steps for autofeat
     feat_sel_steps = 5  # Number of feature selection steps for autofeat
+    n_jobs = 1          # Number of jobs for OpenFE
+    num_features = 500  # Number of features for MLJAR
     working_dir = Path("src/amltk/results")  # Path if running on Cluster
     # working_dir = Path("results")  # Path for local execution
     random_seed = 42  # Set seed
@@ -327,7 +329,7 @@ def main():
                 file_name = f"results_{name}_{method}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
-                    train_x_mljar, test_x_mljar = get_h2o_features(train_x, train_y, test_x)
+                    train_x_mljar, test_x_mljar = get_mljar_features(train_x, train_y, test_x, num_features)
                     evaluator = get_cv_evaluator(train_x_mljar, train_y, test_x_mljar, test_y,
                                                  inner_fold_seed, on_trial_exception, task_hint)
                     history = pipeline.optimize(
@@ -350,7 +352,7 @@ def main():
                 file_name = f"results_{name}_{method}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
-                    train_x_openfe, test_x_openfe = get_h2o_features(train_x, train_y, test_x)
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
                     evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
                                                  inner_fold_seed, on_trial_exception, task_hint)
                     history = pipeline.optimize(

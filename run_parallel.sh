@@ -50,6 +50,7 @@ method=${methods[$SLURM_ARRAY_TASK_ID]}
 # Run the job with the specified method
 start=`date +%s`
 
+echo "Running Method: $method"
 python3 src/amltk/main_parallel.py --method $method
 
 end=`date +%s`
