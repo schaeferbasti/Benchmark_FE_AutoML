@@ -80,6 +80,7 @@ lgbm_classifier_pipeline = Sequential(preprocessing, lgbm_classifier, name="lgbm
 
 
 def main():
+    print("HELLLLLOOOO 1")
     parser = argparse.ArgumentParser(description='Run feature engineering methods')
     parser.add_argument('--method', type=str, required=True, help='Feature engineering method to use')
     args = parser.parse_args()
@@ -134,6 +135,7 @@ def main():
         display = True
         wait_for_all_workers_to_finish = False
 
+    print("HELLLLLOOOO 2")
     for fold in range(folds):
         print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
         inner_fold_seed = random_seed + fold
