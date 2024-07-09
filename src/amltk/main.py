@@ -12,14 +12,12 @@ from sklearn.preprocessing import *
 from src.amltk.classifiers.Classifiers import *
 from src.amltk.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
-from src.amltk.feature_engineering.BioAutoML.BioAutoML import get_bioautoml_features
 from src.amltk.optimizer.RandomSearch import RandomSearch
 
-from src.amltk.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
-from src.amltk.feature_engineering.autofeat.Autofeat import get_autofeat_features
-from src.amltk.feature_engineering.OpenFE.OpenFE import get_openFE_features
+from src.amltk.feature_engineering.FGCNN.FGCNN import get_xxx_features
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
+
 
 preprocessing = Split(
     {
@@ -149,7 +147,7 @@ def main() -> None:
             print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
             if rerun or not os.path.isfile(file):
                 print("Run xxx Method on Dataset")
-                train_x_xxx, test_x_xxx = get_bioautoml_features(train_x, train_y, test_x)
+                train_x_xxx, test_x_xxx = get_xxx_features(train_x, train_y, test_x, test_y)
 
                 evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
                                              on_trial_exception, task_hint)
