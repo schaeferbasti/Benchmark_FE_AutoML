@@ -17,10 +17,16 @@
 
 #SBATCH --propagate=NONE
 
+# Define methods, datasets, and folds
+methods=("original" "autofeat" "autogluon" "bioautoml" "boruta" "correlationBasedFS" "featuretools" "h2o" "mljar" "openfe")
+datasets=(1 5 14 15 16 17 18 21 22 23 24 27 28 29 31 35 36)
+folds=$(seq 0 9)
+
+# Calculate total number of jobs (methods * datasets * folds)
+total_jobs=$((${#methods[@]} * ${#datasets[@]} * ${#folds[@]}))
+
 # Define job array
-#SBATCH --method_array=0-9  # Adjust based on the number of methods
-#SBATCH --dataset_array=0-16
-#SBATCH --fold_array=0-9
+#SBATCH --array=0-$(($total_jobs-1))
 
 echo "Workingdir: $PWD"
 echo "Started at $(date)"
@@ -43,20 +49,20 @@ echo "Requirements installed"
 export PYTHONPATH=$PWD/src/amltk:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
-# Define methods array
-methods=("original" "autofeat" "autogluon" "bioautoml" "boruta" "correlationBasedFS" "featuretools" "h2o" "mljar" "openfe")
-datasets=("abalone" "moneyball" "australian" "bioresponse" "blood_transfusion" "car" "churn" "credit_g" "dna" "gina" "internet_advertisements" "kr_vs_kp" "madeline" "mfeat_factors" "pc4" "wilt" "wine_quality_white")
-folds=("0" "1" "2" "3" "4" "5" "6" "7" "8" "9")
+# Calculate method, dataset, and fold based on SLURM_ARRAY_TASK_ID
+method_index=$(($SLURM_ARRAY_TASK_ID % ${#methods[@]}))
+dataset_index=$((($SLURM_ARRAY_TASK_ID / ${#methods[@]}) % ${#datasets[@]}))
+fold_index=$(($SLURM_ARRAY_TASK_ID / (${#methods[@]} * ${#datasets[@]})))
 
-# Get the method name based on SLURM_ARRAY_TASK_ID
-method=${methods[$SLURM_ARRAY_TASK_ID]}
-dataset=${datasets[$SLURM_ARRAY_TASK_ID]}
-fold=${folds[$SLURM_ARRAY_TASK_ID]}
+method=${methods[$method_index]}
+dataset=${datasets[$dataset_index]}
+fold=$fold_index
+
+echo "Running Method: $method, Dataset: $dataset, Fold: $fold"
 
 # Run the job with the specified method
 start=`date +%s`
 
-echo "Running Method: $method"
 python3 src/amltk/main_parallel.py --method $method --dataset $dataset --fold $fold
 
 end=`date +%s`
