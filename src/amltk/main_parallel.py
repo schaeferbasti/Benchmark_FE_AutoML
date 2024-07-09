@@ -79,19 +79,14 @@ lgbm_classifier = get_lgbm_classifier()
 lgbm_classifier_pipeline = Sequential(preprocessing, lgbm_classifier, name="lgbm_classifier_pipeline")
 
 
-def main():
-    print("HELLLLLOOOO 1")
-    parser = argparse.ArgumentParser(description='Run feature engineering methods')
-    parser.add_argument('--method', type=str, required=True, help='Feature engineering method to use')
-    args = parser.parse_args()
-
+def main(args):
     method = args.method
 
     rerun = True  # Decide if you want to re-execute the methods on a dataset or use the existing files
     debugging = False  # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2  # Number of feature engineering steps for autofeat
     feat_sel_steps = 5  # Number of feature selection steps for autofeat
-    n_jobs = 1          # Number of jobs for OpenFE
+    n_jobs = 1  # Number of jobs for OpenFE
     num_features = 500  # Number of features for MLJAR
     working_dir = Path("src/amltk/results")  # Path if running on Cluster
     # working_dir = Path("results")  # Path for local execution
@@ -135,7 +130,6 @@ def main():
         display = True
         wait_for_all_workers_to_finish = False
 
-    print("HELLLLLOOOO 2")
     for fold in range(folds):
         print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
         inner_fold_seed = random_seed + fold
@@ -262,7 +256,9 @@ def main():
                 file_name = f"results_{name}_{method}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
-                    train_x_correlationBasedFS, test_x_correlationBasedFS = get_correlationbased_features(train_x, train_y, test_x)
+                    train_x_correlationBasedFS, test_x_correlationBasedFS = get_correlationbased_features(train_x,
+                                                                                                          train_y,
+                                                                                                          test_x)
                     evaluator = get_cv_evaluator(train_x_correlationBasedFS, train_y, test_x_correlationBasedFS, test_y,
                                                  inner_fold_seed, on_trial_exception, task_hint)
                     history = pipeline.optimize(
@@ -285,7 +281,8 @@ def main():
                 file_name = f"results_{name}_{method}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
-                    train_x_featuretools, test_x_featuretools = get_featuretools_features(train_x, train_y, test_x, test_y, name)
+                    train_x_featuretools, test_x_featuretools = get_featuretools_features(train_x, train_y, test_x,
+                                                                                          test_y, name)
                     evaluator = get_cv_evaluator(train_x_featuretools, train_y, test_x_featuretools, test_y,
                                                  inner_fold_seed, on_trial_exception, task_hint)
                     history = pipeline.optimize(
@@ -371,3 +368,10 @@ def main():
                     )
                     df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Run feature engineering methods')
+    parser.add_argument('--method', type=str, required=True, help='Feature engineering method to use')
+    args = parser.parse_args()
+    main(args)
