@@ -12,6 +12,7 @@ from sklearn.preprocessing import *
 from src.amltk.classifiers.Classifiers import *
 from src.amltk.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
+from src.amltk.feature_engineering.BioAutoML.BioAutoML import get_bioautoml_features
 from src.amltk.optimizer.RandomSearch import RandomSearch
 
 from src.amltk.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
@@ -54,7 +55,7 @@ preprocessing = Split(
 
 
 def safe_dataframe(df, working_dir, dataset_name, fold_number, method_name):
-    file_string = "results_" + str(dataset_name) + "_" + str(method_name) + "_fold_" + str(fold_number) + ".parquet"
+    file_string = "results_" + str(dataset_name) + "_" + str(method_name) + "_" + str(fold_number) + ".parquet"
     results_to = working_dir / file_string
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
@@ -100,7 +101,7 @@ def main() -> None:
     small_datasets = [1, 5, 14, 16, 17, 18, 21, 27, 31, 35, 36]
     smallest_datasets = [14, 16, 17, 21, 35]  # n ~ 1000, p ~ 15
     big_datasets = [15, 22, 23, 24, 28, 29]
-    test_new_method_datasets = [18]  # [16]
+    test_new_method_datasets = [16]  # [18]  #
 
     optimizer_cls = RandomSearch
     pipeline = lgbm_classifier_pipeline
@@ -148,7 +149,7 @@ def main() -> None:
             print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
             if rerun or not os.path.isfile(file):
                 print("Run xxx Method on Dataset")
-                train_x_xxx, test_x_xxx = get_xxx_features(train_x, train_y, test_x)
+                train_x_xxx, test_x_xxx = get_bioautoml_features(train_x, train_y, test_x)
 
                 evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
                                              on_trial_exception, task_hint)
@@ -170,211 +171,6 @@ def main() -> None:
                 )
                 df_xxx = history_xxx.df()
                 safe_dataframe(df_xxx, working_dir, name, fold, "xxx")
-
-
-            ############## Original Data ##############
-            
-
-            print("Original Data")
-            file_name = "results_" + str(name) + "_original_fold_" + str(fold) + ".parquet"
-            file = working_dir / file_name
-            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
-            if rerun or not os.path.isfile(file):
-                print("Run Original Method on Dataset")
-                evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
-                                             on_trial_exception, task_hint)
-
-                history_original = pipeline.optimize(
-                    target=evaluator.fn,
-                    metric=metric_definition,
-                    optimizer=optimizer_cls,
-                    seed=inner_fold_seed,
-                    process_memory_limit=per_process_memory_limit,
-                    process_walltime_limit=per_process_walltime_limit,
-                    working_dir=working_dir,
-                    max_trials=max_trials,
-                    timeout=max_time,
-                    display=display,
-                    wait=wait_for_all_workers_to_finish,
-                    n_workers=n_workers,
-                    on_trial_exception=on_trial_exception,
-                )
-                df_original = history_original.df()
-                safe_dataframe(df_original, working_dir, name, fold, "original")
-
-
-        
-            ############## Feature Engineering with autofeat ##############
-            
-
-            print("\n\nautofeat Data")
-            file_name = "results_" + str(name) + "_autofeat_fold_" + str(fold) + ".parquet"
-            file = working_dir / file_name
-            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
-            if rerun or not os.path.isfile(file):
-                print("Run autofeat Method on Dataset")
-                train_x_autofeat, test_x_autofeat = get_autofeat_features(train_x, train_y, test_x, task_hint,
-                                                                          feat_eng_steps, feat_sel_steps)
-
-                evaluator = get_cv_evaluator(train_x_autofeat, train_y, test_x_autofeat, test_y, inner_fold_seed,
-                                             on_trial_exception, task_hint)
-
-                history_autofeat = pipeline.optimize(
-                    target=evaluator.fn,
-                    metric=metric_definition,
-                    optimizer=optimizer_cls,
-                    seed=inner_fold_seed,
-                    process_memory_limit=per_process_memory_limit,
-                    process_walltime_limit=per_process_walltime_limit,
-                    working_dir=working_dir,
-                    max_trials=max_trials,
-                    timeout=max_time,
-                    display=display,
-                    wait=wait_for_all_workers_to_finish,
-                    n_workers=n_workers,
-                    on_trial_exception=on_trial_exception,
-                )
-                df_autofeat = history_autofeat.df()
-                safe_dataframe(df_autofeat, working_dir, name, fold, "autofeat")
-
-
-           
-            ############## Feature Engineering with OpenFE ##############
-            
-
-            print("\n\nOpenFE Data")
-            file_name = "results_" + str(name) + "_openfe_fold_" + str(fold) + ".parquet"
-            file = working_dir / file_name
-            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
-            if rerun or not os.path.isfile(file):
-                print("Run OpenFE Method on Dataset")
-                train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, 1)
-
-                evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y, inner_fold_seed,
-                                             on_trial_exception, task_hint)
-
-                history_openFE = pipeline.optimize(
-                    target=evaluator.fn,
-                    metric=metric_definition,
-                    optimizer=optimizer_cls,
-                    seed=inner_fold_seed,
-                    process_memory_limit=per_process_memory_limit,
-                    process_walltime_limit=per_process_walltime_limit,
-                    working_dir=working_dir,
-                    max_trials=max_trials,
-                    timeout=max_time,
-                    display=display,
-                    wait=wait_for_all_workers_to_finish,
-                    n_workers=n_workers,
-                    on_trial_exception=on_trial_exception,
-                )
-                df_openFE = history_openFE.df()
-                safe_dataframe(df_openFE, working_dir, name, fold, "openfe")
-
-
-            
-            ############## Feature Engineering with AutoGluon ##############
-            
-
-            print("\n\nAutoGluon Data")
-            file_name = "results_" + str(name) + "_autogluon_fold_" + str(fold) + ".parquet"
-            file = working_dir / file_name
-            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
-            if rerun or not os.path.isfile(file):
-                print("Run AutoGluon Method on Dataset")
-                train_x_autogluon, test_x_autogluon = get_autogluon_features(train_x, train_y, test_x)
-
-                evaluator = get_cv_evaluator(train_x_autogluon, train_y, test_x_autogluon, test_y, inner_fold_seed,
-                                             on_trial_exception,
-                                             task_hint)
-
-                history_autogluon = pipeline.optimize(
-                    target=evaluator.fn,
-                    metric=metric_definition,
-                    optimizer=optimizer_cls,
-                    seed=inner_fold_seed,
-                    process_memory_limit=per_process_memory_limit,
-                    process_walltime_limit=per_process_walltime_limit,
-                    working_dir=working_dir,
-                    max_trials=max_trials,
-                    timeout=max_time,
-                    display=display,
-                    wait=wait_for_all_workers_to_finish,
-                    n_workers=n_workers,
-                    on_trial_exception=on_trial_exception,
-                )
-                df_autogluon = history_autogluon.df()
-                safe_dataframe(df_autogluon, working_dir, name, fold, "autogluon")
-
-
-            
-            ############## Feature Engineering with H2O ##############
-            
-
-            print("\n\nH2O Data")
-            file_name = "results_" + str(name) + "_h2o_fold_" + str(fold) + ".parquet"
-            file = working_dir / file_name
-            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
-            if rerun or not os.path.isfile(file):
-                print("Run H2O Method on Dataset")
-                train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
-
-                evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y, inner_fold_seed,
-                                             on_trial_exception, task_hint)
-
-                history_h2o = pipeline.optimize(
-                    target=evaluator.fn,
-                    metric=metric_definition,
-                    optimizer=optimizer_cls,
-                    seed=inner_fold_seed,
-                    process_memory_limit=per_process_memory_limit,
-                    process_walltime_limit=per_process_walltime_limit,
-                    working_dir=working_dir,
-                    max_trials=max_trials,
-                    timeout=max_time,
-                    display=display,
-                    wait=wait_for_all_workers_to_finish,
-                    n_workers=n_workers,
-                    on_trial_exception=on_trial_exception,
-                )
-                df_h2o = history_h2o.df()
-                safe_dataframe(df_h2o, working_dir, name, fold, "h2o")
-
-
-            
-            ############## Feature Engineering with MLJAR ##############
-            
-
-            print("\n\nMLJAR Data")
-            file_name = "results_" + str(name) + "_mljar_fold_" + str(fold) + ".parquet"
-            file = working_dir / file_name
-            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
-            if rerun or not os.path.isfile(file):
-                print("Run MLJAR Method on Dataset")
-                train_x_mljar, test_x_mljar = get_autogluon_features(train_x, train_y, test_x)
-
-                evaluator = get_cv_evaluator(train_x_mljar, train_y, test_x_mljar, test_y, inner_fold_seed,
-                                             on_trial_exception,
-                                             task_hint)
-
-                history_mljar = pipeline.optimize(
-                    target=evaluator.fn,
-                    metric=metric_definition,
-                    optimizer=optimizer_cls,
-                    seed=inner_fold_seed,
-                    process_memory_limit=per_process_memory_limit,
-                    process_walltime_limit=per_process_walltime_limit,
-                    working_dir=working_dir,
-                    max_trials=max_trials,
-                    timeout=max_time,
-                    display=display,
-                    wait=wait_for_all_workers_to_finish,
-                    n_workers=n_workers,
-                    on_trial_exception=on_trial_exception,
-                )
-                df_mljar = history_mljar.df()
-                safe_dataframe(df_mljar, working_dir, name, fold, "mljar")
-
 
 
 if __name__ == "__main__":
