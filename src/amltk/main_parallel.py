@@ -134,240 +134,243 @@ def main(args):
         print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
         inner_fold_seed = random_seed + fold
         for option in all_datasets:
-            train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
 
-            if method == "original":
-                print("Original Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed, on_trial_exception,
-                                                 task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                if method == "original":
+                    print("Original Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed, on_trial_exception,
+                                                     task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "autofeat":
-                print("autofeat Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_autofeat, test_x_autofeat = get_autofeat_features(train_x, train_y, test_x, task_hint,
-                                                                              feat_eng_steps, feat_sel_steps)
-                    evaluator = get_cv_evaluator(train_x_autofeat, train_y, test_x_autofeat, test_y, inner_fold_seed,
-                                                 on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "autofeat":
+                    print("autofeat Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_autofeat, test_x_autofeat = get_autofeat_features(train_x, train_y, test_x, task_hint,
+                                                                                  feat_eng_steps, feat_sel_steps)
+                        evaluator = get_cv_evaluator(train_x_autofeat, train_y, test_x_autofeat, test_y, inner_fold_seed,
+                                                     on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "autogluon":
-                print("autogluon Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_autogluon, test_x_autogluon = get_autogluon_features(train_x, train_y, test_x)
-                    evaluator = get_cv_evaluator(train_x_autogluon, train_y, test_x_autogluon, test_y,
-                                                 inner_fold_seed, on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "autogluon":
+                    print("autogluon Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_autogluon, test_x_autogluon = get_autogluon_features(train_x, train_y, test_x)
+                        evaluator = get_cv_evaluator(train_x_autogluon, train_y, test_x_autogluon, test_y,
+                                                     inner_fold_seed, on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "bioautoml":
-                print("BioAutoML Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_bioautoml, test_x_bioautoml = get_bioautoml_features(train_x, train_y, test_x)
-                    evaluator = get_cv_evaluator(train_x_bioautoml, train_y, test_x_bioautoml, test_y,
-                                                 inner_fold_seed, on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "bioautoml":
+                    print("BioAutoML Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_bioautoml, test_x_bioautoml = get_bioautoml_features(train_x, train_y, test_x)
+                        evaluator = get_cv_evaluator(train_x_bioautoml, train_y, test_x_bioautoml, test_y,
+                                                     inner_fold_seed, on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "boruta":
-                print("Boruta Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_boruta, test_x_boruta = get_boruta_features(train_x, train_y, test_x)
-                    evaluator = get_cv_evaluator(train_x_boruta, train_y, test_x_boruta, test_y,
-                                                 inner_fold_seed, on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "boruta":
+                    print("Boruta Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_boruta, test_x_boruta = get_boruta_features(train_x, train_y, test_x)
+                        evaluator = get_cv_evaluator(train_x_boruta, train_y, test_x_boruta, test_y,
+                                                     inner_fold_seed, on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "correlationBasedFS":
-                print("CorrelationBasedFS Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_correlationBasedFS, test_x_correlationBasedFS = get_correlationbased_features(train_x,
-                                                                                                          train_y,
-                                                                                                          test_x)
-                    evaluator = get_cv_evaluator(train_x_correlationBasedFS, train_y, test_x_correlationBasedFS, test_y,
-                                                 inner_fold_seed, on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "correlationBasedFS":
+                    print("CorrelationBasedFS Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_correlationBasedFS, test_x_correlationBasedFS = get_correlationbased_features(train_x,
+                                                                                                              train_y,
+                                                                                                              test_x)
+                        evaluator = get_cv_evaluator(train_x_correlationBasedFS, train_y, test_x_correlationBasedFS, test_y,
+                                                     inner_fold_seed, on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "featuretools":
-                print("Featuretools Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_featuretools, test_x_featuretools = get_featuretools_features(train_x, train_y, test_x,
-                                                                                          test_y, name)
-                    evaluator = get_cv_evaluator(train_x_featuretools, train_y, test_x_featuretools, test_y,
-                                                 inner_fold_seed, on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "featuretools":
+                    print("Featuretools Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_featuretools, test_x_featuretools = get_featuretools_features(train_x, train_y, test_x,
+                                                                                              test_y, name)
+                        evaluator = get_cv_evaluator(train_x_featuretools, train_y, test_x_featuretools, test_y,
+                                                     inner_fold_seed, on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "h2o":
-                print("H2O Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
-                    evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y,
-                                                 inner_fold_seed, on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "h2o":
+                    print("H2O Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_h2o, test_x_h2o = get_h2o_features(train_x, train_y, test_x)
+                        evaluator = get_cv_evaluator(train_x_h2o, train_y, test_x_h2o, test_y,
+                                                     inner_fold_seed, on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "mljar":
-                print("MLJAR Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_mljar, test_x_mljar = get_mljar_features(train_x, train_y, test_x, num_features)
-                    evaluator = get_cv_evaluator(train_x_mljar, train_y, test_x_mljar, test_y,
-                                                 inner_fold_seed, on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "mljar":
+                    print("MLJAR Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_mljar, test_x_mljar = get_mljar_features(train_x, train_y, test_x, num_features)
+                        evaluator = get_cv_evaluator(train_x_mljar, train_y, test_x_mljar, test_y,
+                                                     inner_fold_seed, on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
 
-            elif method == "openfe":
-                print("OpenFE Data")
-                file_name = f"results_{name}_{method}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                 inner_fold_seed, on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method)
+                elif method == "openfe":
+                    print("OpenFE Data")
+                    file_name = f"results_{name}_{method}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                     inner_fold_seed, on_trial_exception, task_hint)
+                        history = pipeline.optimize(
+                            target=evaluator.fn,
+                            metric=metric_definition,
+                            optimizer=optimizer_cls,
+                            seed=inner_fold_seed,
+                            max_trials=max_trials,
+                            timeout=max_time,
+                            display=display,
+                            wait=wait_for_all_workers_to_finish,
+                            n_workers=n_workers,
+                            on_trial_exception=on_trial_exception
+                        )
+                        df = history.df()
+                        safe_dataframe(df, working_dir, name, fold, method)
+            except Exception as e:
+                print(e)
 
 
 if __name__ == "__main__":
