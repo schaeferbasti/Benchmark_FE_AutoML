@@ -15,11 +15,11 @@ def get_xxx_features(train_x, train_y, test_x, test_y) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
-    df_train = pd.concat([train_x, train_y], axis=1)
-    df_test = pd.concat([test_x, test_y], axis=1)
-    df = pd.concat([df_train, df_test], axis=0)
-
-    emb_szs = get_emb_sz(df_train, k=40)
+    # df_train = pd.concat([train_x, train_y], axis=1)
+    # df_test = pd.concat([test_x, test_y], axis=1)
+    # df = pd.concat([df_train, df_test], axis=0)
+    dls = get_dl()
+    emb_szs = get_emb_sz(dls.train_ds, k=40)
 
     m = FGCNN(emb_szs=emb_szs,
               conv_kernels=[14, 16, 18, 20],
@@ -29,6 +29,6 @@ def get_xxx_features(train_x, train_y, test_x, test_y) -> tuple[
               hp=2
               )
 
-    learn = TabularLearner(df, m, loss_func=BCELossFlat(), opt_func=ranger)
+    learn = TabularLearner(dls, m, loss_func=BCELossFlat(), opt_func=ranger)
     learn.fit_flat_cos(1, 2e-4, cbs=EarlyStoppingCallback())
     return train_x, test_x
