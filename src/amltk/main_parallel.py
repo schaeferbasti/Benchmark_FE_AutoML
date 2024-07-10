@@ -80,8 +80,9 @@ lgbm_classifier_pipeline = Sequential(preprocessing, lgbm_classifier, name="lgbm
 
 
 def main(args):
-    method = args.method
-    dataset = args.dataset
+    method_and_dataset = args.method_and_dataset
+    method = method_and_dataset[0]
+    dataset = method_and_dataset[1]
 
     rerun = True  # Decide if you want to re-execute the methods on a dataset or use the existing files
     debugging = False  # Decide if you want ot raise trial exceptions
@@ -196,8 +197,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run automated ML pipeline with specified method, dataset, and fold.")
-    parser.add_argument("--method", type=str, required=True, help="Feature engineering method to use.")
-    parser.add_argument("--dataset", type=int, required=True, help="Dataset to use.")
+    parser = argparse.ArgumentParser(description="Run automated ML pipeline with specified method & dataset.")
+    parser.add_argument("--method_and_dataset", type=str, required=True, help="Feature engineering method and dataset to use.")
     args = parser.parse_args()
     main(args)
