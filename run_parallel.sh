@@ -25,7 +25,7 @@ datasets=(1 5 14 15 16 17 18 21 22 23 24 27 28 29 31 35 36)
 total_jobs=$((${#methods[@]} * ${#datasets[@]}))
 
 # Define job array
-#SBATCH --array=0-$(($total_jobs-1))
+#SBATCH --array=0-169
 
 echo "Workingdir: $PWD"
 echo "Started at $(date)"
