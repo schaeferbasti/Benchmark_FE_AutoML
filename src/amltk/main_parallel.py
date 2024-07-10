@@ -82,7 +82,6 @@ lgbm_classifier_pipeline = Sequential(preprocessing, lgbm_classifier, name="lgbm
 def main(args):
     method = args.method
     dataset = args.dataset
-    fold = args.fold
 
     rerun = True  # Decide if you want to re-execute the methods on a dataset or use the existing files
     debugging = False  # Decide if you want ot raise trial exceptions
@@ -124,83 +123,81 @@ def main(args):
         on_trial_exception = "continue"
         display = True
         wait_for_all_workers_to_finish = False
+    for fold in range(folds):
+        print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
+        inner_fold_seed = random_seed + fold
+        train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
+        if method == "original":
+            print("Original Data")
+            file_name = f"results_{name}_{method}_{fold}.parquet"
+            file = working_dir / file_name
+            if rerun or not os.path.isfile(file):
+                evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed, on_trial_exception, task_hint)
+                history = pipeline.optimize(
+                    target=evaluator.fn,
+                    metric=metric_definition,
+                    optimizer=optimizer_cls,
+                    seed=inner_fold_seed,
+                    max_trials=max_trials,
+                    timeout=max_time,
+                    display=display,
+                    wait=wait_for_all_workers_to_finish,
+                    n_workers=n_workers,
+                    on_trial_exception=on_trial_exception
+                )
+                df = history.df()
+                safe_dataframe(df, working_dir, name, fold, method)
+                print(f"Finished fold {fold} for {name} with method {method}")
+            else:
+                print(f"Results for fold {fold} for {name} with method {method} already exist. Skipping execution.")
 
-    print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
-    inner_fold_seed = random_seed + fold
-    train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
-
-    if method == "original":
-        print("Original Data")
-        file_name = f"results_{name}_{method}_{fold}.parquet"
-        file = working_dir / file_name
-        if rerun or not os.path.isfile(file):
-            evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed, on_trial_exception,
-                                         task_hint)
-            history = pipeline.optimize(
-                target=evaluator.fn,
-                metric=metric_definition,
-                optimizer=optimizer_cls,
-                seed=inner_fold_seed,
-                max_trials=max_trials,
-                timeout=max_time,
-                display=display,
-                wait=wait_for_all_workers_to_finish,
-                n_workers=n_workers,
-                on_trial_exception=on_trial_exception
-            )
-            safe_dataframe(history, working_dir, name, fold, method)
-            print(f"Finished fold {fold} for {name} with method {method}")
         else:
-            print(f"Results for fold {fold} for {name} with method {method} already exist. Skipping execution.")
+            feat_methods = {
+                "autofeat": get_autofeat_features,
+                "autogluon": get_autogluon_features,
+                "bioautoml": get_bioautoml_features,
+                "boruta": get_boruta_features,
+                "correlationBasedFS": get_correlationbased_features,
+                "featuretools": get_featuretools_features,
+                "h2o": get_h2o_features,
+                "mljar": get_mljar_features,
+                "openfe": get_openFE_features,
+            }
 
-    else:
-        feat_methods = {
-            "autofeat": get_autofeat_features,
-            "autogluon": get_autogluon_features,
-            "bioautoml": get_bioautoml_features,
-            "boruta": get_boruta_features,
-            "correlationBasedFS": get_correlationbased_features,
-            "featuretools": get_featuretools_features,
-            "h2o": get_h2o_features,
-            "mljar": get_mljar_features,
-            "openfe": get_openFE_features,
-        }
+            if method not in feat_methods:
+                raise ValueError(f"Unknown method: {method}")
 
-        if method not in feat_methods:
-            raise ValueError(f"Unknown method: {method}")
+            print(f"Using feature engineering method: {method}")
+            feature_eng_func = feat_methods[method]
+            file_name = f"results_{name}_{method}_{fold}.parquet"
+            file = working_dir / file_name
 
-        print(f"Using feature engineering method: {method}")
-        feature_eng_func = feat_methods[method]
-        file_name = f"results_{name}_{method}_{fold}.parquet"
-        file = working_dir / file_name
-
-        if rerun or not os.path.isfile(file):
-            # Apply feature engineering method
-            train_x_feat, test_x_feat = feature_eng_func(train_x, train_y, test_x, test_y, inner_fold_seed, feat_eng_steps, feat_sel_steps, n_jobs, num_features)
-            evaluator = get_cv_evaluator(train_x_feat, train_y, test_x_feat, test_y, inner_fold_seed, on_trial_exception, task_hint)
-            history = pipeline.optimize(
-                target=evaluator.fn,
-                metric=metric_definition,
-                optimizer=optimizer_cls,
-                seed=inner_fold_seed,
-                max_trials=max_trials,
-                timeout=max_time,
-                display=display,
-                wait=wait_for_all_workers_to_finish,
-                n_workers=n_workers,
-                on_trial_exception=on_trial_exception
-            )
-            df = history.df()
-            safe_dataframe(df, working_dir, name, fold, method)
-            print(f"Finished fold {fold} for {name} with method {method}")
-        else:
-            print(f"Results for fold {fold} for {name} with method {method} already exist. Skipping execution.")
+            if rerun or not os.path.isfile(file):
+                # Apply feature engineering method
+                train_x_feat, test_x_feat = feature_eng_func(train_x, train_y, test_x, test_y, inner_fold_seed, feat_eng_steps, feat_sel_steps, n_jobs, num_features)
+                evaluator = get_cv_evaluator(train_x_feat, train_y, test_x_feat, test_y, inner_fold_seed, on_trial_exception, task_hint)
+                history = pipeline.optimize(
+                    target=evaluator.fn,
+                    metric=metric_definition,
+                    optimizer=optimizer_cls,
+                    seed=inner_fold_seed,
+                    max_trials=max_trials,
+                    timeout=max_time,
+                    display=display,
+                    wait=wait_for_all_workers_to_finish,
+                    n_workers=n_workers,
+                    on_trial_exception=on_trial_exception
+                )
+                df = history.df()
+                safe_dataframe(df, working_dir, name, fold, method)
+                print(f"Finished fold {fold} for {name} with method {method}")
+            else:
+                print(f"Results for fold {fold} for {name} with method {method} already exist. Skipping execution.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run automated ML pipeline with specified method, dataset, and fold.")
     parser.add_argument("--method", type=str, required=True, help="Feature engineering method to use.")
     parser.add_argument("--dataset", type=int, required=True, help="Dataset to use.")
-    parser.add_argument("--fold", type=int, required=True, help="Fold number to use.")
     args = parser.parse_args()
     main(args)
