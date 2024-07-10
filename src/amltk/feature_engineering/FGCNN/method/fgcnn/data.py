@@ -78,13 +78,41 @@ def create_dl(df, bs, target, cat_names, cont_names, procs, splitter):
 
 
 # Cell
-def get_dl(df):
-    cat_names = df.columns
+def get_dl():
+    df    = read_dataset()
+    df    = add_time_feat(df)
+
+    crit  = df.hour.astype('str').str.slice(0, 6) == '141023'
+    tr, _ = make_dataset(df, crit)
+
+    cat_names  = ['C1',
+                  'banner_pos',
+                  'site_id',
+                  'site_domain',
+                  'site_category',
+                  'app_id',
+                  'app_domain',
+                  'app_category',
+                  'device_id',
+                  'device_ip',
+                  'device_model',
+                  'device_type',
+                  'device_conn_type',
+                  'click_hour',
+                  'C14',
+                  'C15',
+                  'C16',
+                  'C17',
+                  'C18',
+                  'C19',
+                  'C20',
+                  'C21'
+                 ]
 
     cont_names = []
-    procs = [Categorify, FillMissing]
-    target = 'click'
+    procs      = [Categorify, FillMissing]
+    target     = 'click'
     bs = 2048
     splitter = DateSplitter(seed=41)
 
-    return create_dl(df, bs, target, cat_names, cont_names, procs, splitter)
+    return create_dl(tr, bs, target, cat_names, cont_names, procs, splitter)
