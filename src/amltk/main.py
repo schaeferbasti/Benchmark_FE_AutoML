@@ -86,8 +86,8 @@ lgbm_regressor_pipeline = Sequential(preprocessing, lgbm_regressor, name="lgbm_r
 
 
 def main() -> None:
-    rerun = False                                # Decide if you want to re-execute the methods on a dataset or use the existing files
-    debugging = False                            # Decide if you want ot raise trial exceptions
+    rerun = True                                # Decide if you want to re-execute the methods on a dataset or use the existing files
+    debugging = True                            # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2                          # Number of feature engineering steps for autofeat
     feat_sel_steps = 5                          # Number of feature selection steps for autofeat
     working_dir = Path("src/amltk/results")   # Path if running on Cluster
@@ -173,7 +173,7 @@ def main() -> None:
                     safe_dataframe(df_xxx, working_dir, name, fold, "openfe")
             except Exception as e:
                 print(str(option) + ": " + str(e))
-
+            os.remove("openfe_tmp_data.feather")
 
 if __name__ == "__main__":
     main()
