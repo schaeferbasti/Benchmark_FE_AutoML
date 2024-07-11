@@ -133,385 +133,466 @@ def main(args):
     for fold in range(folds):
         print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
         inner_fold_seed = random_seed + fold
-        for option in all_datasets:
+        # for option in all_datasets:
+
+        if method == "1":
+            print("OpenFE Data")
             try:
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
 
-                if method == "1":
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == "5":
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == "14":
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == "15":
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == "5":
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
 
-                elif method == "16":
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == "17":
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == "18":
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == "21":
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 22:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 23:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 24:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 27:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 28:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 29:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 31:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 35:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
-                elif method == 36:
-                    print("OpenFE Data")
-                    file_name = f"results_{name}_openfe_{fold}.parquet"
-                    file = working_dir / file_name
-                    if rerun or not os.path.isfile(file):
-                        train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
-                        evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
-                                                     inner_fold_seed, on_trial_exception, task_hint)
-                        history = pipeline.optimize(
-                            target=evaluator.fn,
-                            metric=metric_definition,
-                            optimizer=optimizer_cls,
-                            seed=inner_fold_seed,
-                            max_trials=max_trials,
-                            timeout=max_time,
-                            display=display,
-                            wait=wait_for_all_workers_to_finish,
-                            n_workers=n_workers,
-                            on_trial_exception=on_trial_exception
-                        )
-                        df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, "openfe")
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == "14":
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == "15":
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+
+        elif method == "16":
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == "17":
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == "18":
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == "21":
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 22:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 23:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 24:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 27:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 28:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 29:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 31:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 35:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(e)
+        elif method == 36:
+            print("OpenFE Data")
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(method))
+
+                file_name = f"results_{name}_openfe_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x_openfe, test_x_openfe = get_openFE_features(train_x, train_y, test_x, n_jobs)
+                    evaluator = get_cv_evaluator(train_x_openfe, train_y, test_x_openfe, test_y,
+                                                 inner_fold_seed, on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, "openfe")
             except Exception as e:
                 print(e)
 
