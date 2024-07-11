@@ -18,7 +18,7 @@
 #SBATCH --propagate=NONE
 
 # Define job array
-#SBATCH --array=0-9  # Adjust based on the number of methods
+#SBATCH --array=0-16  # Adjust based on the number of methods
 
 echo "Workingdir: $PWD"
 echo "Started at $(date)"
@@ -42,8 +42,8 @@ export PYTHONPATH=$PWD/src/amltk:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 # Define methods array
-methods=("original" "autofeat" "autogluon" "bioautoml" "boruta" "correlationBasedFS" "featuretools" "h2o" "mljar" "openfe")
-
+# methods=("original" "autofeat" "autogluon" "bioautoml" "boruta" "correlationBasedFS" "featuretools" "h2o" "mljar" "openfe")
+methods=("1" "5" "14" "15" "16" "17" "18" "21" "22" "23" "24" "27" "28" "29" "31" "35" "36")
 # Get the method name based on SLURM_ARRAY_TASK_ID
 method=${methods[$SLURM_ARRAY_TASK_ID]}
 
