@@ -11,9 +11,9 @@
 #SBATCH --error logs/%x-%A.err    # STDERR  short: -e logs/%x-%A.out
 
 # Define the amount of memory required per node
-#SBATCH --mem 12GB
-#SBATCH --cpus-per-task=2 # cores
-#SBATCH --gres=localtmp:20 # DISK
+#SBATCH --mem 48GB
+#SBATCH --cpus-per-task=1 # cores
+#SBATCH --gres=localtmp:100 # DISK
 
 #SBATCH --propagate=NONE # to avoid a bug
 

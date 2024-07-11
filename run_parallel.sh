@@ -42,8 +42,7 @@ export PYTHONPATH=$PWD/src/amltk:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 # Define methods array
-# methods=("original" "autofeat" "autogluon" "bioautoml" "boruta" "correlationBasedFS" "featuretools" "h2o" "mljar" "openfe")
-methods=("1" "5" "14" "15" "16" "17" "18" "21" "22" "23" "24" "27" "28" "29" "31" "35" "36")
+methods=("original" "autofeat" "autogluon" "bioautoml" "boruta" "correlationBasedFS" "featuretools" "h2o" "mljar" "openfe")
 # Get the method name based on SLURM_ARRAY_TASK_ID
 method=${methods[$SLURM_ARRAY_TASK_ID]}
 

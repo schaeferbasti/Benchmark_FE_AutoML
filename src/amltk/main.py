@@ -12,9 +12,10 @@ from sklearn.preprocessing import *
 from src.amltk.classifiers.Classifiers import *
 from src.amltk.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
+from src.amltk.feature_engineering.OpenFE.OpenFE import get_openFE_features
 from src.amltk.optimizer.RandomSearch import RandomSearch
 
-from src.amltk.feature_engineering.FGCNN.FGCNN import get_xxx_features
+from src.amltk.feature_engineering.LightAutoML.LightAutoML import get_xxx_features
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -85,12 +86,12 @@ lgbm_regressor_pipeline = Sequential(preprocessing, lgbm_regressor, name="lgbm_r
 
 
 def main() -> None:
-    rerun = True                                # Decide if you want to re-execute the methods on a dataset or use the existing files
-    debugging = True                            # Decide if you want ot raise trial exceptions
+    rerun = False                                # Decide if you want to re-execute the methods on a dataset or use the existing files
+    debugging = False                            # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2                          # Number of feature engineering steps for autofeat
     feat_sel_steps = 5                          # Number of feature selection steps for autofeat
-    # working_dir = Path("src/amltk/results")   # Path if running on Cluster
-    working_dir = Path("results")               # Path for local execution
+    working_dir = Path("src/amltk/results")   # Path if running on Cluster
+    # working_dir = Path("results")               # Path for local execution
     random_seed = 42                            # Set seed
     folds = 1                                   # Set number of folds (normal 10, test 1)
 
@@ -135,40 +136,43 @@ def main() -> None:
         print("\n\n\n*******************************\n Fold " + str(fold) + "\n*******************************\n")
         inner_fold_seed = random_seed + fold
         # Iterate over all chosen datasets
-        for option in test_new_method_datasets:
+        for option in all_datasets:
             # Get train test split dataset
-            train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+            try:
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
 
-            ############## Feature Engineering with AdaFS ##############
+                ############## Feature Engineering with OpenFE ##############
 
-            print("\n\nxxx Data")
-            file_name = "results_" + str(name) + "_xxx_fold_" + str(fold) + ".parquet"
-            file = working_dir / file_name
-            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
-            if rerun or not os.path.isfile(file):
-                print("Run xxx Method on Dataset")
-                train_x_xxx, test_x_xxx = get_xxx_features(train_x, train_y, test_x, test_y)
+                print("\n\nOpenFE Data")
+                file_name = "results_" + str(name) + "_openfe_" + str(fold) + ".parquet"
+                file = working_dir / file_name
+                print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
+                if rerun or not os.path.isfile(file):
+                    print("Run xxx Method on Dataset")
+                    train_x_xxx, test_x_xxx = get_openFE_features(train_x, train_y, test_x, 1)
 
-                evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
-                                             on_trial_exception, task_hint)
+                    evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
+                                                 on_trial_exception, task_hint)
 
-                history_xxx = pipeline.optimize(
-                    target=evaluator.fn,
-                    metric=metric_definition,
-                    optimizer=optimizer_cls,
-                    seed=inner_fold_seed,
-                    process_memory_limit=per_process_memory_limit,
-                    process_walltime_limit=per_process_walltime_limit,
-                    working_dir=working_dir,
-                    max_trials=max_trials,
-                    timeout=max_time,
-                    display=display,
-                    wait=wait_for_all_workers_to_finish,
-                    n_workers=n_workers,
-                    on_trial_exception=on_trial_exception,
-                )
-                df_xxx = history_xxx.df()
-                safe_dataframe(df_xxx, working_dir, name, fold, "xxx")
+                    history_xxx = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        process_memory_limit=per_process_memory_limit,
+                        process_walltime_limit=per_process_walltime_limit,
+                        working_dir=working_dir,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception,
+                    )
+                    df_xxx = history_xxx.df()
+                    safe_dataframe(df_xxx, working_dir, name, fold, "openfe")
+            except Exception as e:
+                print(str(option) + ": " + str(e))
 
 
 if __name__ == "__main__":
