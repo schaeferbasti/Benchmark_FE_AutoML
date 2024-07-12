@@ -17,7 +17,6 @@ def get_xxx_features(train_x, train_y, test_x, test_y, name) -> tuple[
     d_list = [1, 2, 3, 4]
     s_list = [.2, .4, .6, .8, 1]  # top 20%, top 40%, ...
 
-
     df_train = pd.concat([train_x, train_y], axis=1)
     df_test = pd.concat([test_x, test_y], axis=1)
     df_original = pd.concat([df_train, df_test], axis=0)
@@ -29,12 +28,14 @@ def get_xxx_features(train_x, train_y, test_x, test_y, name) -> tuple[
     # Baseline
     print("Original Dim: ", df_original.shape[1] - 1)
 
+    TRM_dataset, TRM_binary_dataset, TRM_scaler = get_TRMs()
+
     # Selection
     df_selected_list = feature_selection(df_original, s_list)
     df = pd.DataFrame
     for s, df_selected in zip(s_list, df_selected_list):
         # Construction
-        df_engineered_list = feature_construction(df_selected, d_list)
+        df_engineered_list = feature_construction(df_selected, d_list, TRM_dataset, TRM_binary_dataset)
 
         # Evaluation
         print("Evaluation...")
@@ -43,24 +44,22 @@ def get_xxx_features(train_x, train_y, test_x, test_y, name) -> tuple[
             df = pd.concat([df_selected, df_engineered], axis=1)
 
             # Scale Features
-            df = feature_scaler(df)
+            df = feature_scaler(df, TRM_scaler)
     train_x, train_y, test_x, test_y = train_test_split(df)
     return train_x, test_x
 
 
-def feature_construction(df_original, d_list):
+def feature_construction(df_original, d_list, TRM_dataset, TRM_binary_dataset):
     df_engineered_list = []
     print("Construction...")
     df_engineered = df_original.copy(deep=True)
 
     max_d = max(d_list)
 
-    TRM_dataset, TRM_binary_dataset, TRM_scaler = get_TRMs()
-
     for d_i in range(1, max_d + 1):
         df_engineered = _feature_construction_step(df_engineered, TRM_dataset, TRM_binary_dataset)
         # Drop Original Features from engineered ones
-        df_engineered_d = df_engineered.drop(df_original.columns, axis = 1)
+        df_engineered_d = df_engineered.drop(df_original.columns, axis=1)
 
         if (d_i in d_list):
             print(f"d:{d_i} done.")
@@ -108,8 +107,8 @@ def feature_selection(df, s_list):
     return df_selected_list
 
 
-def feature_scaler(df):
-    X = df.drop(['class'], axis = 1)
+def feature_scaler(df, TRM_scaler):
+    X = df.drop(['class'], axis=1)
     y = df['class']
 
     column_names = X.columns.tolist().copy()
@@ -142,29 +141,28 @@ def preprocess_dataset(df):
 
 
 def get_TRMs():
-    with open('src/amltk/data/TRM_set.pkl', 'rb') as f:
+    with open('data/TRM_set.pkl', 'rb') as f:
         TRM_set = pickle.load(f)
     TRM_dataset = list()
     for i in range(len(TRM_set)):
         TRM_dataset.append(
-            np.append( TRM_set[i]['encoding'].ravel(), TRM_set[i]['top_t_index']))
+            np.append(TRM_set[i]['encoding'].ravel(), TRM_set[i]['top_t_index']))
     TRM_dataset = np.array(TRM_dataset)
 
-    # with open('data/TRM_binary_set.pkl', 'rb') as f:
-    with open('src/amltk/data/TRM_binary_set_maxf1f2.pkl', 'rb') as f:
+    with open('data/TRM_binary_set_maxf1f2.pkl', 'rb') as f:
         TRM_binary_set = pickle.load(f)
     TRM_binary_dataset = list()
     for i in range(len(TRM_binary_set)):
         TRM_binary_dataset.append(
-            np.append( TRM_binary_set[i]['encoding'].ravel(), TRM_binary_set[i]['top_t_index']))
+            np.append(TRM_binary_set[i]['encoding'].ravel(), TRM_binary_set[i]['top_t_index']))
     TRM_binary_dataset = np.array(TRM_binary_dataset)
 
-    with open('src/amltk/data/TRM_scaler_set.pkl', 'rb') as f:
+    with open('data/TRM_scaler_set.pkl', 'rb') as f:
         TRM_scaler_set = pickle.load(f)
     TRM_scaler_dataset = list()
     for i in range(len(TRM_scaler_set)):
         TRM_scaler_dataset.append(
-            np.append( TRM_scaler_set[i]['encoding'].ravel(), TRM_scaler_set[i]['top_t_index']))
+            np.append(TRM_scaler_set[i]['encoding'].ravel(), TRM_scaler_set[i]['top_t_index']))
     TRM_scaler_dataset = np.array(TRM_scaler_dataset)
 
     return TRM_dataset, TRM_binary_dataset, TRM_scaler_dataset
