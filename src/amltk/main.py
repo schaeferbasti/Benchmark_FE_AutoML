@@ -171,6 +171,8 @@ def main() -> None:
                     )
                     df_xxx = history_xxx.df()
                     safe_dataframe(df_xxx, working_dir, name, fold, "openfe")
+                else:
+                    print("File exists, going for next method")
             except Exception as e:
                 print(str(option) + ": " + str(e))
             os.remove("openfe_tmp_data.feather")
