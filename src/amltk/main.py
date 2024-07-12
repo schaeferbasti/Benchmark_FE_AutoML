@@ -91,7 +91,7 @@ def main() -> None:
     feat_eng_steps = 2                          # Number of feature engineering steps for autofeat
     feat_sel_steps = 5                          # Number of feature selection steps for autofeat
     working_dir = Path("src/amltk/results")   # Path if running on Cluster
-    # working_dir = Path("results")               # Path for local execution
+    working_dir = Path("results")               # Path for local execution
     random_seed = 42                            # Set seed
     folds = 1                                   # Set number of folds (normal 10, test 1)
 
@@ -171,11 +171,12 @@ def main() -> None:
                     )
                     df_xxx = history_xxx.df()
                     safe_dataframe(df_xxx, working_dir, name, fold, "openfe")
+                    os.remove("openfe_tmp_data.feather")
                 else:
                     print("File exists, going for next method")
             except Exception as e:
                 print(str(option) + ": " + str(e))
-            os.remove("openfe_tmp_data.feather")
+
 
 if __name__ == "__main__":
     main()
