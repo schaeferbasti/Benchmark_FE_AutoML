@@ -86,8 +86,8 @@ lgbm_regressor_pipeline = Sequential(preprocessing, lgbm_regressor, name="lgbm_r
 
 
 def main() -> None:
-    rerun = True                                # Decide if you want to re-execute the methods on a dataset or use the existing files
-    debugging = True                            # Decide if you want ot raise trial exceptions
+    rerun = False                                # Decide if you want to re-execute the methods on a dataset or use the existing files
+    debugging = False                            # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2                          # Number of feature engineering steps for autofeat
     feat_sel_steps = 5                          # Number of feature selection steps for autofeat
     working_dir = Path("src/amltk/results")   # Path if running on Cluster
@@ -125,7 +125,7 @@ def main() -> None:
         wait_for_all_workers_to_finish = False
     else:
         max_trials = 100000  # trade-off between exploration and resource usage
-        max_time = 3600  # one hour
+        max_time = 70000  # one hour
         n_workers = 4
         # Just mark the trial as fail and move on to the next one
         on_trial_exception = "continue"
