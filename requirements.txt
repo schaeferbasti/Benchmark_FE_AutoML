@@ -15,4 +15,5 @@ mljar-supervised
 openfe
 openml==0.14.2
 pyarrow
+pymfe
 ucimlrepo

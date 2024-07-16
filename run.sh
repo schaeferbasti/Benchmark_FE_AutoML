@@ -36,13 +36,13 @@ pip install -r requirements.txt
 echo "Requirements installed"
 
 # Set the PYTHONPATH to include the src directory
-export PYTHONPATH=$PWD/src/amltk:$PYTHONPATH
+export PYTHONPATH=$PWD/src:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 # Running the job
 start=`date +%s`
 
-python3 src/amltk/main.py $SLURM_ARRAY_TASK_ID $*
+python3 src/main.py $SLURM_ARRAY_TASK_ID $*
 
 end=`date +%s`
 runtime=$((end-start))
