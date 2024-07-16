@@ -162,6 +162,8 @@ def main(args):
                 pipeline_name = pipeline.name
                 print(pipeline_name)
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                print("Got dataset")
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 print(file_name)
                 file = working_dir / file_name
