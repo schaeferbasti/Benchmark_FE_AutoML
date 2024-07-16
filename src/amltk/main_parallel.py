@@ -160,10 +160,8 @@ def main(args):
                 int(option)
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
-                print("Got dataset")
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
-                print(file_name)
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
                     evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
@@ -195,7 +193,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
@@ -226,7 +225,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
@@ -258,7 +258,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
@@ -291,7 +292,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
@@ -322,7 +324,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
@@ -353,7 +356,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
@@ -384,7 +388,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
@@ -415,7 +420,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
@@ -446,7 +452,8 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
