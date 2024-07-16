@@ -158,16 +158,17 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     print(file_name)
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
                         print("Evaluator done")
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -181,7 +182,7 @@ def main(args):
                         )
                         print("History done")
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
                         print("Saved to df")
 
                 elif method.startswith("autofeat"):
@@ -192,15 +193,16 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps, feat_sel_steps)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -213,7 +215,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
                 elif method.startswith("autogluon"):
                     print("autogluon Data")
@@ -223,15 +225,16 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_autogluon_features(train_x, train_y, test_x)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -244,7 +247,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
 
                 elif method.startswith("bioautoml"):
@@ -255,16 +258,17 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_bioautoml_features(train_x, train_y, test_x)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception,
                                                      task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -277,7 +281,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
 
                 elif method.startswith("boruta"):
@@ -288,15 +292,16 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_boruta_features(train_x, train_y, test_x)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -309,7 +314,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
                 elif method.startswith("correlationBasedFS"):
                     print("CorrelationBasedFS Data")
@@ -319,15 +324,16 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_correlationbased_features(train_x, train_y, test_x)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -340,7 +346,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
                 elif method.startswith("featuretools"):
                     print("Featuretools Data")
@@ -350,15 +356,16 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_featuretools_features(train_x, train_y, test_x, test_y, name)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -371,7 +378,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
                 elif method.startswith("h2o"):
                     print("H2O Data")
@@ -381,15 +388,16 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_h2o_features(train_x, train_y, test_x)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -402,7 +410,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
                 elif method.startswith("mljar"):
                     print("MLJAR Data")
@@ -412,15 +420,16 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_mljar_features(train_x, train_y, test_x, num_features)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -433,7 +442,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
                 elif method.startswith("openfe"):
                     print("OpenFE Data")
@@ -443,15 +452,16 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    print(option)
+                    pipeline = pipeline[0]
+                    pipeline_name = pipeline[1]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
-                    file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         train_x, test_x = get_openFE_features(train_x, train_y, test_x, 1)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
-                        history = pipeline[0].optimize(
+                        history = pipeline.optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
                             optimizer=optimizer_cls,
@@ -464,7 +474,7 @@ def main(args):
                             on_trial_exception=on_trial_exception
                         )
                         df = history.df()
-                        safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
             except Exception as e:
                 print(e)
 
