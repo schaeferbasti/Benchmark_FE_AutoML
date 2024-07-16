@@ -158,8 +158,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     print(file_name)
@@ -193,8 +193,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
@@ -225,8 +225,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
@@ -258,8 +258,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
@@ -292,8 +292,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
@@ -324,8 +324,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
@@ -356,8 +356,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
@@ -388,8 +388,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
@@ -420,8 +420,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
@@ -452,8 +452,8 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
-                    pipeline = pipeline[0]
                     pipeline_name = pipeline[1]
+                    pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
