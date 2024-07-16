@@ -245,7 +245,6 @@ def main(args):
                     df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
-
             elif method.startswith("bioautoml"):
                 print("BioAutoML Data")
                 option = method[-2:]
@@ -278,7 +277,6 @@ def main(args):
                     )
                     df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
 
             elif method.startswith("boruta"):
                 print("boruta Data")
