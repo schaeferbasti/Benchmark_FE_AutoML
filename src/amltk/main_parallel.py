@@ -161,10 +161,12 @@ def main(args):
                     print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
+                    print(file_name)
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
+                        print("Evaluator done")
                         history = pipeline[0].optimize(
                             target=evaluator.fn,
                             metric=metric_definition,
@@ -177,8 +179,10 @@ def main(args):
                             n_workers=n_workers,
                             on_trial_exception=on_trial_exception
                         )
+                        print("History done")
                         df = history.df()
                         safe_dataframe(df, working_dir, name, fold, method, pipeline[1])
+                        print("Saved to df")
 
                 elif method.startswith("autofeat"):
                     print("autofeat Data")
