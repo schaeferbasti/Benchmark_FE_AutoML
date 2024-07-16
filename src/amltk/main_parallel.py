@@ -158,6 +158,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(pipeline)
                     pipeline_name = pipeline[1]
                     pipeline = pipeline[0]
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
