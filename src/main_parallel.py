@@ -158,6 +158,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -189,6 +190,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -221,6 +223,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -253,6 +256,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -286,6 +290,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -318,6 +323,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -350,6 +356,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -382,6 +389,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -414,6 +422,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
@@ -446,6 +455,7 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
+                method.replace(option, "")
                 pipeline_name = pipeline.name
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
