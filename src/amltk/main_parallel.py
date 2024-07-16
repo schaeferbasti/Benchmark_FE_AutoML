@@ -159,6 +159,7 @@ def main(args):
                     option = method[-1:]
                 int(option)
                 print(option)
+                print(type(option))
                 pipeline_name = pipeline.name
                 print(pipeline_name)
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
