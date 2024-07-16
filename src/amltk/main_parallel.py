@@ -158,11 +158,8 @@ def main(args):
                 except ValueError as e:
                     option = method[-1:]
                 int(option)
-                print(option)
-                print(type(option))
                 pipeline_name = pipeline.name
-                print(pipeline_name)
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print("Got dataset")
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
