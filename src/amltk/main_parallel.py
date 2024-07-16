@@ -96,7 +96,7 @@ lgbm_classifier_pipeline = Sequential(preprocessing, lgbm_classifier, name="lgbm
 def main(args):
     method = args.method
 
-    rerun = True  # Decide if you want to re-execute the methods on a dataset or use the existing files
+    rerun = False  # Decide if you want to re-execute the methods on a dataset or use the existing files
     debugging = False  # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2  # Number of feature engineering steps for autofeat
     feat_sel_steps = 5  # Number of feature selection steps for autofeat
@@ -158,6 +158,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -187,6 +188,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -217,6 +219,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -248,6 +251,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -280,6 +284,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -310,6 +315,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -340,6 +346,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -370,6 +377,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -400,6 +408,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
@@ -430,6 +439,7 @@ def main(args):
                     except ValueError as e:
                         option = method[-1:]
                     int(option)
+                    print(option)
                     train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
                     file_name = f"results_{name}_{method}_{pipeline[1]}_{fold}.parquet"
                     file = working_dir / file_name
