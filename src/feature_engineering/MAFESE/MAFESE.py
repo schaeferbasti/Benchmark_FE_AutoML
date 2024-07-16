@@ -25,10 +25,9 @@ def get_xxx_features(train_x, train_y, test_x, test_y, task_hint, num_features) 
     feat_selector = UnsupervisedSelector(problem=task_hint, method='DR', n_features=num_features)
     feat_selector.fit(train_x, train_y)
 
-    index = ['Row' + str(i) for i in range(1, len(train_x) + 1)]
+    X_train_selected = feat_selector.transform(data.X_train)
+    X_test_selected = feat_selector.transform(data.X_test)
 
-    train_x = feat_selector.transform(train_x)
-    # test_x = feat_selector.transform(test_x)
-    train_x = pd.DataFrame(train_x)
-    test_x = pd.DataFrame(test_x)
+    train_x = pd.DataFrame(X_train_selected)
+    test_x = pd.DataFrame(X_test_selected)
     return train_x, test_x
