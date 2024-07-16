@@ -1,17 +1,17 @@
 # https://github.com/thieu1995/mafese
+
 import numpy as np
 import pandas as pd
 from mafese import Data
 from mafese import UnsupervisedSelector
 
-def get_xxx_features(train_x, train_y, test_x, test_y, task_hint, num_features) -> tuple[
+def get_xxx_features(train_x, train_y, test_x, test_y, task_hint, name, num_features) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
-    column_names = train_x.columns
     X = np.array(pd.concat([train_x, test_x], axis=0))
     y = np.array(pd.concat([train_y, test_y], axis=0))
-    data = Data(X, y)
+    data = Data(X, y, name)
 
     data.split_train_test(test_size=0.1, inplace=True)
 

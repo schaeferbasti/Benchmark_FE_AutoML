@@ -12,10 +12,9 @@ from sklearn.preprocessing import *
 from src.classifiers.Classifiers import *
 from src.datasets.Datasets import *
 from src.evaluation.Evaluator import get_cv_evaluator
-from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
 from src.optimizer.RandomSearch import RandomSearch
 
-from src.feature_engineering.MACFE.MACFE import get_xxx_features
+from src.feature_engineering.MAFESE.MAFESE import get_xxx_features
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -90,6 +89,7 @@ def main() -> None:
     debugging = True                            # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2                          # Number of feature engineering steps for autofeat
     feat_sel_steps = 5                          # Number of feature selection steps for autofeat
+    num_features = 20                           # Number of Features for MAFESE in range(1, 20)
     working_dir = Path("src/results")     # Path if running on Cluster
     working_dir = Path("results")               # Path for local execution
     random_seed = 42                            # Set seed
@@ -146,7 +146,7 @@ def main() -> None:
             print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
             if rerun or not os.path.isfile(file):
                 print("Run xxx Method on Dataset")
-                train_x_xxx, test_x_xxx = get_xxx_features(train_x, train_y, test_x, test_y, name)
+                train_x_xxx, test_x_xxx = get_xxx_features(train_x, train_y, test_x, test_y, task_hint, name, num_features)
 
                 evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
                                              on_trial_exception, task_hint)
