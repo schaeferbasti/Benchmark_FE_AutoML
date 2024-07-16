@@ -1,6 +1,6 @@
 # https://github.com/fuyuanlyu/AutoFS-in-CTR/tree/main/LPFS
 import pickle
-
+import os
 import numpy as np
 import pandas as pd
 from causalnex.structure import DAGClassifier
@@ -16,7 +16,6 @@ def get_xxx_features(train_x, train_y, test_x, test_y, name) -> tuple[
 ]:
     d_list = [1, 2, 3, 4]
     s_list = [.2, .4, .6, .8, 1]  # top 20%, top 40%, ...
-
     df_train = pd.concat([train_x, train_y], axis=1)
     df_test = pd.concat([test_x, test_y], axis=1)
     df_original = pd.concat([df_train, df_test], axis=0)
@@ -25,27 +24,20 @@ def get_xxx_features(train_x, train_y, test_x, test_y, name) -> tuple[
     print(f"\n*** Starting MACFE, d:{d_list}, s:{s_list} ***\n")
     print(f"Working on {name}")
 
-    # Baseline
-    print("Original Dim: ", df_original.shape[1] - 1)
-
+    print("Original Dim: ", df_train.shape[1] - 1)
     TRM_dataset, TRM_binary_dataset, TRM_scaler = get_TRMs()
 
-    # Selection
+    df_fe = pd.DataFrame()
     df_selected_list = feature_selection(df_original, s_list)
-    df = pd.DataFrame
     for s, df_selected in zip(s_list, df_selected_list):
-        # Construction
         df_engineered_list = feature_construction(df_selected, d_list, TRM_dataset, TRM_binary_dataset)
-
-        # Evaluation
         print("Evaluation...")
         for d, df_engineered in zip(d_list, df_engineered_list):
-            # Concatenate Selected and Engineered features
-            df = pd.concat([df_selected, df_engineered], axis=1)
+            df_fe = pd.concat([df_selected, df_engineered], axis=1)
 
-            # Scale Features
-            df = feature_scaler(df, TRM_scaler)
-    train_x, train_y, test_x, test_y = train_test_split(df)
+    X = df_fe.drop(columns=["class"])
+    y = df_fe["class"]
+    train_x, test_x, train_y, test_y = train_test_split(X, y, test_size=0.1)
     return train_x, test_x
 
 
@@ -141,7 +133,7 @@ def preprocess_dataset(df):
 
 
 def get_TRMs():
-    with open('data/TRM_set.pkl', 'rb') as f:
+    with open("src/feature_engineering/MACFE/data/TRM_set.pkl", 'rb') as f:
         TRM_set = pickle.load(f)
     TRM_dataset = list()
     for i in range(len(TRM_set)):
@@ -149,7 +141,7 @@ def get_TRMs():
             np.append(TRM_set[i]['encoding'].ravel(), TRM_set[i]['top_t_index']))
     TRM_dataset = np.array(TRM_dataset)
 
-    with open('data/TRM_binary_set_maxf1f2.pkl', 'rb') as f:
+    with open('src/feature_engineering/MACFE/data/TRM_binary_set_maxf1f2.pkl', 'rb') as f:
         TRM_binary_set = pickle.load(f)
     TRM_binary_dataset = list()
     for i in range(len(TRM_binary_set)):
@@ -157,7 +149,7 @@ def get_TRMs():
             np.append(TRM_binary_set[i]['encoding'].ravel(), TRM_binary_set[i]['top_t_index']))
     TRM_binary_dataset = np.array(TRM_binary_dataset)
 
-    with open('data/TRM_scaler_set.pkl', 'rb') as f:
+    with open('src/feature_engineering/MACFE/data/TRM_scaler_set.pkl', 'rb') as f:
         TRM_scaler_set = pickle.load(f)
     TRM_scaler_dataset = list()
     for i in range(len(TRM_scaler_set)):
