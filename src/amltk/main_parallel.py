@@ -166,7 +166,6 @@ def main(args):
                 if rerun or not os.path.isfile(file):
                     evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                  on_trial_exception, task_hint)
-                    print("Evaluator done")
                     history = pipeline.optimize(
                         target=evaluator.fn,
                         metric=metric_definition,
@@ -179,10 +178,8 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    print("History done")
                     df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-                    print("Saved to df")
 
             elif method.startswith("autofeat"):
                 print("autofeat Data")
