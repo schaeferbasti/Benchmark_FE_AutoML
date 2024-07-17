@@ -390,7 +390,7 @@ def main(df):
         sleep(5)
         conns = {}
         for port in ports:
-            conns[port] = rpyc.connect('localhost', port)
+            conns[port] = rpyc.connect("localhost", port)
         m = multiprocessing.Manager()
         lock = m.Lock()
         ports = m.dict(zip(ports, port_state))
