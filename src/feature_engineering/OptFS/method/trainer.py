@@ -5,17 +5,15 @@ from pathlib import Path
 import numpy as np
 from sklearn import metrics
 from src.feature_engineering.OptFS.method.utils import trainUtils
-from src.feature_engineering.OptFS.method.modules.models import DeepFM
-
 
 parser = argparse.ArgumentParser(description="optfs trainer")
-parser.add_argument("dataset", type=str, help="specify dataset")
-parser.add_argument("model", type=str, help="specify model")
+parser.add_argument("dataset", type=str, default="Criteo", help="specify dataset")
+parser.add_argument("model", type=str, default="DeepFM", help="specify model")
 
 # dataset information
-parser.add_argument("--feature", type=int, help="feature number", required=True)
-parser.add_argument("--field", type=int, help="field number", required=True)
-parser.add_argument("--data_dir", type=str, help="data directory", required=True)
+parser.add_argument("--feature", type=int, default=10, help="feature number", required=True)
+parser.add_argument("--field", type=int, default=10, help="field number", required=True)
+parser.add_argument("--data_dir", type=str, default="src/feature_engineering/", help="data directory", required=True)
 
 # training hyperparameters
 parser.add_argument("--lr", type=float, help="learning rate", default=3e-5)
@@ -81,13 +79,13 @@ class Trainer(object):
             prob = torch.sigmoid(logit).detach().cpu().numpy()
         return prob
 
-    def train(self, epochs, df, model, labels):
+    def train(self, epochs):
         step = 0
         cur_auc = 0.0
         for epoch_idx in range(int(epochs)):
             train_loss = .0
             step = 0
-            for feature, label in labels:
+            for feature, label in self.dataloader.get_data("train", batch_size=self.bs):
                 train_loss += self.train_on_batch(label, feature)
                 step += 1
             train_loss /= step
@@ -97,9 +95,9 @@ class Trainer(object):
             early_stop = False
             if val_auc > cur_auc:
                 cur_auc = val_auc
-                torch.save(self.network.state_dict(), model)
+                torch.save(self.network.state_dict(), self.model_dir)
             else:
-                self.network.load_state_dict(torch.load(model))
+                self.network.load_state_dict(torch.load(self.model_dir))
                 self.network.to(self.device)
                 early_stop = True
                 te_auc, te_loss = self.evaluate("test")
@@ -107,12 +105,12 @@ class Trainer(object):
                       format(epoch=epoch_idx, te_auc=te_auc, te_loss=te_loss))
                 break
         if not early_stop:
-            te_auc, te_loss = self.evaluate(labels, "test",)
+            te_auc, te_loss = self.evaluate("test")
             print("Final Test AUC:{te_auc:.6f}, Test Loss:{te_loss:.6f}".format(te_auc=te_auc, te_loss=te_loss))
 
-    def evaluate(self, labels, on: str):
+    def evaluate(self, on: str):
         preds, trues = [], []
-        for feature, label in labels:
+        for feature, label in self.dataloader.get_data(on, batch_size=self.bs * 10):
             pred = self.eval_on_batch(feature)
             label = label.detach().cpu().numpy()
             preds.append(pred)
@@ -124,7 +122,7 @@ class Trainer(object):
         return auc, loss
 
 
-def main(df):
+def main():
     model_opt = {
         "latent_dim": args.dim, "feat_num": args.feature, "field_num": args.field,
         "mlp_dropout": args.mlp_dropout, "use_bn": args.mlp_bn, "mlp_dims": args.mlp_dims,
@@ -135,8 +133,6 @@ def main(df):
            "bsize": args.bsize, "epoch": args.max_epoch, "optimizer": args.optim, "data_dir": args.data_dir,
            "save_dir": args.save_dir, "cuda": args.cuda
            }
-
+    print(opt)
     trainer = Trainer(opt)
-    labels = df.columns
-    model = DeepFM(opt)
-    trainer.train(args.max_epoch, df, model, labels)
+    trainer.train(args.max_epoch)

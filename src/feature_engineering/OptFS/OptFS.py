@@ -13,6 +13,6 @@ def get_xxx_features(train_x, train_y, test_x, test_y) -> tuple[
     df_test = pd.concat([test_x, test_y], axis=1)
     df = pd.concat([df_train, df_test], axis=0)
 
-    main(df)
+    main()
 
     return train_x, test_x

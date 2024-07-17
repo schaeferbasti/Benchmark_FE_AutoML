@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 import pandas as pd
 import numpy as np
-parser = argparse.ArgumentParser(description='Transfrom original data to TFRecord')
+parser = argparse.ArgumentParser(description='Transform original data to TFRecord')
 
 parser.add_argument('--label', default="Label", type=str)
 parser.add_argument("--store_stat", action="store_true")
