@@ -12,12 +12,6 @@ def get_boruta_features(train_x, train_y, test_x) -> tuple[
     rf = RandomForestClassifier(n_jobs=-1, class_weight='balanced', max_depth=5)
     feat_selector = BorutaPy(rf, n_estimators="auto", verbose=2)
 
-    """
-    feat_selector.fit(train_x, train_y)
-    train_x = feat_selector.transform(train_x)
-    test_x = feat_selector.transform(test_x)
-    """
-
     train_x_np = train_x.values
     train_y_np = train_y.values
     test_x_np = test_x.values
