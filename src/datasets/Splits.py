@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 def _save_stratified_splits(
-    _splitter: StratifiedKFold | RepeatedStratifiedKFold,
-    x: np.ndarray,
-    y: np.ndarray,
-    n_splits: int,
-    auto_fix_stratified_splits: bool = False,
+        _splitter: StratifiedKFold | RepeatedStratifiedKFold,
+        x: np.ndarray,
+        y: np.ndarray,
+        n_splits: int,
+        auto_fix_stratified_splits: bool = False,
 ) -> list[list[list[int], list[int]]]:
     """Fix from AutoGluon to avoid unsafe splits for classification if less than n_splits instances exist for all classes.
 
@@ -49,10 +49,10 @@ def _save_stratified_splits(
 
 
 def fix_split_by_dropping_classes(
-    x: np.ndarray,
-    y: np.ndarray,
-    n_splits: int,
-    spliter_kwargs: dict,
+        x: np.ndarray,
+        y: np.ndarray,
+        n_splits: int,
+        spliter_kwargs: dict,
 ) -> list[list[list[int], list[int]]]:
     """Fixes stratifed splits for edge case.
 
@@ -97,12 +97,12 @@ def fix_split_by_dropping_classes(
 
 
 def assert_valid_splits(
-    splits: list[list[list[int], list[int]]],
-    y: np.ndarray,
-    *,
-    non_empty: bool = True,
-    each_selected_class_in_each_split_subset: bool = True,
-    same_length_training_splits: bool = True,
+        splits: list[list[list[int], list[int]]],
+        y: np.ndarray,
+        *,
+        non_empty: bool = True,
+        each_selected_class_in_each_split_subset: bool = True,
+        same_length_training_splits: bool = True,
 ):
     """Verify that the splits are valid."""
     if non_empty:
@@ -131,8 +131,8 @@ def assert_valid_splits(
 
 
 def _equalize_training_splits(
-    input_splits: list[list[list[int], list[int]]],
-    rng: np.random.RandomState,
+        input_splits: list[list[list[int], list[int]]],
+        rng: np.random.RandomState,
 ) -> list[list[list[int], list[int]]]:
     """Equalize training splits by duplicating samples in too small splits."""
     splits = input_splits[:]
@@ -150,15 +150,15 @@ def _equalize_training_splits(
 
 
 def get_cv_split_for_data(
-    x: np.ndarray,
-    y: np.ndarray,
-    splits_seed: int,
-    n_splits: int,
-    *,
-    stratified_split: bool,
-    safety_shuffle: bool = True,
-    auto_fix_stratified_splits: bool = False,
-    force_same_length_training_splits: bool = False,
+        x: np.ndarray,
+        y: np.ndarray,
+        splits_seed: int,
+        n_splits: int,
+        *,
+        stratified_split: bool,
+        safety_shuffle: bool = True,
+        auto_fix_stratified_splits: bool = False,
+        force_same_length_training_splits: bool = False,
 ) -> list[list[list[int], list[int]]] | str:
     """Safety shuffle and generate (safe) splits.
 
@@ -260,3 +260,30 @@ def get_cv_split_for_data(
             split[1] = sorted(p[split[1]])
 
     return splits
+
+
+def get_splits(train_x, train_y, test_x, test_y) -> tuple[
+    pd.DataFrame,
+    pd.Series,
+    pd.DataFrame,
+    pd.Series
+]:
+
+    X = pd.concat([train_x, test_x], axis=0)
+    y = pd.concat([train_y, test_y], axis=0)
+    X = np.array(X)
+    y = np.array(y)
+
+    splits = get_cv_split_for_data(X,
+                                   y,
+                                   splits_seed=42,
+                                   n_splits=2,
+                                   stratified_split=False,
+                                   #auto_fix_stratified_splits=True
+    )
+
+    train_x = pd.DataFrame(X[splits[0][0]])
+    train_y = pd.Series(y[splits[0][0]])
+    test_x = pd.DataFrame(X[splits[0][1]])
+    test_y = pd.Series(y[splits[0][1]])
+    return train_x, train_y, test_x, test_y
