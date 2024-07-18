@@ -15,11 +15,14 @@ from sklearn.metrics import make_scorer
 global global_train_y
 
 
-def get_bioautoml_features(train_x, train_y, test_x) -> tuple[
+def get_bioautoml_features(train_x, train_y, test_x, estimations) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
-    estimations = 50
+    for column in train_x.select_dtypes(include=['object', 'category']).columns:
+        train_x[column], uniques = pd.factorize(train_x[column])
+    for column in test_x.select_dtypes(include=['object', 'category']).columns:
+        test_x[column], uniques = pd.factorize(test_x[column])
     train_x, test_x = feature_engineering(estimations, train_x, train_y, test_x)
     return train_x, test_x
 

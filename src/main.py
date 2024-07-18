@@ -14,10 +14,9 @@ from src.datasets.Datasets import *
 from src.evaluation.Evaluator import get_cv_evaluator
 from src.optimizer.RandomSearch import RandomSearch
 
-from src.feature_engineering.MAFESE.MAFESE import get_xxx_features
+from src.feature_engineering.BioAutoML.BioAutoML import get_bioautoml_features
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
 
 preprocessing = Split(
     {
@@ -85,22 +84,25 @@ lgbm_regressor_pipeline = Sequential(preprocessing, lgbm_regressor, name="lgbm_r
 
 
 def main() -> None:
-    rerun = True                                # Decide if you want to re-execute the methods on a dataset or use the existing files
-    debugging = True                            # Decide if you want ot raise trial exceptions
-    feat_eng_steps = 2                          # Number of feature engineering steps for autofeat
-    feat_sel_steps = 5                          # Number of feature selection steps for autofeat
-    num_features = 20                           # Number of Features for MAFESE in range(1, 20)
-    working_dir = Path("src/results")     # Path if running on Cluster
-    working_dir = Path("results")               # Path for local execution
-    random_seed = 42                            # Set seed
-    folds = 1                                   # Set number of folds (normal 10, test 1)
+    rerun = True        # Decide if you want to re-execute the methods on a dataset or use the existing files
+    debugging = True    # Decide if you want ot raise trial exceptions
+
+    feat_eng_steps = 2  # Number of feature engineering steps for autofeat
+    feat_sel_steps = 5  # Number of feature selection steps for autofeat
+    estimations = 50    # Number of estimations for BioAutoML, default = 50
+    num_features = 20   # Number of Features for MAFESE in range(1, 20)
+
+    working_dir = Path("src/results")  # Path if running on Cluster
+    working_dir = Path("results")  # Path for local execution
+    random_seed = 42  # Set seed
+    folds = 1  # Set number of folds (normal 10, test 1)
 
     # Choose set of datasets
     all_datasets = [1, 5, 14, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 31, 35, 36]  # 17
     small_datasets = [1, 5, 14, 16, 17, 18, 21, 27, 31, 35, 36]
     smallest_datasets = [14, 16, 17, 21, 35]  # n ~ 1000, p ~ 15
     big_datasets = [15, 22, 23, 24, 28, 29]
-    test_new_method_datasets = [18]  # [18]  # [16]
+    test_new_method_datasets = [1]  # [18]  # [18]  # [16]
 
     optimizer_cls = RandomSearch
     pipeline = lgbm_classifier_pipeline
@@ -146,11 +148,9 @@ def main() -> None:
             print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
             if rerun or not os.path.isfile(file):
                 print("Run xxx Method on Dataset")
-                train_x_xxx, test_x_xxx = get_xxx_features(train_x, train_y, test_x, test_y, task_hint, name, num_features)
-
+                train_x_xxx, test_x_xxx = get_bioautoml_features(train_x, train_y, test_x, estimations)
                 evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
                                              on_trial_exception, task_hint)
-
                 history_xxx = pipeline.optimize(
                     target=evaluator.fn,
                     metric=metric_definition,
@@ -167,7 +167,7 @@ def main() -> None:
                     on_trial_exception=on_trial_exception,
                 )
                 df_xxx = history_xxx.df()
-                safe_dataframe(df_xxx, working_dir, name, fold, "xxx")
+                safe_dataframe(df_xxx, working_dir, name, fold, "bioautoml")
             else:
                 print("File exists, going for next method")
 

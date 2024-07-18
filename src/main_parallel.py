@@ -102,6 +102,7 @@ def main(args):
     feat_sel_steps = 5  # Number of feature selection steps for autofeat
     n_jobs = 1  # Number of jobs for OpenFE
     num_features = 500  # Number of features for MLJAR
+    estimations = 50    # Number of estimations for BioAutoML, default = 50
     working_dir = Path("src/results")  # Path if running on Cluster
     # working_dir = Path("results")  # Path for local execution
     random_seed = 42  # Set seed
@@ -155,7 +156,7 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
@@ -187,19 +188,30 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
-                print(name)
-                file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x, test_x = get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps, feat_sel_steps)
-                    evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
-                                                 on_trial_exception, task_hint)
+                try:
+                    train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                    print(name)
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x, test_x = get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps, feat_sel_steps)
+                        evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
+                                                     on_trial_exception, task_hint)
+                except:
+                    train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                    print(name)
+                    file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
+                    file = working_dir / file_name
+                    if rerun or not os.path.isfile(file):
+                        train_x, test_x = get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps-1,
+                                                                feat_sel_steps)
+                        evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
+                                                     on_trial_exception, task_hint)
                     history = pipeline.optimize(
                         target=evaluator.fn,
                         metric=metric_definition,
@@ -220,7 +232,7 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
@@ -253,7 +265,7 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
@@ -263,7 +275,7 @@ def main(args):
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
-                    train_x, test_x = get_bioautoml_features(train_x, train_y, test_x)
+                    train_x, test_x = get_bioautoml_features(train_x, train_y, test_x, estimations)
                     evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                  on_trial_exception,
                                                  task_hint)
@@ -287,7 +299,7 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
@@ -314,13 +326,45 @@ def main(args):
                     )
                     df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
+            elif method.startswith("caafe"):
+                print("CAAFE Data")
+                option = method[-2:]
+                try:
+                    int(option)
+                except ValueError:
+                    option = method[-1:]
+                int(option)
+                method.replace(option, "")
+                pipeline_name = pipeline.name
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                print(name)
+                file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
+                file = working_dir / file_name
+                if rerun or not os.path.isfile(file):
+                    train_x, test_x = get_correlationbased_features(train_x, train_y, test_x)
+                    evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
+                                                 on_trial_exception, task_hint)
+                    history = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception
+                    )
+                    df = history.df()
+                    safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("correlationBasedFS"):
                 print("CorrelationBasedFS Data")
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
@@ -353,7 +397,7 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
@@ -386,7 +430,7 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
@@ -419,7 +463,7 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
@@ -452,7 +496,7 @@ def main(args):
                 option = method[-2:]
                 try:
                     int(option)
-                except ValueError as e:
+                except ValueError:
                     option = method[-1:]
                 int(option)
                 method.replace(option, "")
