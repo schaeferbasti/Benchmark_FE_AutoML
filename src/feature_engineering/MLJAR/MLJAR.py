@@ -37,13 +37,18 @@ def get_mljar_features(train_x, train_y, test_x, num_features) -> tuple[
 
     preprocessor = GoldenFeaturesTransformer()
 
-    # train_x, test_x = preprocess_data(train_x, test_x)
-    # train_y = preprocess_target(train_y)
-
     cols = train_x.columns
     feature_list, name_list = create_feature_list(cols, num_features)
     preprocessor._new_features = feature_list
     preprocessor._new_columns = name_list
+
+    for column in train_x.select_dtypes(include=['object', 'category']).columns:
+        train_x[column], uniques = pd.factorize(train_x[column])
+    for column in test_x.select_dtypes(include=['object', 'category']).columns:
+        test_x[column], uniques = pd.factorize(test_x[column])
+    train_y = pd.DataFrame(train_y)
+    for column in train_y.select_dtypes(include=['object', 'category']).columns:
+        train_y[column], uniques = pd.factorize(train_y[column])
 
     preprocessor.fit(train_x, train_y)
     train_x = preprocessor.transform(train_x)
@@ -52,11 +57,5 @@ def get_mljar_features(train_x, train_y, test_x, num_features) -> tuple[
     test_x = pd.DataFrame(test_x)
 
     print(train_x.shape, test_x.shape)
-
-    """
-    # MLJAR with AutoML with generation of Golden Features
-    mljar = AutoML(golden_features=True, kmeans_features=True, features_selection=True)
-    mljar.fit(train_x, train_y)
-    """
 
     return train_x, test_x
