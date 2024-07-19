@@ -23,7 +23,11 @@ def get_bioautoml_features(train_x, train_y, test_x, estimations) -> tuple[
         train_x[column], uniques = pd.factorize(train_x[column])
     for column in test_x.select_dtypes(include=['object', 'category']).columns:
         test_x[column], uniques = pd.factorize(test_x[column])
-    train_x, test_x = feature_engineering(estimations, train_x, train_y, test_x)
+    train_y = pd.DataFrame(train_y)
+    for column in train_y.select_dtypes(include=['object', 'category']).columns:
+        train_y[column], uniques = pd.factorize(train_y[column])
+
+    train_x, test_x = feature_engineering(estimations, train_x, train_y.values.ravel(), test_x)
     return train_x, test_x
 
 
