@@ -42,8 +42,8 @@ def get_h2o_features(train_x, train_y, test_x) -> tuple[
     train_x = X_train_h2o.as_data_frame(use_pandas=True)
     test_x = X_test_h2o.as_data_frame(use_pandas=True)
 
-    train_x = train_x.round(3)
-    test_x = test_x.round(3)
+    # train_x = train_x.round(3)
+    # test_x = test_x.round(3)
 
     train_x.replace(-np.inf, 0, inplace=True)
     test_x.replace(-np.inf, 0, inplace=True)
