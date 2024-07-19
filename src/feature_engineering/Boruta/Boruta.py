@@ -12,6 +12,14 @@ def get_boruta_features(train_x, train_y, test_x) -> tuple[
     rf = RandomForestClassifier(n_jobs=-1, class_weight='balanced', max_depth=5)
     feat_selector = BorutaPy(rf, n_estimators="auto", verbose=2)
 
+    for column in train_x.select_dtypes(include=['object', 'category']).columns:
+        train_x[column], uniques = pd.factorize(train_x[column])
+    for column in test_x.select_dtypes(include=['object', 'category']).columns:
+        test_x[column], uniques = pd.factorize(test_x[column])
+    train_y = pd.DataFrame(train_y)
+    for column in train_y.select_dtypes(include=['object', 'category']).columns:
+        train_y[column], uniques = pd.factorize(train_y[column])
+
     train_x_np = train_x.values
     train_y_np = train_y.values
     test_x_np = test_x.values
