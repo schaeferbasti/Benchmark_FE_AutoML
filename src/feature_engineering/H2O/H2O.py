@@ -1,15 +1,22 @@
 # https://github.com/h2oai/h2o-3
-
+import numpy as np
 import pandas as pd
 
 from h2o.assembly import *
 from h2o.transforms.preprocessing import *
+
+from src.datasets.Datasets import preprocess_data
 
 
 def get_h2o_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
+    for column in train_x.select_dtypes(include=['object', 'category']).columns:
+        train_x[column], uniques = pd.factorize(train_x[column])
+    for column in test_x.select_dtypes(include=['object', 'category']).columns:
+        test_x[column], uniques = pd.factorize(test_x[column])
+
     h2o.init()
 
     X_train_h2o = h2o.H2OFrame(train_x)
@@ -34,4 +41,11 @@ def get_h2o_features(train_x, train_y, test_x) -> tuple[
 
     train_x = X_train_h2o.as_data_frame(use_pandas=True)
     test_x = X_test_h2o.as_data_frame(use_pandas=True)
+
+    train_x = train_x.round(3)
+    test_x = test_x.round(3)
+
+    train_x.replace(-np.inf, 0, inplace=True)
+    test_x.replace(-np.inf, 0, inplace=True)
+
     return train_x, test_x
