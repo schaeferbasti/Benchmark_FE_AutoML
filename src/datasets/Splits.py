@@ -268,6 +268,8 @@ def get_splits(train_x, train_y, test_x, test_y) -> tuple[
     pd.DataFrame,
     pd.Series
 ]:
+    column_names = train_x.columns
+    target_name = train_y.name
 
     X = pd.concat([train_x, test_x], axis=0)
     y = pd.concat([train_y, test_y], axis=0)
@@ -283,7 +285,13 @@ def get_splits(train_x, train_y, test_x, test_y) -> tuple[
     )
 
     train_x = pd.DataFrame(X[splits[0][0]])
+    train_x.columns = column_names
     train_y = pd.Series(y[splits[0][0]])
+    train_y.name = target_name
+
     test_x = pd.DataFrame(X[splits[0][1]])
+    test_x.columns = column_names
     test_y = pd.Series(y[splits[0][1]])
+    test_y.name = target_name
+
     return train_x, train_y, test_x, test_y
