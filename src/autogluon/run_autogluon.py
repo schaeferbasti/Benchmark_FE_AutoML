@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from src.datasets.Splits import get_splits
 
 datasets = ["abalone"]
-methods = ["autofeat"]
+methods = ["autofeat", "autogluon", "bioautoml", "boruta", "correlationbased", "featuretools", "featurewiz", "h2o", "macfe", "mafese", "mljar", "openfe"]
 
 for name in datasets:
     for method in methods:
