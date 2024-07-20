@@ -11,11 +11,10 @@ from sklearn.preprocessing import *
 
 from src.amltk.classifiers.Classifiers import *
 from src.datasets.Datasets import *
-from src.datasets.Splits import get_splits
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
 from src.amltk.optimizer.RandomSearch import RandomSearch
 
-from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
+from src.feature_engineering.Boruta.Boruta import get_boruta_features
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -150,7 +149,7 @@ def main() -> None:
             if rerun or not os.path.isfile(file):
                 print("Run xxx Method on Dataset")
                 # train_x, train_y, test_x, test_y = get_splits(train_x, train_y, test_x, test_y)
-                train_x_xxx, test_x_xxx = get_openFE_features(train_x, train_y, test_x, 1)
+                train_x_xxx, test_x_xxx = get_boruta_features(train_x, train_y, test_x)
                 evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
                                              on_trial_exception, task_hint)
                 history_xxx = pipeline.optimize(

@@ -1,5 +1,5 @@
-# https://github.com/numb3r33/fgcnn
-from boruta import BorutaPy
+# https://github.com/scikit-learn-contrib/boruta_py
+from src.feature_engineering.Boruta.method import BorutaPy
 
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
