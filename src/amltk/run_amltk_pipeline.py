@@ -9,11 +9,11 @@ from amltk.pipeline import Choice, Sequential, Split
 from sklearn.metrics import get_scorer
 from sklearn.preprocessing import *
 
-from src.classifiers.Classifiers import *
+from src.amltk.classifiers.Classifiers import *
 from src.datasets.Datasets import *
 from src.datasets.Splits import get_splits
-from src.evaluation.Evaluator import get_cv_evaluator
-from src.optimizer.RandomSearch import RandomSearch
+from src.amltk.evaluation.Evaluator import get_cv_evaluator
+from src.amltk.optimizer.RandomSearch import RandomSearch
 
 from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
 
@@ -93,8 +93,7 @@ def main() -> None:
     estimations = 50    # Number of estimations for BioAutoML, default = 50
     num_features = 20   # Number of Features for MAFESE in range(1, 20)
 
-    working_dir = Path("src/results")  # Path if running on Cluster
-    working_dir = Path("results")  # Path for local execution
+    working_dir = Path("results")  # Path
     random_seed = 42  # Set seed
     folds = 1  # Set number of folds (normal 10, test 1)
 
