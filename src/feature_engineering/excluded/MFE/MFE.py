@@ -10,7 +10,12 @@ def get_mfe_features(train_x, train_y, test_x) -> tuple[
 ]:
     mfe = MFE()
     mfe.fit(np.array(train_x), np.array(train_y))
-    train_x = pd.DataFrame(train_x, np.array(mfe.extract()[1]))
-    mfe.fit(np.array(test_x))
-    test_x = pd.DataFrame(test_x, np.array(mfe.extract()[1]))
+    extract = mfe.extract()
+    print(extract)
+    extract_names = mfe.extract_metafeature_names()
+    print(extract_names)
+
+    mtfs_all = MFE.valid_metafeatures()
+    for mtf in mtfs_all:
+        print(mtf.metafeature_name)
     return train_x, test_x
