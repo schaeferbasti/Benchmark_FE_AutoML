@@ -4,7 +4,7 @@ import pandas as pd
 from pymfe.mfe import MFE
 
 
-def get_xxx_features(train_x, train_y, test_x) -> tuple[
+def get_mfe_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:

@@ -6,7 +6,7 @@ from mafese import Data
 from mafese import UnsupervisedSelector
 from mafese import get_dataset
 
-def get_xxx_features(train_x, train_y, test_x, test_y, task_hint, name, num_features) -> tuple[
+def get_mafese_features(train_x, train_y, test_x, test_y, name, num_features) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:

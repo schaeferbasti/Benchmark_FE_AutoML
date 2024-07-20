@@ -10,7 +10,7 @@ from sklearn.preprocessing import LabelEncoder
 from src.feature_engineering.MACFE.method.transform import transform_unary, transform_binary, transform_scaler
 
 
-def get_xxx_features(train_x, train_y, test_x, test_y, name) -> tuple[
+def get_macfe_features(train_x, train_y, test_x, test_y, name) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:

@@ -5,7 +5,7 @@ import pandas as pd
 from src.feature_engineering.FETCH.method.main_attention import main
 
 
-def get_xxx_features(train_x, train_y, test_x) -> tuple[
+def get_fetch_features(train_x, train_y, test_x) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:

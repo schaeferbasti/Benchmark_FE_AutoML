@@ -102,6 +102,34 @@ def preprocess_target(series) -> pd.DataFrame:
     return series
 
 
+def get_amlb_dataset(openml_task_id) -> tuple[
+    pd.DataFrame,
+    pd.DataFrame,
+    pd.DataFrame | pd.Series,
+    pd.DataFrame | pd.Series,
+    str,
+    str
+]:
+    outer_fold_number = 0
+    task = openml.tasks.get_task(
+        openml_task_id,
+        download_splits=True,
+        download_data=True,
+        download_qualities=True,
+        download_features_meta_data=True,
+    )
+    train_idx, test_idx = task.get_train_test_split_indices(fold=0)
+    name = task.get_dataset().name
+    if task.task_type == "Supervised Classification":
+        task_hint = "classification"
+    else:
+        task_hint = "regression"
+    X, y = task.get_X_and_y(dataset_format="dataframe")  # type: ignore
+    train_x, train_y = X.iloc[train_idx], y.iloc[train_idx]
+    test_x, test_y = X.iloc[test_idx], y.iloc[test_idx]
+    return train_x, train_y, test_x, test_y, name, task_hint
+
+
 def get_dataset(option) -> tuple[
     pd.DataFrame,
     pd.DataFrame,
@@ -110,6 +138,7 @@ def get_dataset(option) -> tuple[
     str,
     str
 ]:
+
     """All Datasets from the AutoML Benchmark with a number of 1000-5000 samples"""
     #### REGRESSION ####
     # abalone (n = 4177, p = 9) (yes)
@@ -470,4 +499,11 @@ def get_old_dataset(option) -> tuple[
         openml_task_id = 359954
         outer_fold_number = 0
         train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
+        openml.tasks.get_task(openml_task_id=openml_task_id)
         return train_x, train_y, test_x, test_y, task_hint, name
+
+def construct_dataframe(train_x, train_y, test_x, test_y):
+    df_train = pd.concat([train_x, train_y], axis=1)
+    df_test = pd.concat([test_x, test_y], axis=1)
+    df = pd.concat([df_train, df_test], axis=0)
+    return df
