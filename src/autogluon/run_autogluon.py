@@ -34,8 +34,5 @@ for name in datasets:
         test_data = TabularDataset(test_data)
 
         predictor = TabularPredictor(label=label, verbosity=0).fit(train_data)
-
-        y_pred = predictor.predict(test_data.drop(columns=[label]))
-        print(y_pred.head())
         eval_dict = predictor.evaluate(test_data, silent=True)
         print(eval_dict)
