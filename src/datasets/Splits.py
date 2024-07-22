@@ -295,3 +295,36 @@ def get_splits(train_x, train_y, test_x, test_y) -> tuple[
     test_y.name = target_name
 
     return train_x, train_y, test_x, test_y
+
+
+def get_splits(X, y) -> tuple[
+    pd.DataFrame,
+    pd.Series,
+    pd.DataFrame,
+    pd.Series
+]:
+    column_names = X.columns
+    target_name = y.name
+
+    X = np.array(X)
+    y = np.array(y)
+
+    splits = get_cv_split_for_data(X,
+                                   y,
+                                   splits_seed=42,
+                                   n_splits=2,
+                                   stratified_split=False,
+                                   #auto_fix_stratified_splits=True
+    )
+
+    train_x = pd.DataFrame(X[splits[0][0]])
+    train_x.columns = column_names
+    train_y = pd.Series(y[splits[0][0]])
+    train_y.name = target_name
+
+    test_x = pd.DataFrame(X[splits[0][1]])
+    test_x.columns = column_names
+    test_y = pd.Series(y[splits[0][1]])
+    test_y.name = target_name
+
+    return train_x, train_y, test_x, test_y
