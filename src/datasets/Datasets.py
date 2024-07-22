@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import openml
+from pandas import Series, DataFrame
 from sklearn.datasets import fetch_california_housing
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
@@ -98,8 +99,14 @@ def preprocess_data(train_x, test_x) -> (pd.DataFrame, pd.DataFrame):
     return train_x, test_x
 
 
-def preprocess_target(series) -> pd.DataFrame:
-    return series
+def preprocess_target(label) -> DataFrame:
+    label = pd.DataFrame(label)
+    cols = label.columns
+    imp_nan = SimpleImputer(missing_values=np.nan, strategy='mean')
+    label = imp_nan.fit_transform(label)
+    label = pd.DataFrame(label).fillna(0)
+    label.columns = cols
+    return label
 
 
 def get_amlb_dataset(openml_task_id) -> tuple[

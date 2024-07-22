@@ -22,11 +22,9 @@ for name in datasets:
 
         train_x, train_y, test_x, test_y = get_splits(X, y)
 
-        """
-        train_x, test_x = preprocess_data(train_x, test_x)
+        train_x, test_x = preprocess_data(train_x, test_x)#
         train_y = preprocess_target(train_y)
         test_y = preprocess_target(test_y)
-        """
 
         train_data = pd.concat([train_x, train_y], axis=1)
         test_data = pd.concat([test_x, test_y], axis=1)
