@@ -309,12 +309,13 @@ def get_splits(X, y) -> tuple[
     X = np.array(X)
     y = np.array(y)
 
-    splits = get_cv_split_for_data(X,
-                                   y,
-                                   splits_seed=42,
-                                   n_splits=2,
-                                   stratified_split=False,
-                                   #auto_fix_stratified_splits=True
+    splits = get_cv_split_for_data(
+        X,
+        y,
+        splits_seed=42,
+        n_splits=2,
+        stratified_split=False,
+        # auto_fix_stratified_splits=True
     )
 
     train_x = pd.DataFrame(X[splits[0][0]])
