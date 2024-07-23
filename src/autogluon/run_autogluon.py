@@ -23,9 +23,9 @@ for name in datasets:
             exec_time = result['Time'].values[0]
         else:
             exec_time = 0 # no FE method executed on dataset -> raw dataset
-        print(f"Execution time: {exec_time}")
 
-
+        time_limit = 14400 - exec_time
+        print(f"Time limit: {time_limit}")
         try:
             data = pd.read_csv(f'../datasets/feature_engineered_datasets/regression_{name}_{method}.csv')
             task_hint = 'regression'
@@ -52,12 +52,12 @@ for name in datasets:
         train_data = TabularDataset(train_data)
         test_data = TabularDataset(test_data)
         if task_hint == 'regression':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="root_mean_squared_error").fit(train_data)
+            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="root_mean_squared_error").fit(train_data, time_limit=time_limit)
             eval_dict = predictor.evaluate(test_data)
         elif task_hint == 'binary_classification':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="roc_auc").fit(train_data)
+            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="roc_auc").fit(train_data, time_limit=time_limit)
             eval_dict = predictor.evaluate(test_data)
         elif task_hint == 'multi_classification':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="log_loss").fit(train_data)
+            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="log_loss").fit(train_data, time_limit=time_limit)
             eval_dict = predictor.evaluate(test_data)
         print(eval_dict)
