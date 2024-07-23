@@ -1,50 +1,59 @@
 # FeatureEngineering & AutoML
-This is the Version Control of the code for the master thesis of Bastian Schäfer, a Computer Science (AI) student at Albert-Ludwigs Universität Freiburg.
+This is the Version Control of the code for the master project of Bastian Schäfer, a Computer Science (AI) student at Albert-Ludwigs Universität Freiburg with the ML Lab (Prof. Frank Hutter) supervised by Lennart Purucker.
 
-The master thesis is conducted on the topic of Feature Engineering in the context of AutoML.
+The master project is conducted on the topic of Feature Engineering in the context of AutoML. The goal is to investigate feature engineering in the AutoML context and show the benefits of (not) using it by implementing a benchmark.
+
+
+## Details on the Benchmark
+There are two different implementations of the benchmark, a simpler one and a more sophisticated one.
+The simpler one is the AMLTK pipeline, which is using a LGBM classifier and performs feature engineering with the given methods on 17 datasets and uses as many Trials as possible in one hour to find the best configuration for the given data using a RandomSearch Optimizer. The evaluation is conducted by using the ROC AUC metric.
+The more sophisticated one is based on Autogluon, we are using 4 hours of time (32GB, 8 CPUs, 104 datasets) for feature engineering and AutoML together, so that all methods have to work with the same amount of time. Autogluon automatically searches for the best classifier by itself. We are using different metrics for the final evaluation depending on the task.
+
+
+## Code Structure
+The code is structured in 4 parts, in the src folder one can find an amltk directory, an autogluon directory, a datasets directory and a feature_engineering directory.
+The amltk and autogluon folders are containing the code of the respective pipelines, that can be used by running the corresponding run_xxx.py file.
+In the datasets folder, there is the code for retrieving datasets in the Datasets.py file and the code for the splits in the Splits file. There is also a directory containing all feature engineered datasets as a .csv file.
+In the feature_engineering folder, there is the code for all the tested feature engineering methods as far as they are open-source and there is a file for executing all feature engineering methods on the AMLB datasets and save the results to a file.
+
 
 ## Get it Running:
 #### Install Dependencies:
 `pip install -r requirements.txt`
 
-#### Local Execution:
+#### Local Execution of AMLTK:
 1. Choose the variable `working_dir = Path("src/amltk/results")` accordingly, depending on you execute your code locally or in the cluster (see comments)
 2. Set the variable `rerun = True` to True if you want to rerun methods on datasets with existing results
 3. Set the variable `debugging = False` to True if you want to raise Trial Exceptions
-4. Set the variable `steps = 1`to the value of feature engineering and selection steps you want for autofeat
-5. Set the variable `num_features = 50` to the desired number of generated golden features from MLJAR
-6. Choose set of datasets in the line `for option in smallest_datasets:` (replace smallest_datasets by your desired set) in file src/amltk/main.py
-7. Choose feature engineering methods and add them to the final dataframe in order to see the results:
+4. Choose set of datasets in the line `for option in all_datasets:` (replace all_datasets by your desired set) in file src/amltk/main.py
+5. Choose feature engineering methods and add them to the final dataframe in order to see the results:
    1. Get feature-engineered features by using the method from the corresponding file. Example: get_openFE_features from file src/amltk/feature_engineering/open_fe.py
    2. Get Cross-validation evaluator by calling get_cv_evaluator() method from the file src/amltk/evaluation/get_evaluator.py
    3. Optimize the pipeline and receive the history by calling e.g. history_openfe = pipeline.optimize(...)
    4. Convert history to a pandas dataframe: df_openFE = history_openFE.df()
    5. Append the dataframe with the history to one as done in line `df = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE], axis=0)`
-8. Execute `python3 src/amltk/pipeline/main.py`
-<br>&rarr; See all results in src/amltk/results/results_collection.parquet
-9. Adapt the first codeblock in the src/amltk/results/analysis.ipynb file in the following way:
-   1. Make sure, that the number of `max_trials` (src/amltk/main.py) still equals 10 and set the `part_size = 10` value to exactly the same value
+6. Execute `python3 src/amltk/run_amltk_pipeline.py`
+7. In case of parallel execution use the batch file `src/amltk/run_amltk_pipeline_parallel.sh`
+<br>&rarr; See all results in src/amltk/results/results_collection.parquet 
+8. Adapt the first codeblock in the src/amltk/results/analysis.ipynb file in the following way:
+   1. Make sure, that the number of `max_trials` (src/amltk/run_amltk_pipeline.py) still equals 10 and set the `part_size = 10` value to exactly the same value
    2. Add all labels for all the methods used in the correct order (see src/amltk/main.py `df_option = pd.concat([df_original, df_sklearn, df_autofeat, df_openFE, df_h2o, df_mljar, df_autogluon], axis=0)`)
    3. Choose the list of dataset names corresponding to the one used in the main.py file 
-10. Execute the file analysis.ipynb and receive all plots from the different accuracy metrics in the notebook and in the src/amltk/results/plots folder
+9. Execute the file analysis.ipynb and receive all plots from the different accuracy metrics in the notebook and in the src/amltk/results/plots folder
+10. Execute the file tabular_analysis.ipynb for a tabular comparison
+
+#### Local Execution of Autogluon:
+1. Change the variables `datasets` in case of need for other datasets and the `methods` variable in case of usage of other feature engineering methods
+2. Execute `run_autogluon.py`
+
+
+#### Local Execution of Feature Engineering:
+1. Change the variables `amlb_task_ids` in case of need for other datasets and the `feature_engineering_methods` in case of other feature engineering methods
+2. Execute `run_feature_engineering.py`
 
 #### Execution on MetaCluster:
 1. Choose options (see above)
-2. `sbatch run.sh`
+2. Run according batch file (that has the same name) by submitting a job with `sbatch run.sh`
 <br>&rarr; See all results in logs/AMLTK_Pipeline-_BatchJobID_.out and in the file src/amltk/results/results_collection.parquet
+3. Retrieve results by doing e.g. `tar -czvf results.tar.gz results/` and downloading the compressed file by `scp schaefeb@kislogin1.rz.ki.privat:FE_AutoML/src/amltk/results.tar.gz Downloads`
 
-## Explanation of the Results:
-- The first 10 lines of the table are the results of 10 proposed models of the AutoML Pipeline on the original data (without Feature Engineering).
-- All following lines (in packages of 10 lines each) are the results of proposed methods for AutoML with feature engineered data.
-
-### First Insights
-#### OpenFE 
-- The test accuracy of the best performing model of the different splits is usually better on the original data.
-- The mean of the training accuracy is usually higher over all the 10 models for the feature-engineered data.
-- The mean of the validation accuracy is usually higher over all the 10 models for the feature-engineered data.
-- The mean of the test accuracy is usually higher over all the 10 models for the feature-engineered data.
-#### sklearn FE
-- The data with the sklearn FE has a very high mean accuracy, while the std accuracy is slightly lower in comparison to the original data.
-- The metric accuracy is much higher for the sklearn FE data than for the original data.
-- The std accuracy is very low for both, original and FE data in all dataset splits.
-- Regarding the test data, the original data outperforms the FE data.
