@@ -12,7 +12,7 @@ The more sophisticated one is based on Autogluon, we are using 4 hours of time (
 
 ## Code Structure
 The code is structured in 4 parts, in the src folder one can find an amltk directory, an autogluon directory, a datasets directory and a feature_engineering directory.
-The amltk and autogluon folders are containing the code of the respective pipelines, that can be used by running the corresponding run_xxx.py file.
+The amltk and autogluon folders contain the code of the respective pipelines, that can be used by running the corresponding run_xxx.py file.
 In the datasets folder, there is the code for retrieving datasets in the Datasets.py file and the code for the splits in the Splits file. There is also a directory containing all feature engineered datasets as a .csv file.
 In the feature_engineering folder, there is the code for all the tested feature engineering methods as far as they are open-source and there is a file for executing all feature engineering methods on the AMLB datasets and save the results to a file.
 
