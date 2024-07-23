@@ -16,6 +16,16 @@ methods = ["original", "autofeat", "autogluon"]  # , "bioautoml", "boruta", "cor
 for name in datasets:
     for method in methods:
         print(f"\n****************************************\n{name} - {method}\n****************************************")
+        execution_times = pd.read_csv(f"../datasets/feature_engineered_datasets/exec_times.csv")
+        result = execution_times[(execution_times['Dataset'] == name) & (execution_times['Method'] == method)]
+        # Extract the time value if a match is found
+        if not result.empty:  # method has been executed on dataset
+            exec_time = result['Time'].values[0]
+        else:
+            exec_time = 0 # no FE method executed on dataset -> raw dataset
+        print(f"Execution time: {exec_time}")
+
+
         try:
             data = pd.read_csv(f'../datasets/feature_engineered_datasets/regression_{name}_{method}.csv')
             task_hint = 'regression'
