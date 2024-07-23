@@ -46,7 +46,8 @@ def main():
         2073
     ]
 
-    feature_engineering_methods = ["autofeat", "autogluon", "bioautoml", "boruta", "correlationbased", "featuretools", "featurewiz", "h2o", "macfe", "mafese", "mljar", "openfe"]
+    feature_engineering_methods = ["autofeat", "autogluon", "bioautoml", "boruta", "correlationbased", "featuretools",
+                                   "featurewiz", "h2o", "macfe", "mafese", "mljar", "openfe"]
     for task_id in amlb_task_ids:
         run_and_save(feature_engineering_methods, task_id)
 
@@ -66,7 +67,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
     df = None
 
     if method == "autofeat":
-        fe = limit(get_autofeat_features, wall_time=(4, "h")) # , memory=(32, "GB"))
+        fe = limit(get_autofeat_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x, task_hint, 2, 5)
@@ -77,7 +78,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = None
 
     elif method == "autogluon":
-        fe = limit(get_autogluon_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_autogluon_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x)
@@ -89,7 +90,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
 
     elif method == "bioautoml":
         estimations = 50
-        fe = limit(get_bioautoml_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_bioautoml_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x, estimations)
@@ -100,7 +101,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = None
 
     elif method == "bortua":
-        fe = limit(get_boruta_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_boruta_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x)
@@ -111,7 +112,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = None
 
     elif method == "correlationBasedFS":
-        fe = limit(get_correlationbased_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_correlationbased_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x)
@@ -122,7 +123,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = None
 
     elif method == "featuretools":
-        fe = limit(get_featuretools_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_featuretools_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x, test_y, name)
@@ -133,7 +134,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = None
 
     elif method == "featurewiz":
-        fe = limit(get_featurewiz_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_featurewiz_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x)
@@ -144,7 +145,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = None
 
     elif method == "h2o":
-        fe = limit(get_h2o_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_h2o_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x)
@@ -155,7 +156,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = None
 
     elif method == "macfe":
-        fe = limit(get_macfe_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_macfe_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x, test_y, name)
@@ -167,7 +168,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
 
     elif method == "mafese":
         num_features = 50
-        fe = limit(get_mafese_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_mafese_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x, test_y, name, num_features)
@@ -179,7 +180,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
 
     elif method == "mljar":
         num_features = 50
-        fe = limit(get_mljar_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_mljar_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x, num_features)
@@ -190,7 +191,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = None
 
     elif method == "openfe":
-        fe = limit(get_openFE_features, wall_time=(4, "h"))#, memory=(32, "GB"))
+        fe = limit(get_openFE_features, wall_time=(4, "h"), memory=(32, "GB"))
         try:
             start_time = time.time()  #
             train_x, test_x = fe(train_x, train_y, test_x, 1)
