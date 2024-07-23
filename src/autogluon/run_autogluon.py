@@ -52,12 +52,12 @@ for name in datasets:
         train_data = TabularDataset(train_data)
         test_data = TabularDataset(test_data)
         if task_hint == 'regression':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="root_mean_squared_error").fit(train_data, time_limit=time_limit)
+            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="root_mean_squared_error").fit(train_data, time_limit=time_limit, num_cpus=8)
             eval_dict = predictor.evaluate(test_data)
         elif task_hint == 'binary_classification':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="roc_auc").fit(train_data, time_limit=time_limit)
+            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="roc_auc").fit(train_data, time_limit=time_limit, num_cpus=8)
             eval_dict = predictor.evaluate(test_data)
         elif task_hint == 'multi_classification':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="log_loss").fit(train_data, time_limit=time_limit)
+            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="log_loss").fit(train_data, time_limit=time_limit, num_cpus=8)
             eval_dict = predictor.evaluate(test_data)
         print(eval_dict)
