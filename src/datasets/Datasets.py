@@ -127,8 +127,11 @@ def get_amlb_dataset(openml_task_id) -> tuple[
     )
     train_idx, test_idx = task.get_train_test_split_indices(fold=0)
     name = task.get_dataset().name
+    print(task.task_type)
     if task.task_type == "Supervised Classification":
-        task_hint = "classification"
+        task_hint = "binary-classification"
+    elif task.task_type == "Clustering":
+        task_hint = "multi-classification"
     else:
         task_hint = "regression"
     X, y = task.get_X_and_y(dataset_format="dataframe")  # type: ignore

@@ -10,14 +10,22 @@ from src.datasets.Splits import get_splits
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UndefinedMetricWarning)
 
-task_hint = 'regression'
 datasets = ["abalone"]
 methods = ["original", "autofeat", "autogluon"]  # , "bioautoml", "boruta", "correlationbased", "featuretools", "featurewiz", "h2o", "macfe", "mafese", "mljar", "openfe"]
 
 for name in datasets:
     for method in methods:
         print(f"\n****************************************\n{name} - {method}\n****************************************")
-        data = pd.read_csv(f'../datasets/feature_engineered_datasets/{name}_{method}.csv')
+        try:
+            data = pd.read_csv(f'../datasets/feature_engineered_datasets/regression_{name}_{method}.csv')
+            task_hint = 'regression'
+        except:
+            try:
+                data = pd.read_csv(f'../datasets/feature_engineered_datasets/binary-classification_{name}_{method}.csv')
+                task_hint = 'binary-classification'
+            except:
+                data = pd.read_csv(f'../datasets/feature_engineered_datasets/multi-classification_{name}_{method}.csv')
+                task_hint = 'multi-classification'
         label = data.columns[-1]
 
         X = data.drop(label, axis=1)
