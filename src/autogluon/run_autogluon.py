@@ -24,7 +24,10 @@ for name in datasets:
         else:
             exec_time = 0 # no FE method executed on dataset -> raw dataset
 
-        time_limit = 14400 - exec_time
+        time_limit = 14400 - exec_time # 4h in seconds - time needed for feature engineering
+        max_memory_usage_ratio = 0.1  # share of total memory
+        num_cpus = 8
+
         print(f"Time limit: {time_limit}")
         try:
             data = pd.read_csv(f'../datasets/feature_engineered_datasets/regression_{name}_{method}.csv')
@@ -32,10 +35,10 @@ for name in datasets:
         except:
             try:
                 data = pd.read_csv(f'../datasets/feature_engineered_datasets/binary-classification_{name}_{method}.csv')
-                task_hint = 'binary-classification'
+                task_hint = 'binary'
             except:
                 data = pd.read_csv(f'../datasets/feature_engineered_datasets/multi-classification_{name}_{method}.csv')
-                task_hint = 'multi-classification'
+                task_hint = 'multiclass'
         label = data.columns[-1]
 
         X = data.drop(label, axis=1)
@@ -52,12 +55,12 @@ for name in datasets:
         train_data = TabularDataset(train_data)
         test_data = TabularDataset(test_data)
         if task_hint == 'regression':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="root_mean_squared_error").fit(train_data, time_limit=time_limit, num_cpus=8)
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="root_mean_squared_error").fit(train_data, time_limit=time_limit, num_cpus=num_cpus, ag_args_fit={max_memory_usage_ratio:max_memory_usage_ratio})
             eval_dict = predictor.evaluate(test_data)
-        elif task_hint == 'binary_classification':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="roc_auc").fit(train_data, time_limit=time_limit, num_cpus=8)
+        elif task_hint == 'binary':
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="roc_auc").fit(train_data, time_limit=time_limit, num_cpus=num_cpus, ag_args_fit={max_memory_usage_ratio:max_memory_usage_ratio})
             eval_dict = predictor.evaluate(test_data)
-        elif task_hint == 'multi_classification':
-            predictor = TabularPredictor(label=label, verbosity=0, eval_metric="log_loss").fit(train_data, time_limit=time_limit, num_cpus=8)
+        elif task_hint == 'multiclass':
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="log_loss").fit(train_data, time_limit=time_limit, num_cpus=num_cpus, ag_args_fit={max_memory_usage_ratio:max_memory_usage_ratio})
             eval_dict = predictor.evaluate(test_data)
         print(eval_dict)
