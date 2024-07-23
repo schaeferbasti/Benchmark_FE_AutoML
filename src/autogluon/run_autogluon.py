@@ -11,9 +11,6 @@ from src.datasets.Splits import get_splits
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UndefinedMetricWarning)
 
-datasets = ["abalone"]
-methods = ["original", "autofeat", "autogluon"]  # , "bioautoml", "boruta", "correlationbased", "featuretools", "featurewiz", "h2o", "macfe", "mafese", "mljar", "openfe"]
-
 dataset_files = os.listdir("../datasets/feature_engineered_datasets/")
 csv_files = []
 for dataset_file in dataset_files:
