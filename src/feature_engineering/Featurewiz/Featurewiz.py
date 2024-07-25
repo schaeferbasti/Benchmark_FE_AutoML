@@ -1,7 +1,7 @@
 # https://github.com/AutoViML/featurewiz
 
 import pandas as pd
-from featurewiz import FeatureWiz
+from src.feature_engineering.Featurewiz.method.featurewiz import FeatureWiz
 
 
 def get_featurewiz_features(train_x, train_y, test_x) -> tuple[
