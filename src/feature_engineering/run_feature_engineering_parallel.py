@@ -4,7 +4,8 @@ import time
 import pandas as pd
 from pynisher import limit, WallTimeoutException, MemoryLimitException
 
-from datasets.Datasets import get_amlb_dataset, construct_dataframe
+# wrong path because of setting home directory in batch script, please do not change
+from src.datasets.Datasets import get_amlb_dataset, construct_dataframe
 from AutoGluon.AutoGluon import get_autogluon_features
 from BioAutoML.BioAutoML import get_bioautoml_features
 from Boruta.Boruta import get_boruta_features
