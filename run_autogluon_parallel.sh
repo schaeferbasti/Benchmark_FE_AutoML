@@ -53,7 +53,7 @@ method=${methods[$SLURM_ARRAY_TASK_ID]}
 start=`date +%s`
 
 echo "Running Method: $method"
-python3 run_feature_engineering_parallel.py --method $method
+python3 src/feature_engineering/run_feature_engineering_parallel.py --method $method
 
 end=`date +%s`
 runtime=$((end-start))

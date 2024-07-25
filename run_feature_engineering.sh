@@ -42,7 +42,7 @@ echo "PYTHONPATH set to $PYTHONPATH"
 # Running the job
 start=`date +%s`
 
-python3 run_feature_engineering.py $SLURM_ARRAY_TASK_ID $*
+python3 src/feature_engineering/run_feature_engineering.py $SLURM_ARRAY_TASK_ID $*
 
 end=`date +%s`
 runtime=$((end-start))

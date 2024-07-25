@@ -51,7 +51,7 @@ echo "Requirements installed"
 # shellcheck disable=SC1068
 
 # Set the PYTHONPATH to include the src directory
-export PYTHONPATH=$PWD:$PYTHONPATH
+export PYTHONPATH=$PWD/src:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 # Define methods array
