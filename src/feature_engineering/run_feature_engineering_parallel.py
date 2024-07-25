@@ -4,19 +4,19 @@ import time
 import pandas as pd
 from pynisher import limit, WallTimeoutException, MemoryLimitException
 
-from ..datasets.Datasets import get_amlb_dataset, construct_dataframe
-from ..feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
-from ..feature_engineering.BioAutoML.BioAutoML import get_bioautoml_features
-from ..feature_engineering.Boruta.Boruta import get_boruta_features
-from ..feature_engineering.CorrelationBasedFS.CorrelationBasedFS import get_correlationbased_features
-from ..feature_engineering.Featuretools.Featuretools import get_featuretools_features
-from ..feature_engineering.Featurewiz.Featurewiz import get_featurewiz_features
-from ..feature_engineering.H2O.H2O import get_h2o_features
-from ..feature_engineering.MACFE.MACFE import get_macfe_features
-from ..feature_engineering.MAFESE.MAFESE import get_mafese_features
-from ..feature_engineering.MLJAR.MLJAR import get_mljar_features
-from ..feature_engineering.OpenFE.OpenFE import get_openFE_features
-from ..feature_engineering.autofeat.Autofeat import get_autofeat_features
+from datasets.Datasets import get_amlb_dataset, construct_dataframe
+from AutoGluon.AutoGluon import get_autogluon_features
+from BioAutoML.BioAutoML import get_bioautoml_features
+from Boruta.Boruta import get_boruta_features
+from CorrelationBasedFS.CorrelationBasedFS import get_correlationbased_features
+from Featuretools.Featuretools import get_featuretools_features
+from Featurewiz.Featurewiz import get_featurewiz_features
+from H2O.H2O import get_h2o_features
+from MACFE.MACFE import get_macfe_features
+from MAFESE.MAFESE import get_mafese_features
+from MLJAR.MLJAR import get_mljar_features
+from OpenFE.OpenFE import get_openFE_features
+from autofeat.Autofeat import get_autofeat_features
 
 
 def main(args):

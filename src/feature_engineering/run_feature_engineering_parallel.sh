@@ -20,7 +20,20 @@
 # Define job array
 #SBATCH --array=0-103  # Adjust based on the number of methods
 
-echo "Workingdir: $PWD"
+current_dir="$PWD"
+echo "Current Working Directory: $current_dir"
+
+# Get the parent directory of the current working directory
+parent_dir=$(dirname "$current_dir")
+echo "Parent Directory: $parent_dir"
+
+# Set the path to the parent directory
+# shellcheck disable=SC2164
+cd "$parent_dir"
+
+# Confirm the change
+echo "Changed to Parent Directory: $PWD"
+
 echo "Started at $(date)"
 
 # SLURM variables
@@ -38,7 +51,7 @@ echo "Requirements installed"
 # shellcheck disable=SC1068
 
 # Set the PYTHONPATH to include the src directory
-export PYTHONPATH=$PWD/src:$PYTHONPATH
+export PYTHONPATH=$PWD:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 # Define methods array
@@ -51,7 +64,7 @@ method=${methods[$SLURM_ARRAY_TASK_ID]}
 start=`date +%s`
 
 echo "Running Method: $method"
-python3 run_feature_engineering_parallel.py --method $method
+python3 feature_engineering/run_feature_engineering_parallel.py --method $method
 
 end=`date +%s`
 runtime=$((end-start))
