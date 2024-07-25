@@ -42,7 +42,7 @@ def get_featuretools_features(train_x, train_y, test_x, test_y, name) -> tuple[
         entityset=train_es,
         target_dataframe_name=name + "_train_x",
         agg_primitives=["sum", "std", "max", "skew", "min", "mean", "count", "percent_true", "num_unique", "mode"],
-        max_depth=10
+        max_depth=2
     )
 
 
@@ -62,7 +62,7 @@ def get_featuretools_features(train_x, train_y, test_x, test_y, name) -> tuple[
         entityset=test_es,
         target_dataframe_name=name + "_test_x",
         agg_primitives=["sum", "std", "max", "skew", "min", "mean", "count", "percent_true", "num_unique", "mode"],
-        max_depth=10
+        max_depth=2
     )
 
     train_x = train_feature_matrix
