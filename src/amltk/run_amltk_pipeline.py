@@ -14,7 +14,7 @@ from src.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
 from src.amltk.optimizer.RandomSearch import RandomSearch
 
-from src.feature_engineering.Boruta.Boruta import get_boruta_features
+from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -84,15 +84,15 @@ lgbm_regressor_pipeline = Sequential(preprocessing, lgbm_regressor, name="lgbm_r
 
 
 def main() -> None:
-    rerun = True        # Decide if you want to re-execute the methods on a dataset or use the existing files
-    debugging = True    # Decide if you want ot raise trial exceptions
+    rerun = False        # Decide if you want to re-execute the methods on a dataset or use the existing files
+    debugging = False    # Decide if you want ot raise trial exceptions
 
     feat_eng_steps = 2  # Number of feature engineering steps for autofeat
     feat_sel_steps = 5  # Number of feature selection steps for autofeat
     estimations = 50    # Number of estimations for BioAutoML, default = 50
     num_features = 20   # Number of Features for MAFESE in range(1, 20)
 
-    working_dir = Path("results")  # Path
+    working_dir = Path("results/third_try")  # Path
     random_seed = 42  # Set seed
     folds = 1  # Set number of folds (normal 10, test 1)
 
@@ -138,7 +138,7 @@ def main() -> None:
         print("\n\n\n*******************************\n Fold " + str(fold) + "\n*******************************\n")
         inner_fold_seed = random_seed + fold
         # Iterate over all chosen datasets
-        for option in test_new_method_datasets:
+        for option in all_datasets:
             # Get train test split dataset
             train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
 
@@ -147,9 +147,9 @@ def main() -> None:
             file = working_dir / file_name
             print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
             if rerun or not os.path.isfile(file):
-                print("Run xxx Method on Dataset")
+                print("Run OpenFE Method on Dataset")
                 # train_x, train_y, test_x, test_y = get_splits(train_x, train_y, test_x, test_y)
-                train_x_xxx, test_x_xxx = get_boruta_features(train_x, train_y, test_x)
+                train_x_xxx, test_x_xxx = get_openFE_features(train_x, train_y, test_x, 1)
                 evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
                                              on_trial_exception, task_hint)
                 history_xxx = pipeline.optimize(
@@ -168,7 +168,7 @@ def main() -> None:
                     on_trial_exception=on_trial_exception,
                 )
                 df_xxx = history_xxx.df()
-                safe_dataframe(df_xxx, working_dir, name, fold, "bioautoml")
+                safe_dataframe(df_xxx, working_dir, name, fold, "openfe")
             else:
                 print("File exists, going for next method")
 
