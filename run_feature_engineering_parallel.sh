@@ -20,20 +20,7 @@
 # Define job array
 #SBATCH --array=0-103  # Adjust based on the number of methods
 
-current_dir="$PWD"
-echo "Current Working Directory: $current_dir"
-
-# Get the parent directory of the current working directory
-parent_dir=$(dirname "$current_dir")
-echo "Parent Directory: $parent_dir"
-
-# Set the path to the parent directory
-# shellcheck disable=SC2164
-cd "$parent_dir"
-
-# Confirm the change
-echo "Changed to Parent Directory: $PWD"
-
+echo "Workingdir: $PWD"
 echo "Started at $(date)"
 
 # SLURM variables
