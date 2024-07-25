@@ -7,6 +7,7 @@ dask[complete]
 fastparquet
 featuretools
 h2o
+imblearn
 lightgbm
 mafese
 mljar-supervised
