@@ -2,12 +2,10 @@ amltk
 autofeat
 autogluon
 boruta
-# caafe
 configspace
 dask[complete]
 fastparquet
 featuretools
-#featurewiz
 h2o
 lightgbm
 mafese
@@ -15,5 +13,6 @@ mljar-supervised
 openfe
 openml==0.14.2
 pyarrow
+pynisher
 pymfe
 ucimlrepo
