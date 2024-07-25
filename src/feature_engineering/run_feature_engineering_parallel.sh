@@ -33,7 +33,7 @@ echo "conda amltk_env activated"
 
 # Install requirements
 python3 -m pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r ../../requirements.txt
 echo "Requirements installed"
 # shellcheck disable=SC1068
 
