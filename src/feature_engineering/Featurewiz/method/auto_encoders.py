@@ -12,6 +12,8 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.base import BaseEstimator, TransformerMixin
 from .stacking_models import analyze_problem_type_array
 from sklearn.utils import check_X_y
+from tensorflow.keras import layers
+import tensorflow as tf
 import pdb
 
 ######################################################################################
@@ -537,11 +539,6 @@ class VariationalAutoEncoder(BaseEstimator, TransformerMixin):
          }
 
     """
-    try:
-        from tensorflow.keras import layers
-    except:
-        print('tensorflow >= 2.5 not installed in machine. Please install and try again. ')
-
     class Sampling(layers.Layer):
         """Uses (z_mean, z_log_var) to sample z, the vector encoding a digit."""
         def call(self, inputs):
