@@ -1,4 +1,5 @@
 import argparse
+import os
 import time
 
 import pandas as pd
@@ -33,7 +34,8 @@ def run_and_save(feature_engineering_methods, task_id):
     df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + "_" + name + '_original.csv', index=False)
     df_times = pd.DataFrame()
     for method in feature_engineering_methods:
-        df_times = get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, task_hint)
+        if not os.path.isfile('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '.csv'):
+            df_times = get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, task_hint)
     df_times.to_csv('src/datasets/feature_engineered_datasets/exec_times.csv', index=False)
 
 
