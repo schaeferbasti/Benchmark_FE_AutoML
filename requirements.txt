@@ -2,12 +2,14 @@ amltk
 autofeat
 autogluon
 boruta
+causalnex
 configspace
 dask[complete]
 fastparquet
 featuretools
 h2o
 imblearn
+lazytransform
 lightgbm
 mafese
 mljar-supervised
@@ -16,4 +18,6 @@ openml==0.14.2
 pyarrow
 pynisher
 pymfe
+tensorflow
 ucimlrepo
+xlrd
