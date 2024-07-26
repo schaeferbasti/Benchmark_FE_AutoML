@@ -50,7 +50,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "autogluon":
         fe = limit(get_autogluon_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -61,7 +61,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "bioautoml":
         estimations = 50
@@ -73,7 +73,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "bortua":
         fe = limit(get_boruta_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -84,7 +84,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "correlationBasedFS":
         fe = limit(get_correlationbased_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -95,7 +95,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "featuretools":
         fe = limit(get_featuretools_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -106,7 +106,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "featurewiz":
         fe = limit(get_featurewiz_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -117,7 +117,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "h2o":
         fe = limit(get_h2o_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -128,7 +128,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "macfe":
         fe = limit(get_macfe_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -139,7 +139,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "mafese":
         num_features = 50
@@ -151,7 +151,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "mljar":
         num_features = 50
@@ -163,7 +163,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     elif method == "openfe":
         fe = limit(get_openFE_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -174,7 +174,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
-            df = None
+            df = pd.DataFrame()
 
     df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '.csv', index=False)
     df_times = df_times._append({'Dataset': name, 'Method': method, 'Time': execution_time}, ignore_index=True)
