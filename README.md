@@ -1,5 +1,5 @@
 # FeatureEngineering & AutoML
-This is the Version Control of the code for the master project of Bastian Schäfer, a Computer Science (AI) student at Albert-Ludwigs Universität Freiburg with the ML Lab (Prof. Frank Hutter) supervised by Lennart Purucker.
+This is the Version Control of the code for my master project: My name is Bastian Schäfer and I am a Computer Science (AI) student at Albert-Ludwigs Universität Freiburg doing my project with the ML Lab (Prof. Frank Hutter) supervised by Lennart Purucker.
 
 The master project is conducted on the topic of Feature Engineering in the context of AutoML. The goal is to investigate feature engineering in the AutoML context and show the benefits of (not) using it by implementing a benchmark.
 
