@@ -6,18 +6,18 @@ from pynisher import limit, WallTimeoutException, MemoryLimitException
 
 # wrong path because of setting home directory in batch script, please do not change
 from src.datasets.Datasets import get_amlb_dataset, construct_dataframe
-from AutoGluon.AutoGluon import get_autogluon_features
-from BioAutoML.BioAutoML import get_bioautoml_features
-from Boruta.Boruta import get_boruta_features
-from CorrelationBasedFS.CorrelationBasedFS import get_correlationbased_features
-from Featuretools.Featuretools import get_featuretools_features
-from Featurewiz.Featurewiz import get_featurewiz_features
-from H2O.H2O import get_h2o_features
-from MACFE.MACFE import get_macfe_features
-from MAFESE.MAFESE import get_mafese_features
-from MLJAR.MLJAR import get_mljar_features
-from OpenFE.OpenFE import get_openFE_features
-from autofeat.Autofeat import get_autofeat_features
+from src.feature_engineering.autofeat.Autofeat import get_autofeat_features
+from src.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
+from src.feature_engineering.BioAutoML.BioAutoML import get_bioautoml_features
+from src.feature_engineering.Boruta.Boruta import get_boruta_features
+from src.feature_engineering.CorrelationBasedFS.CorrelationBasedFS import get_correlationbased_features
+from src.feature_engineering.Featuretools.Featuretools import get_featuretools_features
+from src.feature_engineering.Featurewiz.Featurewiz import get_featurewiz_features
+from src.feature_engineering.H2O.H2O import get_h2o_features
+from src.feature_engineering.MACFE.MACFE import get_macfe_features
+from src.feature_engineering.MAFESE.MAFESE import get_mafese_features
+from src.feature_engineering.MLJAR.MLJAR import get_mljar_features
+from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
 
 
 def main(args):
