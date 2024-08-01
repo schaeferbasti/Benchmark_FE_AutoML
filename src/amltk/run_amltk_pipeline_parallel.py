@@ -106,7 +106,7 @@ def main(args):
     n_jobs = 1  # Number of jobs for OpenFE
     num_features = 500  # Number of features for MLJAR
     estimations = 50    # Number of estimations for BioAutoML, default = 50
-    working_dir = Path("results")  # Path
+    working_dir = Path("results/second_try")  # Path
     random_seed = 42  # Set seed
     folds = 10  # Set number of folds (normal 10, test 1)
 
