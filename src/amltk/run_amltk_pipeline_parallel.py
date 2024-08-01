@@ -6,6 +6,7 @@ from pathlib import Path
 import argparse
 import os
 
+import pandas as pd
 from amltk.optimization import Metric
 from amltk.pipeline import Choice, Sequential, Split
 from sklearn.metrics import get_scorer
@@ -150,7 +151,7 @@ def main(args):
     for fold in range(folds):
         print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
         inner_fold_seed = random_seed + fold
-        #for pipeline in pipelines:
+        # for pipeline in pipelines:
         try:
             if method.startswith("original"):
                 print("Original Data")
@@ -181,7 +182,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("autofeat"):
@@ -225,7 +229,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("autogluon"):
@@ -258,7 +265,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("bioautoml"):
@@ -292,7 +302,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("boruta"):
@@ -325,7 +338,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
             elif method.startswith("caafe"):
                 print("CAAFE Data")
@@ -357,7 +373,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("correlationBasedFS"):
@@ -390,7 +409,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("featuretools"):
@@ -423,7 +445,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("h2o"):
@@ -456,7 +481,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("mljar"):
@@ -489,7 +517,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
             elif method.startswith("openfe"):
@@ -522,7 +553,10 @@ def main(args):
                         n_workers=n_workers,
                         on_trial_exception=on_trial_exception
                     )
-                    df = history.df()
+                    if history.df() is None:
+                        df = pd.DataFrame()
+                    else:
+                        df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
         except Exception as e:
             print(e)
