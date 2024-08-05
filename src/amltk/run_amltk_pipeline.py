@@ -92,7 +92,7 @@ def main() -> None:
     estimations = 50    # Number of estimations for BioAutoML, default = 50
     num_features = 20   # Number of Features for MAFESE in range(1, 20)
 
-    working_dir = Path("results/third_try")  # Path
+    working_dir = Path("src/amltk/results/third_try")  # Path
     random_seed = 42  # Set seed
     folds = 1  # Set number of folds (normal 10, test 1)
 
