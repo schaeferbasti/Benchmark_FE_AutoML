@@ -77,7 +77,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
         except (WallTimeoutException, MemoryLimitException):
             df = pd.DataFrame()
 
-    elif method == "bortua":
+    elif method == "boruta":
         try:
             fe = limit(get_boruta_features, wall_time=(4, "h"), memory=(32, "GB"))
             start_time = time.time()  #
