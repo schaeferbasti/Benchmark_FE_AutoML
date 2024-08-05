@@ -1,4 +1,5 @@
 # https://github.com/scikit-learn-contrib/boruta_py
+from src.datasets.Datasets import preprocess_data
 from src.feature_engineering.Boruta.method import BorutaPy
 
 import pandas as pd
@@ -11,6 +12,8 @@ def get_boruta_features(train_x, train_y, test_x) -> tuple[
 ]:
     rf = RandomForestClassifier(n_jobs=-1, class_weight='balanced', max_depth=5)
     feat_selector = BorutaPy(rf, n_estimators="auto", verbose=2)
+
+    train_x, test_x = preprocess_data(train_x, test_x)
 
     for column in train_x.select_dtypes(include=['object', 'category']).columns:
         train_x[column], uniques = pd.factorize(train_x[column])
