@@ -1,7 +1,7 @@
 # https://github.com/TjuJianyu/NFS
 
 import pandas as pd
-from src.feature_engineering.NFS.method.Main_sequence import main
+from src.feature_engineering.excluded.NFS.method.Main_sequence import main
 
 
 def get_xxx_features(train_x, train_y, test_x, test_y) -> tuple[

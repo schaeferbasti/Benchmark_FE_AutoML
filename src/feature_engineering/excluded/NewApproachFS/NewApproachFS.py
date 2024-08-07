@@ -1,7 +1,7 @@
 # https://github.com/tud-zih-energy/pymit/tree/master
 import numpy as np
 import pandas as pd
-from src.feature_engineering.NewApproachFS import pymit
+from src.feature_engineering.excluded.NewApproachFS import pymit
 
 
 

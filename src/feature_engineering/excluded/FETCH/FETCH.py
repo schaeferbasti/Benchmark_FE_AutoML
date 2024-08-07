@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from src.feature_engineering.FETCH.method.main_attention import main
+from src.feature_engineering.excluded.FETCH.method.main_attention import main
 
 
 def get_fetch_features(train_x, train_y, test_x) -> tuple[

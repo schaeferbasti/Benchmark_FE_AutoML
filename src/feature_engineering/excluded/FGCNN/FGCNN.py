@@ -5,9 +5,9 @@ from fastai.losses import BCELossFlat
 from fastai.optimizer import ranger
 from fastai.tabular.learner import TabularLearner
 
-from src.feature_engineering.FGCNN.method.fgcnn.data import *
-from src.feature_engineering.FGCNN.method.fgcnn.model import *
-from src.feature_engineering.FGCNN.method.fgcnn.train import *
+from src.feature_engineering.excluded.FGCNN.method.fgcnn.data import *
+from src.feature_engineering.excluded.FGCNN.method.fgcnn.model import *
+from src.feature_engineering.excluded.FGCNN.method.fgcnn.train import *
 
 
 

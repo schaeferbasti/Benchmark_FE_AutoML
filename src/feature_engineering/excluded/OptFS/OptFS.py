@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from src.feature_engineering.OptFS.method.trainer import main
+from src.feature_engineering.excluded.OptFS.method.trainer import main
 
 
 def get_xxx_features(train_x, train_y, test_x, test_y) -> tuple[

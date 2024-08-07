@@ -2,10 +2,10 @@
 import numpy as np
 import pandas as pd
 
-import src.feature_engineering.LightAutoML.method.lightautoml.pipelines.features.lgb_pipeline as lgb
-from src.feature_engineering.LightAutoML.method.lightautoml.dataset.base import LAMLDataset
-from src.feature_engineering.LightAutoML.method.lightautoml.dataset.roles import TargetRole, CategoryRole, NumericRole, DatetimeRole, FoldsRole
-from src.feature_engineering.LightAutoML.method.lightautoml.dataset.utils import roles_parser
+import src.feature_engineering.excluded.LightAutoML.method.lightautoml.pipelines.features.lgb_pipeline as lgb
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.base import LAMLDataset
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.roles import TargetRole, CategoryRole, NumericRole, DatetimeRole, FoldsRole
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.utils import roles_parser
 
 
 def get_xxx_features(train_x, train_y, test_x, task_hint) -> tuple[

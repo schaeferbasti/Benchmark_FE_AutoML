@@ -4,7 +4,7 @@
 import pandas as pd
 
 
-from src.feature_engineering.ExploreKit.method.main import main
+from src.feature_engineering.excluded.ExploreKit.method.main import main
 
 
 def get_explorekit_features(train_x, train_y, test_x, test_y, name) -> tuple[
