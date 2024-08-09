@@ -1,6 +1,6 @@
 from joblib import Parallel, delayed
 
-from src.feature_engineering.ExploreKit.method.Properties import Properties
+from src.feature_engineering.excluded.ExploreKit.method.Properties import Properties
 
 
 def ParallelForEach(func, listOfListOfArgs):

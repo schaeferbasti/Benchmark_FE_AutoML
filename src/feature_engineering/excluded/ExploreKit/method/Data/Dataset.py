@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-from src.feature_engineering.ExploreKit.method.Data.Fold import Fold
+from src.feature_engineering.excluded.ExploreKit.method.Data.Fold import Fold
 
 class Dataset:
 

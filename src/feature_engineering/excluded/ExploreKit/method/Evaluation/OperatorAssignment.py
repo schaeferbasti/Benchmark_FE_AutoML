@@ -1,7 +1,7 @@
 from typing import Optional
 
-from src.feature_engineering.ExploreKit.method.Operators.Operator import Operator
-from src.feature_engineering.ExploreKit.method.Operators.UnaryOperators.UnaryOperator import UnaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.Operator import Operator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.UnaryOperators.UnaryOperator import UnaryOperator
 
 
 class OperatorAssignment:

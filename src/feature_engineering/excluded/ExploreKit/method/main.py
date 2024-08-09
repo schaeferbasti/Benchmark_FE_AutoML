@@ -6,8 +6,8 @@ import pandas as pd
 from scipy.io import arff
 
 from src.datasets.Datasets import get_dataset
-from src.feature_engineering.ExploreKit.method.Search.FilterWrapperHeuristicSearch import FilterWrapperHeuristicSearch
-from src.feature_engineering.ExploreKit.method.Utils.Loader import Loader
+from src.feature_engineering.excluded.ExploreKit.method.Search.FilterWrapperHeuristicSearch import FilterWrapperHeuristicSearch
+from src.feature_engineering.excluded.ExploreKit.method.Utils.Loader import Loader
 
 
 def getFolds(df: pd.DataFrame, k: int) -> list:

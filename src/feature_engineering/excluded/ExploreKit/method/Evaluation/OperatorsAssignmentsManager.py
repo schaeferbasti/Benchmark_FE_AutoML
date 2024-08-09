@@ -3,28 +3,28 @@ from builtins import staticmethod
 from typing import List, Dict
 from itertools import combinations
 
-from src.feature_engineering.ExploreKit.method.Evaluation.AucWrapperEvaluator import AucWrapperEvaluator
-from src.feature_engineering.ExploreKit.method.Data.Dataset import Dataset
-from src.feature_engineering.ExploreKit.method.Evaluation.ClassificationResults import ClassificationResults
-from src.feature_engineering.ExploreKit.method.Evaluation.FilterEvaluator import FilterEvaluator
-from src.feature_engineering.ExploreKit.method.Evaluation.InformationGainFilterEvaluator import InformationGainFilterEvaluator
-from src.feature_engineering.ExploreKit.method.Evaluation.OperationAssignmentAncestorsSingleton import OperationAssignmentAncestorsSingleton
-from src.feature_engineering.ExploreKit.method.Evaluation.OperatorAssignment import OperatorAssignment
-from src.feature_engineering.ExploreKit.method.Operators.BinaryOperators.DivsionBinaryOperator import DivisionBinaryOperator
-from src.feature_engineering.ExploreKit.method.Operators.BinaryOperators.MultiplyBinaryOperator import MultiplyBinaryOperator
-from src.feature_engineering.ExploreKit.method.Operators.BinaryOperators.SubtractBinaryOperator import SubtractBinaryOperator
-from src.feature_engineering.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenAvg import GroupByThenAvg
-from src.feature_engineering.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenCount import GroupByThenCount
-from src.feature_engineering.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenMax import GroupByThenMax
-from src.feature_engineering.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenMin import GroupByThenMin
-from src.feature_engineering.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenStdev import GroupByThenStdev
-from src.feature_engineering.ExploreKit.method.Utils import Parallel
-from src.feature_engineering.ExploreKit.method.Utils.Logger import Logger
-from src.feature_engineering.ExploreKit.method.Operators.BinaryOperators.AddBinaryOperator import AddBinaryOperator
-from src.feature_engineering.ExploreKit.method.Operators.UnaryOperators.EqualRangeDiscretizerUnaryOperator import EqualRangeDiscretizerUnaryOperator
-from src.feature_engineering.ExploreKit.method.Operators.Operator import Operator, operatorType
-from src.feature_engineering.ExploreKit.method.Operators.UnaryOperators.UnaryOperator import UnaryOperator
-from src.feature_engineering.ExploreKit.method.Properties import Properties
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.AucWrapperEvaluator import AucWrapperEvaluator
+from src.feature_engineering.excluded.ExploreKit.method.Data.Dataset import Dataset
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.ClassificationResults import ClassificationResults
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.FilterEvaluator import FilterEvaluator
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.InformationGainFilterEvaluator import InformationGainFilterEvaluator
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.OperationAssignmentAncestorsSingleton import OperationAssignmentAncestorsSingleton
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.OperatorAssignment import OperatorAssignment
+from src.feature_engineering.excluded.ExploreKit.method.Operators.BinaryOperators.DivsionBinaryOperator import DivisionBinaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.BinaryOperators.MultiplyBinaryOperator import MultiplyBinaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.BinaryOperators.SubtractBinaryOperator import SubtractBinaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenAvg import GroupByThenAvg
+from src.feature_engineering.excluded.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenCount import GroupByThenCount
+from src.feature_engineering.excluded.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenMax import GroupByThenMax
+from src.feature_engineering.excluded.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenMin import GroupByThenMin
+from src.feature_engineering.excluded.ExploreKit.method.Operators.GroupByThenOperators.GroupByThenStdev import GroupByThenStdev
+from src.feature_engineering.excluded.ExploreKit.method.Utils import Parallel
+from src.feature_engineering.excluded.ExploreKit.method.Utils.Logger import Logger
+from src.feature_engineering.excluded.ExploreKit.method.Operators.BinaryOperators.AddBinaryOperator import AddBinaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.UnaryOperators.EqualRangeDiscretizerUnaryOperator import EqualRangeDiscretizerUnaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.Operator import Operator, operatorType
+from src.feature_engineering.excluded.ExploreKit.method.Operators.UnaryOperators.UnaryOperator import UnaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Properties import Properties
 
 import pandas as pd
 

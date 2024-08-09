@@ -4,13 +4,13 @@ import pandas as pd
 import numpy as np
 from scipy.stats import chi2_contingency, ttest_rel
 
-from src.feature_engineering.ExploreKit.method.Evaluation.AttributeInfo import AttributeInfo
-from src.feature_engineering.ExploreKit.method.Data.Dataset import Dataset
-from src.feature_engineering.ExploreKit.method.Evaluation.InformationGainFilterEvaluator import InformationGainFilterEvaluator
-from src.feature_engineering.ExploreKit.method.Evaluation.StatisticOperations import StatisticOperations
-from src.feature_engineering.ExploreKit.method.Evaluation.OperatorAssignment import OperatorAssignment
-from src.feature_engineering.ExploreKit.method.Operators import Operator
-from src.feature_engineering.ExploreKit.method.Operators.UnaryOperators.UnaryOperator import UnaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.AttributeInfo import AttributeInfo
+from src.feature_engineering.excluded.ExploreKit.method.Data.Dataset import Dataset
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.InformationGainFilterEvaluator import InformationGainFilterEvaluator
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.StatisticOperations import StatisticOperations
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.OperatorAssignment import OperatorAssignment
+from src.feature_engineering.excluded.ExploreKit.method.Operators import Operator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.UnaryOperators.UnaryOperator import UnaryOperator
 
 
 class OperatorAssignmentBasedAttributes:

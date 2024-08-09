@@ -5,15 +5,15 @@ import pandas as pd
 import scipy
 import scipy.stats
 
-from src.feature_engineering.ExploreKit.method.Evaluation.AttributeInfo import AttributeInfo
-from src.feature_engineering.ExploreKit.method.Evaluation.AucWrapperEvaluator import AucWrapperEvaluator
-from src.feature_engineering.ExploreKit.method.Data.Dataset import Dataset
-from src.feature_engineering.ExploreKit.method.Evaluation.StatisticOperations import StatisticOperations
-from src.feature_engineering.ExploreKit.method.Operators import Operator
-from src.feature_engineering.ExploreKit.method.Operators.UnaryOperators.EqualRangeDiscretizerUnaryOperator import EqualRangeDiscretizerUnaryOperator
-from src.feature_engineering.ExploreKit.method.Evaluation.InformationGainFilterEvaluator import InformationGainFilterEvaluator
-from src.feature_engineering.ExploreKit.method.Utils.Logger import Logger
-from src.feature_engineering.ExploreKit.method.Properties import Properties
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.AttributeInfo import AttributeInfo
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.AucWrapperEvaluator import AucWrapperEvaluator
+from src.feature_engineering.excluded.ExploreKit.method.Data.Dataset import Dataset
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.StatisticOperations import StatisticOperations
+from src.feature_engineering.excluded.ExploreKit.method.Operators import Operator
+from src.feature_engineering.excluded.ExploreKit.method.Operators.UnaryOperators.EqualRangeDiscretizerUnaryOperator import EqualRangeDiscretizerUnaryOperator
+from src.feature_engineering.excluded.ExploreKit.method.Evaluation.InformationGainFilterEvaluator import InformationGainFilterEvaluator
+from src.feature_engineering.excluded.ExploreKit.method.Utils.Logger import Logger
+from src.feature_engineering.excluded.ExploreKit.method.Properties import Properties
 
 
 class DatasetBasedAttributes:
