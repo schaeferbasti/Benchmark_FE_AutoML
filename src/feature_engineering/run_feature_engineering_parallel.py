@@ -36,7 +36,7 @@ def run_and_save(feature_engineering_methods, task_id):
     for method in feature_engineering_methods:
         if not os.path.isfile('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '.csv'):
             df_times = get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, task_hint)
-    df_times.to_csv('src/datasets/feature_engineered_datasets/exec_times.csv', index=False)
+            df_times.to_csv('src/datasets/feature_engineered_datasets/exec_times/exec_times_' + name + '_' + method + '.csv', index=False)
 
 
 def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, task_hint):
