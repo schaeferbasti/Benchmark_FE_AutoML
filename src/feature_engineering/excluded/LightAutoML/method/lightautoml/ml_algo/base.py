@@ -16,7 +16,7 @@ from typing import cast
 
 import numpy as np
 
-from src.amltk.feature_engineering.LightAutoML.method.lightautoml.validation.base import TrainValidIterator
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.validation.base import TrainValidIterator
 
 from ..dataset.base import LAMLDataset
 from ..dataset.np_pd_dataset import CSRSparseDataset

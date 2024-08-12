@@ -11,7 +11,7 @@ from typing import Union
 
 from pandas import Series
 
-from src.amltk.feature_engineering.LightAutoML.method.lightautoml.validation.base import TrainValidIterator
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.validation.base import TrainValidIterator
 
 from ...dataset.base import LAMLDataset
 from ...ml_algo.base import MLAlgo

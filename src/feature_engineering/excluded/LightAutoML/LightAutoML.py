@@ -4,6 +4,7 @@ import pandas as pd
 
 import src.feature_engineering.excluded.LightAutoML.method.lightautoml.pipelines.features.lgb_pipeline as lgb
 from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.base import LAMLDataset
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.np_pd_dataset import PandasDataset
 from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.roles import TargetRole, CategoryRole, NumericRole, DatetimeRole, FoldsRole
 from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.utils import roles_parser
 
@@ -12,15 +13,16 @@ def get_xxx_features(train_x, train_y, test_x, task_hint) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
-    # columns = train_x.columns
+    columns = train_x.columns
     # columns.append("target")
     data = pd.DataFrame(train_x, train_y)
     features = data.columns
     roles = extract_roles(train_x)
 
-    laml_dataset = LAMLDataset(data, features, roles_parser(roles))
+    pandas_dataset = PandasDataset(data, roles_parser(roles), task_hint)
+    laml_dataset = LAMLDataset(pandas_dataset, features, roles_parser(roles))
     lgb_pipeline = lgb.LGBSimpleFeatures()
-    train_x = lgb_pipeline.fit_transform(laml_dataset)
+    train_x = lgb_pipeline.fit_transform(pandas_dataset)
     test_x = lgb_pipeline.transform(test_x)
     train_x = pd.DataFrame(train_x)
     test_x = pd.DataFrame(test_x)

@@ -11,8 +11,8 @@ from typing import Tuple
 from typing import TypeVar
 from typing import cast
 
-from src.amltk.feature_engineering.LightAutoML.method.lightautoml.dataset.base import LAMLDataset
-from src.amltk.feature_engineering.LightAutoML.method.lightautoml.pipelines.features.base import FeaturesPipeline
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.base import LAMLDataset
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.pipelines.features.base import FeaturesPipeline
 
 
 # from ..pipelines.selection.base import SelectionPipeline

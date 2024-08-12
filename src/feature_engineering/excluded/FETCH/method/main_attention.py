@@ -8,8 +8,8 @@ import warnings
 
 from sklearn.model_selection import train_test_split
 
-from src.feature_engineering.FETCH.method.autofe import AutoFE
-from src.feature_engineering.FETCH.method.config_pool import configs
+from src.feature_engineering.excluded.FETCH.method.autofe import AutoFE
+from src.feature_engineering.excluded.FETCH.method.config_pool import configs
 
 warnings.filterwarnings("ignore")
 

@@ -5,7 +5,7 @@ from typing import List
 from typing import Optional
 from typing import Sequence
 
-from src.amltk.feature_engineering.LightAutoML.method.lightautoml.dataset.base import LAMLDataset
+from src.feature_engineering.excluded.LightAutoML.method.lightautoml.dataset.base import LAMLDataset
 
 
 def map_pipeline_names(input_names: Sequence[str], output_names: Sequence[str]) -> List[Optional[str]]:
