@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
+from tensorflow.compat.v1.nn.rnn_cell import BasicLSTMCell
 from keras.api.models import Sequential
 from keras.api.layers import Dense, Activation
 from keras import optimizers, regularizers
@@ -26,10 +28,10 @@ class Controller:
     def _create_rnn(self):
         self.rnns = {}
         for i in range(self.num_feature):
-            self.rnns['rnn%d' % i] = tf.contrib.rnn.BasicLSTMCell(
-                num_units=self.num_op, name='rnn%d' % i)
+            self.rnns['rnn%d' % i] = BasicLSTMCell(num_units=self.num_op)
 
     def _create_placeholder(self):
+        tf.compat.v1.disable_eager_execution()
         self.concat_action = tf.placeholder(tf.int32,
                                             shape=[self.num_batch, self.num_action], name='concat_action')
 
@@ -40,6 +42,13 @@ class Controller:
                                     shape=[None, self.num_action], name='state')
         self.value = tf.placeholder(tf.float32,
                                     shape=[None, 1], name='value')
+        """
+        self.concat_action = tf.Variable(tf.ones(shape=[self.num_batch, self.num_action]), dtype=tf.float32,
+                                         name='concat_action')
+        self.rewards = tf.Variable(tf.ones(shape=[self.num_batch, self.num_action]), dtype=tf.float32, name='rewards')
+        self.state = tf.Variable(tf.ones(shape=[self.num_action]), dtype=tf.float32, name='state')
+        self.value = tf.Variable(tf.ones(shape=[1]), dtype=tf.float32, name='value')
+        """
 
     def _create_variable(self):
         self.input0 = np.ones(shape=[self.num_feature, self.num_op], dtype=np.float32)
@@ -53,7 +62,7 @@ class Controller:
             Dense(4, kernel_regularizer=regularizers.l2(self.reg)),
             Activation('tanh'),
             Dense(1)])
-        self.value_optimizer = optimizers.Adam(lr=self.lr_value)
+        self.value_optimizer = optimizers.Adam(learning_rate=self.lr_value)
         self.value_estimator.compile(
             optimizer=self.value_optimizer, loss='mean_squared_error')
 

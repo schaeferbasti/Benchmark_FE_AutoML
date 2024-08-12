@@ -59,13 +59,12 @@ def parse_args():
     parser.add_argument('--multiprocessing', type=bool,
                         default=True, help='whether get reward using multiprocess')
     parser.add_argument('--package', nargs='?',
-                        default='weka', help='choose sklearn or weka to evaluate')
+                        default='sklearn', help='choose sklearn or weka to evaluate')
     return parser.parse_args()
 
 
-def get_reword(actions):
+def get_reword(X, y, actions):
     global path, args, method, origin_result
-    X = pd.read_csv(path)
     num_feature = X.shape[1] - 1
     action_per_feature = int(len(actions) / num_feature)
     copies, copies_run, rewards = {}, [], []
@@ -138,12 +137,7 @@ def get_reword(actions):
     elif method == 'test':
         for i in range(len(copies_run)):
             X.insert(0, 'new%d' % i, copies_run[i])
-        if args.package == 'weka':
-            result = get_weka_result(X)
-        elif args.package == 'sklearn':
-            y = X[X.columns[-1]]
-            del X[X.columns[-1]]
-            result = evaluate(X, y, args)
+        result = evaluate(X, y, args)
         return result
 
 
@@ -211,25 +205,18 @@ def random_run(num_random_sample, model, l=None, p=None):
     return random_result, random_sample
 
 
-def train(model, l=None, p=None):
+def train(X, y, task_hint, model, eval_metric, l=None, p=None):
     global path, args, infos, method, origin_result, num_process
 
-    X = pd.read_csv(path)
-    if args.package == 'weka':
-        origin_result = get_weka_result(X)
-    elif args.package == 'sklearn':
-        y = X[X.columns[-1]]
-        del X[X.columns[-1]]
-        print(X.shape)
-        origin_result = evaluate(X, y, args)
+    origin_result = evaluate(X, y, task_hint, model, eval_metric)
     best_result = origin_result
     print(origin_result)
 
-    config = tf.ConfigProto()
+    config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
-    with tf.Session(config=config) as sess:
-        init_op = tf.group(tf.global_variables_initializer(),
-                           tf.local_variables_initializer())
+    with tf.compat.v1.Session(config=config) as sess:
+        init_op = tf.group(tf.compat.v1.global_variables_initializer(),
+                           tf.compat.v1.local_variables_initializer())
         sess.run(init_op)
 
         model_result = -10000.0
@@ -375,7 +362,7 @@ def get_weka_result(X):
     return result
 
 
-def main(df):
+def main(X, y, task_hint):
     args = parse_args()
     origin_result, method, name = None, None, None
     num_process, infos = 64, []
@@ -395,22 +382,12 @@ def main(df):
         lock = m.Lock()
         ports = m.dict(zip(ports, port_state))
 
-    num_feature = df.shape[1]
+    num_feature = X.shape[1]
     if args.controller == 'rnn':
         controller = Controller(args, num_feature)
     elif args.controller == 'pure':
         controller = Controller_pure(args, num_feature)
     controller.build_graph()
-
-    if args.package == 'weka':
-        train(controller, lock, ports)
-    elif args.package == 'sklearn':
-        train(controller)
-
+    train(X, y, task_hint, "RF", "1-rae", controller)
     save_result(infos, name)
-
-    if args.package == 'weka':
-        stop_service_pool(pids)
-        for port in conns.keys():
-            conns[port].close()
     return infos, name

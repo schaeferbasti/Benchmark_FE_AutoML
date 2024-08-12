@@ -28,37 +28,37 @@ def mod_column(c1, c2):
     return r
 
 
-def evaluate(X, y, args):
-    if args.task == 'regression':
-        if args.model == 'LR':
+def evaluate(X, y, task_hint, model, eval_metric):
+    if task_hint == 'regression':
+        if model == 'LR':
             model = Lasso()
-        elif args.model == 'RF':
+        elif model == 'RF':
             model = RandomForestRegressor(n_estimators=10, random_state=0)
-        if args.evaluate == 'mae':
+        if eval_metric == 'mae':
             r_mae = cross_val_score(model, X, y, cv=5,
                                     scoring='neg_mean_absolute_error').mean()
             return r_mae
-        elif args.evaluate == 'mse':
+        elif eval_metric == 'mse':
             r_mse = cross_val_score(model, X, y, cv=5,
                                     scoring='neg_mean_squared_error').mean()
             return r_mse
-        elif args.evaluate == 'r2':
+        elif eval_metric == 'r2':
             r_r2 = cross_val_score(model, X, y, cv=5).mean()
             return r_r2
 
-    elif args.task == 'classification':
+    elif task_hint == 'classification':
         le = LabelEncoder()
         y = le.fit_transform(y)
 
-        if args.model == 'RF':
+        if model == 'RF':
             model = RandomForestClassifier(n_estimators=10, random_state=0)
-        elif args.model == 'LR':
+        elif model == 'LR':
             model = LogisticRegression(multi_class='ovr')
-        elif args.model == 'SVM':
+        elif model == 'SVM':
             model = svm.SVC()
-        if args.evaluate == 'f_score':
+        if eval_metric == 'f_score':
             s = cross_val_score(model, X, y, scoring='f1', cv=5).mean()
-        elif args.evaluate == 'auc':
+        elif eval_metric == 'auc':
             model = RandomForestClassifier(max_depth=10, random_state=0)
             split_pos = X.shape[0] // 10
             X_train, X_test = X[:9 * split_pos], X[9 * split_pos:]
