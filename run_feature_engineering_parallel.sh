@@ -4,14 +4,14 @@
 #SBATCH --partition mlhiwidlc_gpu-rtx2080
 
 # Define a name for your job
-#SBATCH --job-name AMLTK_Pipeline
+#SBATCH --job-name FeaEng_Pipeline
 
 # Define the files to write the outputs of the job to.
 #SBATCH --output logs/%x-%A_%a.out
 #SBATCH --error logs/%x-%A_%a.err
 
 # Define the amount of memory required per node
-#SBATCH --mem 48GB
+#SBATCH --mem 32GB
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=localtmp:100
 
