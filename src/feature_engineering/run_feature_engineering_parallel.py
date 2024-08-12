@@ -5,7 +5,6 @@ import time
 import pandas as pd
 from pynisher import limit, WallTimeoutException, MemoryLimitException
 
-# wrong path because of setting home directory in batch script, please do not change
 from src.datasets.Datasets import get_amlb_dataset, construct_dataframe
 from src.feature_engineering.autofeat.Autofeat import get_autofeat_features
 from src.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
