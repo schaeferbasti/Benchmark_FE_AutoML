@@ -18,7 +18,7 @@
 #SBATCH --propagate=NONE
 
 # Define job array
-#SBATCH --array=0-95  # Adjust based on the number of methods
+#SBATCH --array=0-87  # Adjust based on the number of methods
 
 echo "Workingdir: $PWD"
 echo "Started at $(date)"
