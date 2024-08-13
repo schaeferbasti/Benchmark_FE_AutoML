@@ -12,7 +12,7 @@
 
 # Define the amount of memory required per node
 #SBATCH --mem 48GB
-#SBATCH --cpus-per-task=1 # cores
+#SBATCH --cpus-per-task=8 # cores
 #SBATCH --gres=localtmp:100 # DISK
 
 #SBATCH --propagate=NONE # to avoid a bug
