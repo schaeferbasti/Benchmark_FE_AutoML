@@ -62,8 +62,21 @@ def main(args):
         train_data = TabularDataset(train_data)
         test_data = TabularDataset(test_data)
 
-        predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="root_mean_squared_error").fit(train_data, time_limit=time_limit, num_cpus=num_cpus, ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
-        eval_dict = predictor.evaluate(test_data)
+        if task_hint == 'regression':
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="root_mean_squared_error").fit(
+                train_data, time_limit=time_limit, num_cpus=num_cpus,
+                ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
+            eval_dict = predictor.evaluate(test_data)
+        elif task_hint == 'binary':
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="roc_auc").fit(
+                train_data, time_limit=time_limit, num_cpus=num_cpus,
+                ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
+            eval_dict = predictor.evaluate(test_data)
+        elif task_hint == 'multiclass':
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="log_loss").fit(
+                train_data, time_limit=time_limit, num_cpus=num_cpus,
+                ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
+            eval_dict = predictor.evaluate(test_data)
         print(eval_dict)
 
 
