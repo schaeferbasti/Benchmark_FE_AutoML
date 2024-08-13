@@ -51,8 +51,8 @@ preprocessing = Split(
 )
 
 
-def safe_dataframe(df, working_dir, dataset_name, fold_number, method_name):
-    file_string = "results_" + str(dataset_name) + "_" + str(method_name) + "_" + str(fold_number) + ".parquet"
+def safe_dataframe(df, working_dir, dataset_name, fold_number, method_name, classifier_name):
+    file_string = f"results_{dataset_name}_{method_name}_{classifier_name}_{fold_number}.parquet"
     results_to = working_dir / file_string
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
