@@ -138,40 +138,41 @@ def main() -> None:
         print("\n\n\n*******************************\n Fold " + str(fold) + "\n*******************************\n")
         inner_fold_seed = random_seed + fold
         # Iterate over all chosen datasets
-        for option in all_datasets:
-            # Get train test split dataset
-            train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
+        try:
+            for option in all_datasets:
+                # Get train test split dataset
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=option)
 
-            # ############# Feature Engineering with xxx ############# #
-            file_name = "results_" + str(name) + "_xxx_" + str(fold) + ".parquet"
-            file = working_dir / file_name
-            print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
-            if rerun or not os.path.isfile(file):
-                print("Run OpenFE Method on Dataset")
-                # train_x, train_y, test_x, test_y = get_splits(train_x, train_y, test_x, test_y)
-                train_x_xxx, test_x_xxx = get_openFE_features(train_x, train_y, test_x, 1)
-                evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
-                                             on_trial_exception, task_hint)
-                history_xxx = pipeline.optimize(
-                    target=evaluator.fn,
-                    metric=metric_definition,
-                    optimizer=optimizer_cls,
-                    seed=inner_fold_seed,
-                    process_memory_limit=per_process_memory_limit,
-                    process_walltime_limit=per_process_walltime_limit,
-                    working_dir=working_dir,
-                    max_trials=max_trials,
-                    timeout=max_time,
-                    display=display,
-                    wait=wait_for_all_workers_to_finish,
-                    n_workers=n_workers,
-                    on_trial_exception=on_trial_exception,
-                )
-                df_xxx = history_xxx.df()
-                safe_dataframe(df_xxx, working_dir, name, fold, "openfe")
-            else:
-                print("File exists, going for next method")
-
-
+                # ############# Feature Engineering with xxx ############# #
+                file_name = "results_" + str(name) + "_xxx_" + str(fold) + ".parquet"
+                file = working_dir / file_name
+                print("\n\n\n*******************************\n" + str(file_name) + "\n*******************************\n")
+                if rerun or not os.path.isfile(file):
+                    print("Run OpenFE Method on Dataset")
+                    # train_x, train_y, test_x, test_y = get_splits(train_x, train_y, test_x, test_y)
+                    train_x_xxx, test_x_xxx = get_openFE_features(train_x, train_y, test_x, 1)
+                    evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
+                                                 on_trial_exception, task_hint)
+                    history_xxx = pipeline.optimize(
+                        target=evaluator.fn,
+                        metric=metric_definition,
+                        optimizer=optimizer_cls,
+                        seed=inner_fold_seed,
+                        process_memory_limit=per_process_memory_limit,
+                        process_walltime_limit=per_process_walltime_limit,
+                        working_dir=working_dir,
+                        max_trials=max_trials,
+                        timeout=max_time,
+                        display=display,
+                        wait=wait_for_all_workers_to_finish,
+                        n_workers=n_workers,
+                        on_trial_exception=on_trial_exception,
+                    )
+                    df_xxx = history_xxx.df()
+                    safe_dataframe(df_xxx, working_dir, name, fold, "openfe", pipeline.name)
+                else:
+                    print("File exists, going for next method")
+        except:
+            print("Exception occured on dataset :" + name)
 if __name__ == "__main__":
     main()
