@@ -170,12 +170,14 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
         try:
             fe = limit(get_openFE_features, wall_time=(4, "h"), memory=(32, "GB"))
             start_time = time.time()  #
-            train_x, test_x = fe(train_x, train_y, test_x, 1)
+            train_x, test_x = fe(train_x, train_y, test_x, 1, name)
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
         except (WallTimeoutException, MemoryLimitException):
             df = pd.DataFrame()
+    else:
+        df = pd.DataFrame()
 
     df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '.csv', index=False)
     df_times = df_times._append({'Dataset': name, 'Method': method, 'Time': execution_time}, ignore_index=True)
