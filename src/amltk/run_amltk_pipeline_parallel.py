@@ -538,7 +538,7 @@ def main(args):
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
                 if rerun or not os.path.isfile(file):
-                    train_x, test_x = get_openFE_features(train_x, train_y, test_x, 1)
+                    train_x, test_x = get_openFE_features(train_x, train_y, test_x, 1, name)
                     evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                  on_trial_exception, task_hint)
                     history = pipeline.optimize(

@@ -164,6 +164,9 @@ class OpenFE:
 
         Parameters
         ----------
+
+        name: str
+            The name of the dataset
         data: pd.DataFrame
             the input data
 
@@ -282,7 +285,7 @@ class OpenFE:
         self.stage2_params = stage2_params
         self.is_stage1 = is_stage1
         self.n_repeats = n_repeats
-        self.tmp_save_path = './openfe_tmp_data_xx_' + name + '.feather',
+        self.tmp_save_path = './openfe_tmp_data_xx_' + str(name) + '.feather'
         self.n_jobs = n_jobs
         self.seed = seed
         self.verbose = verbose

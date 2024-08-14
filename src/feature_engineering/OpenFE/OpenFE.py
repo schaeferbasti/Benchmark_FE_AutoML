@@ -9,6 +9,6 @@ def get_openFE_features(train_x, train_y, test_x, n_jobs, name) -> tuple[
     pd.DataFrame
 ]:
     openFE = OpenFE()
-    features = openFE.fit(train_x, label=train_y, n_jobs=n_jobs, name)  # generate new features
+    features = openFE.fit(name=name, data=train_x, label=train_y, n_jobs=n_jobs)  # generate new features
     train_x, test_x = transform(train_x, test_x, features, n_jobs=n_jobs)
     return train_x, test_x

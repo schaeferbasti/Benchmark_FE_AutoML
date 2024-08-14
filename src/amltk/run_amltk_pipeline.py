@@ -150,7 +150,7 @@ def main() -> None:
                 if rerun or not os.path.isfile(file):
                     print("Run OpenFE Method on Dataset")
                     # train_x, train_y, test_x, test_y = get_splits(train_x, train_y, test_x, test_y)
-                    train_x_xxx, test_x_xxx = get_openFE_features(train_x, train_y, test_x, 1)
+                    train_x_xxx, test_x_xxx = get_openFE_features(train_x, train_y, test_x, 1, name)
                     evaluator = get_cv_evaluator(train_x_xxx, train_y, test_x_xxx, test_y, inner_fold_seed,
                                                  on_trial_exception, task_hint)
                     history_xxx = pipeline.optimize(
