@@ -2,7 +2,7 @@ import warnings
 import os
 
 import pandas as pd
-from autogluon.tabular import TabularDataset, TabularPredictor
+from src.autogluon.autogluon.tabular.src.autogluon.tabular.predictor.predictor import (TabularDataset, TabularPredictor)
 from sklearn.exceptions import UndefinedMetricWarning
 
 from src.datasets.Datasets import preprocess_data, preprocess_target
@@ -51,7 +51,7 @@ for dataset_file in dataset_files:
         X = data.drop(label, axis=1)
         y = data[label]
 
-        train_x, train_y, test_x, test_y = get_splits(X, y)
+        train_x, train_y, test_x, test_y = get_splits(X, y, 42)
 
         train_x, test_x = preprocess_data(train_x, test_x)
         train_y = preprocess_target(train_y)
@@ -63,13 +63,22 @@ for dataset_file in dataset_files:
         test_data = TabularDataset(test_data)
 
         eval_dict = None
+        leaderboard = None
         if task_hint == 'regression':
-            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="root_mean_squared_error").fit(train_data, time_limit=time_limit, num_cpus=num_cpus, ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="root_mean_squared_error").fit(
+                train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=32)
             eval_dict = predictor.evaluate(test_data)
+            leaderboard = predictor.leaderboard(test_data)
         elif task_hint == 'binary':
-            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="roc_auc").fit(train_data, time_limit=time_limit, num_cpus=num_cpus, ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="roc_auc").fit(
+                train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=32)
             eval_dict = predictor.evaluate(test_data)
+            leaderboard = predictor.leaderboard(test_data)
         elif task_hint == 'multiclass':
-            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="log_loss").fit(train_data, time_limit=time_limit, num_cpus=num_cpus, ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
+            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="log_loss").fit(
+                train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=32)
             eval_dict = predictor.evaluate(test_data)
+            leaderboard = predictor.leaderboard(test_data)
         print(eval_dict)
+        print(leaderboard)
+

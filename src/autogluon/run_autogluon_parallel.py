@@ -12,6 +12,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UndefinedMetricWarning)
 
 def main(args):
+    folds = 10
     csv_files = []
     dataset_file = args.method
     if dataset_file.endswith(".csv") and not dataset_file.__contains__("exec_times"):
@@ -51,33 +52,38 @@ def main(args):
         X = data.drop(label, axis=1)
         y = data[label]
 
-        train_x, train_y, test_x, test_y = get_splits(X, y)
+        for fold in range(folds):
+            train_x, train_y, test_x, test_y = get_splits(X, y, fold)
 
-        train_x, test_x = preprocess_data(train_x, test_x)
-        train_y = preprocess_target(train_y)
-        test_y = preprocess_target(test_y)
+            train_x, test_x = preprocess_data(train_x, test_x)
+            train_y = preprocess_target(train_y)
+            test_y = preprocess_target(test_y)
 
-        train_data = pd.concat([train_x, train_y], axis=1)
-        test_data = pd.concat([test_x, test_y], axis=1)
-        train_data = TabularDataset(train_data)
-        test_data = TabularDataset(test_data)
+            train_data = pd.concat([train_x, train_y], axis=1)
+            test_data = pd.concat([test_x, test_y], axis=1)
+            train_data = TabularDataset(train_data)
+            test_data = TabularDataset(test_data)
 
-        if task_hint == 'regression':
-            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="root_mean_squared_error").fit(
-                train_data, time_limit=time_limit, num_cpus=num_cpus,
-                ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
-            eval_dict = predictor.evaluate(test_data)
-        elif task_hint == 'binary':
-            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="roc_auc").fit(
-                train_data, time_limit=time_limit, num_cpus=num_cpus,
-                ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
-            eval_dict = predictor.evaluate(test_data)
-        elif task_hint == 'multiclass':
-            predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="log_loss").fit(
-                train_data, time_limit=time_limit, num_cpus=num_cpus,
-                ag_args_fit={max_memory_usage_ratio: max_memory_usage_ratio})
-            eval_dict = predictor.evaluate(test_data)
-        print(eval_dict)
+            path = "logs/autogluon_" + dataset + "_" + method + "_" + fold + ".csv"
+
+            if task_hint == 'regression':
+                predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="root_mean_squared_error", path=path).fit(
+                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=32)
+                eval_dict = predictor.evaluate(test_data)
+                leaderboard = predictor.leaderboard(test_data)
+            elif task_hint == 'binary':
+                predictor = TabularPredictor(label=label, verbosity=2, problem_type=task_hint, eval_metric="roc_auc", path=path).fit(
+                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=32)
+                eval_dict = predictor.evaluate(test_data)
+                leaderboard = predictor.leaderboard(test_data)
+            elif task_hint == 'multiclass':
+                predictor = TabularPredictor(label=label, verbosity=4, problem_type=task_hint, eval_metric="log_loss", path=path).fit(
+                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=32)
+                eval_dict = predictor.evaluate(test_data)
+                leaderboard = predictor.leaderboard(test_data)
+            print(eval_dict)
+            print(leaderboard)
+
 
 
 if __name__ == '__main__':
