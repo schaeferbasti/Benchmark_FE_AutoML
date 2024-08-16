@@ -1,0 +1,12 @@
+matcher:
+  loss:
+    type: "contrastive_loss"
+    pos_margin: 0.8
+    neg_margin: 0.2
+  distance:
+    type: "cosine_similarity"
+  miner:
+    type: "pair_margin_miner"
+    pos_margin: 0.6
+    neg_margin: 0.4
+  matches:

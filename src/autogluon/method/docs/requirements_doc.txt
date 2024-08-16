@@ -1,0 +1,9 @@
+furo
+myst_nb
+sphinx
+sphinx-copybutton
+sphinx-design
+sphinx-inline-tabs
+sphinx-togglebutton
+sphinxext-opengraph
+sphinxcontrib-googleanalytics

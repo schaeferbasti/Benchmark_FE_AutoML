@@ -297,7 +297,7 @@ def get_splits(train_x, train_y, test_x, test_y) -> tuple[
     return train_x, train_y, test_x, test_y
 
 
-def get_splits(X, y) -> tuple[
+def get_splits(X, y, seed) -> tuple[
     pd.DataFrame,
     pd.Series,
     pd.DataFrame,
@@ -312,7 +312,7 @@ def get_splits(X, y) -> tuple[
     splits = get_cv_split_for_data(
         X,
         y,
-        splits_seed=42,
+        splits_seed=seed,
         n_splits=2,
         stratified_split=False,
         # auto_fix_stratified_splits=True

@@ -1,7 +1,7 @@
 # https://github.com/autogluon/autogluon
 
 import pandas as pd
-from autogluon.features.generators import AutoMLInterpretablePipelineFeatureGenerator, AutoMLPipelineFeatureGenerator, IdentityFeatureGenerator
+from src.autogluon.method.features.src.autogluon.features.generators import AutoMLInterpretablePipelineFeatureGenerator, AutoMLPipelineFeatureGenerator, IdentityFeatureGenerator
 
 
 def get_autogluon_features(train_x, train_y, test_x) -> tuple[

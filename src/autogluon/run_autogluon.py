@@ -2,7 +2,7 @@ import warnings
 import os
 
 import pandas as pd
-from src.autogluon.autogluon.tabular.src.autogluon.tabular.predictor.predictor import (TabularDataset, TabularPredictor)
+from src.autogluon.method.tabular.src.autogluon.tabular import (TabularDataset, TabularPredictor)
 from sklearn.exceptions import UndefinedMetricWarning
 
 from src.datasets.Datasets import preprocess_data, preprocess_target
@@ -31,7 +31,7 @@ for dataset_file in dataset_files:
         else:
             exec_time = 0  # no FE method executed on dataset -> raw dataset
 
-        time_limit = 14400 - exec_time  # 4h in seconds - time needed for feature engineering
+        time_limit = 300 - exec_time  # 4h in seconds - time needed for feature engineering
         max_memory_usage_ratio = 0.1  # share of total memory (we want to give 32GB to autogluon)
         num_cpus = 8
 

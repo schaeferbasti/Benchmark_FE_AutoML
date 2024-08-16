@@ -1,0 +1,2 @@
+class ExhaustedSearchSpaceError(Exception):
+    pass
