@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import openml
-from pandas import Series, DataFrame
+from pandas import DataFrame
 from sklearn.datasets import fetch_california_housing
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
@@ -109,7 +109,7 @@ def preprocess_target(label) -> DataFrame:
     return label
 
 
-def get_amlb_dataset(openml_task_id) -> tuple[
+def get_amlb_dataset(openml_task_id, split) -> tuple[
     pd.DataFrame,
     pd.DataFrame,
     pd.DataFrame | pd.Series,
@@ -117,15 +117,8 @@ def get_amlb_dataset(openml_task_id) -> tuple[
     str,
     str
 ]:
-    outer_fold_number = 0
-    task = openml.tasks.get_task(
-        openml_task_id,
-        download_splits=True,
-        download_data=True,
-        download_qualities=True,
-        download_features_meta_data=True,
-    )
-    train_idx, test_idx = task.get_train_test_split_indices(fold=0)
+    task = openml.tasks.get_task(openml_task_id)
+    train_idx, test_idx = task.get_train_test_split_indices(fold=split)
     name = task.get_dataset().name
     print(task.task_type)
     if task.task_type == "Supervised Classification":
@@ -134,7 +127,7 @@ def get_amlb_dataset(openml_task_id) -> tuple[
         task_hint = "multi-classification"
     else:
         task_hint = "regression"
-    X, y = task.get_X_and_y(dataset_format="dataframe")  # type: ignore
+    X, y = task.get_X_and_y(dataset_format="dataframe")
     train_x, train_y = X.iloc[train_idx], y.iloc[train_idx]
     test_x, test_y = X.iloc[test_idx], y.iloc[test_idx]
     return train_x, train_y, test_x, test_y, name, task_hint

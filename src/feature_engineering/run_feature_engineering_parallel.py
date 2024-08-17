@@ -6,6 +6,7 @@ import pandas as pd
 from pynisher import limit, WallTimeoutException, MemoryLimitException
 
 from src.datasets.Datasets import get_amlb_dataset, construct_dataframe
+
 from src.feature_engineering.autofeat.Autofeat import get_autofeat_features
 from src.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
 from src.feature_engineering.BioAutoML.BioAutoML import get_bioautoml_features
@@ -29,17 +30,19 @@ def main(args):
 
 
 def run_and_save(feature_engineering_methods, task_id):
-    train_x, train_y, test_x, test_y, name, task_hint = get_amlb_dataset(task_id)
-    df = construct_dataframe(train_x, train_y, test_x, test_y)
-    df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + "_" + name + '_original.csv', index=False)
-    df_times = pd.DataFrame()
-    for method in feature_engineering_methods:
-        if not os.path.isfile('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '.csv'):
-            df_times = get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, task_hint)
-            df_times.to_csv('src/datasets/feature_engineered_datasets/exec_times/exec_times_' + name + '_' + method + '.csv', index=False)
+    splits = 10
+    for split in range(splits):
+        train_x, train_y, test_x, test_y, name, task_hint = get_amlb_dataset(task_id, split)
+        df = construct_dataframe(train_x, train_y, test_x, test_y)
+        df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + "_" + name + '_original_' + str(split) + '.csv', index=False)
+        df_times = pd.DataFrame()
+        for method in feature_engineering_methods:
+            if not os.path.isfile('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + str(split) + '.csv'):
+                df_times = get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, split, task_hint)
+                df_times.to_csv('src/datasets/feature_engineered_datasets/exec_times/exec_times_' + name + '_' + method + '_' + str(split) + '.csv', index=False)
 
 
-def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, task_hint):
+def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, split, task_hint):
     execution_time = 0
     df = pd.DataFrame()
 
@@ -189,13 +192,13 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
         except (WallTimeoutException, MemoryLimitException):
             df = pd.DataFrame()
 
-    df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '.csv', index=False)
+    df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + split + '.csv', index=False)
     df_times = df_times._append({'Dataset': name, 'Method': method, 'Time': execution_time}, ignore_index=True)
     return df_times
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run feature engineering methods')
-    parser.add_argument('--method', type=str, required=True, help='Feature engineering method to use')
+    parser.add_argument('--method', type=str, required=True, help='Feature engineering dataset to use')
     args = parser.parse_args()
     main(args)
