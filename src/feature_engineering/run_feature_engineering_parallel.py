@@ -18,7 +18,7 @@ from src.feature_engineering.H2O.H2O import get_h2o_features
 from src.feature_engineering.MACFE.MACFE import get_macfe_features
 from src.feature_engineering.MAFESE.MAFESE import get_mafese_features
 from src.feature_engineering.MLJAR.MLJAR import get_mljar_features
-from src.feature_engineering.NFS.NFS import get_nfs_features
+# from src.feature_engineering.NFS.NFS import get_nfs_features
 from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
 
 
@@ -170,17 +170,6 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
         except (WallTimeoutException, MemoryLimitException):
             df = pd.DataFrame()
 
-    elif method == "nfs":
-        try:
-            fe = limit(get_nfs_features, wall_time=(4, "h"), memory=(32, "GB"))
-            start_time = time.time()  #
-            train_x, test_x = fe(train_x, train_y, test_x, test_y, name)
-            end_time = time.time()  #
-            execution_time = end_time - start_time
-            df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException):
-            df = pd.DataFrame()
-
     elif method == "openfe":
         try:
             fe = limit(get_openFE_features, wall_time=(4, "h"), memory=(32, "GB"))
@@ -192,7 +181,20 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
         except (WallTimeoutException, MemoryLimitException):
             df = pd.DataFrame()
 
-    df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + split + '.csv', index=False)
+    """
+    elif method == "nfs":
+        try:
+            fe = limit(get_nfs_features, wall_time=(4, "h"), memory=(32, "GB"))
+            start_time = time.time()  #
+            train_x, test_x = fe(train_x, train_y, test_x, test_y, name)
+            end_time = time.time()  #
+            execution_time = end_time - start_time
+            df = construct_dataframe(train_x, train_y, test_x, test_y)
+        except (WallTimeoutException, MemoryLimitException):
+            df = pd.DataFrame()
+    """
+
+    df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + str(split) + '.csv', index=False)
     df_times = df_times._append({'Dataset': name, 'Method': method, 'Time': execution_time}, ignore_index=True)
     return df_times
 
