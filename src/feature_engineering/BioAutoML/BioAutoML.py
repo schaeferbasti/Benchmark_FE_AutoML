@@ -8,14 +8,14 @@ from catboost import CatBoostClassifier
 from hyperopt import hp, Trials, fmin, tpe, STATUS_OK
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import f1_score, balanced_accuracy_score
-from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score, KFold
 from sklearn.metrics import make_scorer
 
 
 global global_train_y
 
 
-def get_bioautoml_features(train_x, train_y, test_x, estimations) -> tuple[
+def get_bioautoml_features(train_x, train_y, test_x, estimations, continuous) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
@@ -27,11 +27,11 @@ def get_bioautoml_features(train_x, train_y, test_x, estimations) -> tuple[
     for column in train_y.select_dtypes(include=['object', 'category']).columns:
         train_y[column], uniques = pd.factorize(train_y[column])
 
-    train_x, test_x = feature_engineering(estimations, train_x, train_y.values.ravel(), test_x)
+    train_x, test_x = feature_engineering(estimations, train_x, train_y.values.ravel(), test_x, continuous)
     return train_x, test_x
 
 
-def feature_engineering(estimations, train, train_labels, test):
+def feature_engineering(estimations, train, train_labels, test, continuous):
     """Automated Feature Engineering - Bayesian Optimization"""
 
     global df_x, labels_y
@@ -63,7 +63,7 @@ def feature_engineering(estimations, train, train_labels, test):
              'Classifier': hp.choice('Classifier', [0, 1, 2])}
 
     trials = Trials()
-    best_tuning = fmin(fn=objective_rf,
+    best_tuning = fmin(fn=objective_rf(continuous),
                        space=space,
                        algo=tpe.suggest,
                        max_evals=estimations,
@@ -79,7 +79,7 @@ def feature_engineering(estimations, train, train_labels, test):
 
     return btrain, btest
 
-def objective_rf(space):
+def objective_rf(space, continuous):
     fasta_label_train = 2
     n_cpu = 1
 
@@ -106,7 +106,11 @@ def objective_rf(space):
     else:
         score = make_scorer(balanced_accuracy_score)
 
-    kfold = StratifiedKFold(n_splits=10, shuffle=True)
+    if continuous:
+        kfold = KFold(n_splits=10, shuffle=True)
+    else:
+        kfold = StratifiedKFold(n_splits=10, shuffle=True)
+
     metric = cross_val_score(model,
                              x,
                              labels_y,
