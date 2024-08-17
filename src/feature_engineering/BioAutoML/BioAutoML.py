@@ -106,9 +106,12 @@ def objective_rf(space, continuous):
     else:
         score = make_scorer(balanced_accuracy_score)
 
+    print("continuous")
     if continuous:
+        print("KFold")
         kfold = KFold(n_splits=10, shuffle=True)
     else:
+        print("StratifiedKFold")
         kfold = StratifiedKFold(n_splits=10, shuffle=True)
 
     metric = cross_val_score(model,
