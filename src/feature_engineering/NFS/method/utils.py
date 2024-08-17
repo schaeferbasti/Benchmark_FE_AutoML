@@ -1,15 +1,14 @@
 from sklearn.model_selection import cross_val_score, GridSearchCV
-from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso, Ridge
+from sklearn.linear_model import LogisticRegression, Lasso, Ridge
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import make_scorer, roc_auc_score
+from sklearn.metrics import roc_auc_score
 from sklearn import svm
 import numpy as np
 from weka.classifiers import Classifier, Evaluation
 from weka.core.classes import Random
 from weka.filters import Filter
 import weka.core.converters as converters
-import pandas as pd
 import weka.core.jvm as jvm
 import sys
 from rpyc import Service

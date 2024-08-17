@@ -1,6 +1,4 @@
-import pandas as pd
 import numpy as np
-# import tensorflow as tf
 import tensorflow.compat.v1 as tf
 from tensorflow.compat.v1.nn.rnn_cell import BasicLSTMCell
 from keras.api.models import Sequential
