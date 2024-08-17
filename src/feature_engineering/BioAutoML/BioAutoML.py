@@ -63,7 +63,7 @@ def feature_engineering(estimations, train, train_labels, test, continuous):
              'Classifier': hp.choice('Classifier', [0, 1, 2])}
 
     trials = Trials()
-    best_tuning = fmin(fn=objective_rf(space=space, continuous=continuous),
+    best_tuning = fmin(fn=lambda space: objective_rf(space, continuous),
                        space=space,
                        algo=tpe.suggest,
                        max_evals=estimations,
