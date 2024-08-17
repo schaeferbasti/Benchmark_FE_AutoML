@@ -1,21 +1,19 @@
 import logging
-from src.feature_engineering.NFS.method.Controller import Controller, Controller_sequence, Controller_pure
+import warnings
+import random
+import argparse
+
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
-import warnings
-
-warnings.filterwarnings("ignore")
-import argparse
-from multiprocessing import Pool, cpu_count, Process
-import multiprocessing
-from time import time, sleep
-import random
 import tensorflow as tf
 
-from src.feature_engineering.NFS.method.Java_service import start_service_pool, stop_service_pool, find_free_port
+from sklearn.preprocessing import MinMaxScaler
+from multiprocessing import Pool
+
+from src.feature_engineering.NFS.method.Controller import Controller, Controller_pure
 from src.feature_engineering.NFS.method.utils import mod_column, evaluate, init_name_and_log, save_result
 
+warnings.filterwarnings("ignore")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Run.")
@@ -156,10 +154,13 @@ def get_reward_per_feature(copies, count, former_result, former_copys=[None]):
 
     for copy in copies:
         X.insert(0, 'new', copy)
+        """
         if args.package == 'weka':
             current_result = get_weka_result(X)
+        
         elif args.package == 'sklearn':
-            current_result = evaluate(X, y, args)
+        """
+        current_result = evaluate(X, y, args)
 
         reward.append(current_result - previous_result)
         previous_result = current_result
@@ -186,10 +187,12 @@ def random_run(num_random_sample, model, l=None, p=None):
         samples.append(sample)
 
     if args.multiprocessing:
+        """
         if args.package == 'weka':
             pool = Pool(num_process, initializer=init, initargs=(l, p))
         elif args.package == 'sklearn':
-            pool = Pool(num_process)
+        """
+        pool = Pool(num_process)
         res = list(pool.map(get_reword, samples))
         pool.close()
         pool.join()
@@ -233,10 +236,12 @@ def train(X, y, task_hint, model, eval_metric, l=None, p=None):
 
             method = 'train'
             if args.multiprocessing:
+                """
                 if args.package == 'weka':
                     pool = Pool(num_process, initializer=init, initargs=(l, p))
                 elif args.package == 'sklearn':
-                    pool = Pool(num_process)
+                """
+                pool = Pool(num_process)
                 rewards = np.array(pool.map(get_reword, concat_action))
                 pool.close()
                 pool.join()
@@ -248,10 +253,12 @@ def train(X, y, task_hint, model, eval_metric, l=None, p=None):
 
             method = 'test'
             if args.multiprocessing:
+                """
                 if args.package == 'weka':
                     pool = Pool(num_process, initializer=init, initargs=(l, p))
                 elif args.package == 'sklearn':
-                    pool = Pool(num_process)
+                """
+                pool = Pool(num_process)
                 results = pool.map(get_reword, concat_action)
                 pool.close()
                 pool.join()
