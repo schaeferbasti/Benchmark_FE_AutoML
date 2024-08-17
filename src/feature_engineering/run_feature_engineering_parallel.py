@@ -3,7 +3,7 @@ import os
 import time
 
 import pandas as pd
-from pynisher import limit, WallTimeoutException, MemoryLimitException
+from pynisher import limit, WallTimeoutException, MemoryLimitException, PynisherException
 
 from src.datasets.Datasets import get_amlb_dataset, construct_dataframe
 
@@ -78,7 +78,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException):
+        except (WallTimeoutException, MemoryLimitException, PynisherException):
             df = pd.DataFrame()
         except ValueError:
             continuous = True
@@ -122,7 +122,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except (WallTimeoutException, MemoryLimitException, RecursionError):
             df = pd.DataFrame()
 
     elif method == "featurewiz":
