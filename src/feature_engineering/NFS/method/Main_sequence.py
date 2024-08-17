@@ -10,7 +10,6 @@ import argparse
 from multiprocessing import Pool, cpu_count, Process
 import multiprocessing
 from time import time, sleep
-import rpyc
 import random
 import tensorflow as tf
 
@@ -370,6 +369,7 @@ def main(X, y, task_hint):
     name = init_name_and_log(args)
     print(name)
 
+    """
     if args.package == 'weka':
         ports = [find_free_port() for _ in range(num_weka_process)]
         port_state = [True for _ in range(num_weka_process)]
@@ -381,6 +381,7 @@ def main(X, y, task_hint):
         m = multiprocessing.Manager()
         lock = m.Lock()
         ports = m.dict(zip(ports, port_state))
+    """
 
     num_feature = X.shape[1]
     if args.controller == 'rnn':
