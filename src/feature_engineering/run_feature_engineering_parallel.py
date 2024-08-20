@@ -37,7 +37,8 @@ def run_and_save(method, task_id):
     for split in range(splits):
         train_x, train_y, test_x, test_y, name, task_hint = get_amlb_dataset(task_id, split)
         df = construct_dataframe(train_x, train_y, test_x, test_y)
-        df.to_parquet('src/datasets/feature_engineered_datasets/' + task_hint + "_" + name + '_original_' + str(split) + '.parquet', index=False)
+        if not os.path.isfile('src/datasets/feature_engineered_datasets/' + task_hint + "_" + name + '_original_' + str(split) + '.parquet'):
+            df.to_parquet('src/datasets/feature_engineered_datasets/' + task_hint + "_" + name + '_original_' + str(split) + '.parquet', index=False)
         df_times = pd.DataFrame()
         if not os.path.isfile('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + str(split) + '.parquet'):
             df_times = get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, split, task_hint)
