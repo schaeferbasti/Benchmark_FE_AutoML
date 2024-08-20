@@ -15,6 +15,14 @@ def get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps, f
 
     # transformations = ("1/", "exp", "log", "abs", "sqrt", "^2", "^3", "1+", "1-", "sin", "cos", "exp-", "2^")
 
+    for column in train_x.select_dtypes(include=['object', 'category']).columns:
+        train_x[column], uniques = pd.factorize(train_x[column])
+    for column in test_x.select_dtypes(include=['object', 'category']).columns:
+        test_x[column], uniques = pd.factorize(test_x[column])
+    train_y = pd.DataFrame(train_y)
+    for column in train_y.select_dtypes(include=['object', 'category']).columns:
+        train_y[column], uniques = pd.factorize(train_y[column])
+
     if task_hint == 'regression':
         autofeat_regression = AutoFeatRegressor(
             verbose=1,
