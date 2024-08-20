@@ -64,8 +64,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "autogluon":
@@ -84,8 +84,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "bioautoml":
@@ -123,7 +123,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
                 print(MemoryLimitException)
                 print(fe.memory)
                 df = pd.DataFrame()
-            except:
+            except Exception:
+                print(Exception)
                 df = pd.DataFrame()
 
     elif method == "boruta":
@@ -142,8 +143,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "correlationBasedFS":
@@ -162,8 +163,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "featuretools":
@@ -182,8 +183,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "featurewiz":
@@ -202,8 +203,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "h2o":
@@ -222,8 +223,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "macfe":
@@ -242,8 +243,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "mafese":
@@ -263,8 +264,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "mljar":
@@ -284,8 +285,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     elif method == "openfe":
@@ -304,8 +305,8 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             print(MemoryLimitException)
             print(fe.memory)
             df = pd.DataFrame()
-        except ValueError:
-            print(ValueError)
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
 
     """
@@ -317,7 +318,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except Exception:
+            print(Exception)
             df = pd.DataFrame()
     """
 
