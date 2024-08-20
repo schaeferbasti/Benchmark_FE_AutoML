@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 import time
 
 import pandas as pd
@@ -23,23 +24,24 @@ from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
 
 
 def main(args):
-    task_id = args.method
-    feature_engineering_methods = ["autofeat", "autogluon", "bioautoml", "boruta", "correlationbased", "featuretools",
-                                   "featurewiz", "h2o", "macfe", "mafese", "mljar", "nfs", "openfe"]
-    run_and_save(feature_engineering_methods, task_id)
+    method_and_task = args.method
+    temp = re.compile("([a-zA-Z]+)([0-9]+)")
+    res = temp.match(method_and_task).groups()
+    method = res[0]
+    task_id = res[1]
+    run_and_save(method, task_id)
 
 
-def run_and_save(feature_engineering_methods, task_id):
+def run_and_save(method, task_id):
     splits = 10
     for split in range(splits):
         train_x, train_y, test_x, test_y, name, task_hint = get_amlb_dataset(task_id, split)
         df = construct_dataframe(train_x, train_y, test_x, test_y)
-        df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + "_" + name + '_original_' + str(split) + '.csv', index=False)
+        df.to_parquet('src/datasets/feature_engineered_datasets/' + task_hint + "_" + name + '_original_' + str(split) + '.parquet', index=False)
         df_times = pd.DataFrame()
-        for method in feature_engineering_methods:
-            if not os.path.isfile('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + str(split) + '.csv'):
-                df_times = get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, split, task_hint)
-                df_times.to_csv('src/datasets/feature_engineered_datasets/exec_times/exec_times_' + name + '_' + method + '_' + str(split) + '.csv', index=False)
+        if not os.path.isfile('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + str(split) + '.parquet'):
+            df_times = get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, split, task_hint)
+            df_times.to_parquet('src/datasets/feature_engineered_datasets/exec_times/exec_times_' + name + '_' + method + '_' + str(split) + '.parquet', index=False)
 
 
 def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, method, split, task_hint):
@@ -54,7 +56,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "autogluon":
@@ -65,7 +76,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "bioautoml":
@@ -78,7 +98,13 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, PynisherException):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
             df = pd.DataFrame()
         except ValueError:
             continuous = True
@@ -89,6 +115,14 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
                 end_time = time.time()  #
                 execution_time = end_time - start_time
                 df = construct_dataframe(train_x, train_y, test_x, test_y)
+            except WallTimeoutException:
+                print(WallTimeoutException)
+                print(fe.wall_time)
+                df = pd.DataFrame()
+            except MemoryLimitException:
+                print(MemoryLimitException)
+                print(fe.memory)
+                df = pd.DataFrame()
             except:
                 df = pd.DataFrame()
 
@@ -100,7 +134,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "correlationBasedFS":
@@ -111,7 +154,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "featuretools":
@@ -122,7 +174,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, RecursionError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "featurewiz":
@@ -133,7 +194,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "h2o":
@@ -144,7 +214,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "macfe":
@@ -155,7 +234,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "mafese":
@@ -167,7 +255,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "mljar":
@@ -179,7 +276,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     elif method == "openfe":
@@ -190,7 +296,16 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             end_time = time.time()  #
             execution_time = end_time - start_time
             df = construct_dataframe(train_x, train_y, test_x, test_y)
-        except (WallTimeoutException, MemoryLimitException, ValueError):
+        except WallTimeoutException:
+            print(WallTimeoutException)
+            print(fe.wall_time)
+            df = pd.DataFrame()
+        except MemoryLimitException:
+            print(MemoryLimitException)
+            print(fe.memory)
+            df = pd.DataFrame()
+        except ValueError:
+            print(ValueError)
             df = pd.DataFrame()
 
     """
@@ -206,7 +321,7 @@ def get_and_save_features(df_times, train_x, train_y, test_x, test_y, name, meth
             df = pd.DataFrame()
     """
 
-    df.to_csv('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + str(split) + '.csv', index=False)
+    df.to_parquet('src/datasets/feature_engineered_datasets/' + task_hint + '_' + name + '_' + method + '_' + str(split) + '.parquet', index=False)
     df_times = df_times._append({'Dataset': name, 'Method': method, 'Time': execution_time}, ignore_index=True)
     return df_times
 
