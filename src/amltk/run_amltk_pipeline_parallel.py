@@ -110,7 +110,7 @@ def main(args):
     n_jobs = 1  # Number of jobs for OpenFE
     num_features = 500  # Number of features for MLJAR
     estimations = 50    # Number of estimations for BioAutoML, default = 50
-    working_dir = Path("src/amltk/results/fourth_try")  # Path
+    working_dir = Path("src/amltk/results/next_try")  # Path
     random_seed = 42  # Set seed
     folds = 10  # Set number of folds (normal 10, test 1)
 
@@ -170,8 +170,8 @@ def main(args):
                 train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
+                existing_file = "src/amltk/results/files/" + file_name
+                if rerun or not os.path.isfile(existing_file):
                     evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                  on_trial_exception, task_hint)
                     history = pipeline.optimize(
@@ -347,8 +347,8 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-            elif method.startswith("caafe"):
-                print("CAAFE Data")
+            elif method.startswith("cfs"):
+                print("CFS Data")
                 option = method[-2:]
                 try:
                     int(option)
