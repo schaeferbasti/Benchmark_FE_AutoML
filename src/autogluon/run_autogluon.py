@@ -91,11 +91,11 @@ for dataset_file in dataset_files:
             leaderboard.to_parquet(f"../autogluon/results/leaderboard/leaderboard_{dataset}_{method}_{fold}.parquet")
         if method == old_method and dataset == old_dataset:
             eval_df = eval_df._append(pd.DataFrame(eval_dict, index=[0]))
-            eval_df.to_parquet(f"../autogluon/results/evaldict/evaldict_{method}_{dataset}.parquet")
+            eval_df.to_parquet(f"../autogluon/results/evaldict/evaldict_{dataset}_{method}.parquet")
         else:
             if old_method is not None and old_dataset is not None:
-                eval_df.to_parquet(f"../autogluon/results/evaldict/evaldict_{old_method}_{old_dataset}.parquet")
+                eval_df.to_parquet(f"../autogluon/results/evaldict/evaldict_{old_dataset}_{old_method}.parquet")
             eval_df = pd.DataFrame(eval_dict, index=[0])
-            eval_df.to_parquet(f"../autogluon/results/evaldict/evaldict_{method}_{dataset}.parquet")
+            eval_df.to_parquet(f"../autogluon/results/evaldict/evaldict_{dataset}_{method}.parquet")
         old_method = method
         old_dataset = dataset
