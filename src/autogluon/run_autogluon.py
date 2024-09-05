@@ -28,9 +28,11 @@ for dataset_file in dataset_files:
         parts.remove(fold)
         dataset = '_'.join(parts)
 
-        print(f"\n****************************************\n {dataset} - {method} - {fold} \n****************************************")
+        print(
+            f"\n****************************************\n {dataset} - {method} - {fold} \n****************************************")
         try:
-            execution_times = pd.read_parquet(f"../datasets/feature_engineered_datasets/exec_times/exec_times_{dataset}_{method}_{fold}.parquet")
+            execution_times = pd.read_parquet(
+                f"../datasets/feature_engineered_datasets/exec_times/exec_times_{dataset}_{method}_{fold}.parquet")
             result = execution_times[(execution_times['Dataset'] == dataset) & (execution_times['Method'] == method)]
             exec_time = result['Time'].values[0]
         except FileNotFoundError:
@@ -45,7 +47,8 @@ for dataset_file in dataset_files:
         eval_dict = None
         if time_limit >= 0:
             try:
-                data = pd.read_parquet(f'../datasets/feature_engineered_datasets/regression_{dataset}_{method}_{fold}.parquet')
+                data = pd.read_parquet(
+                    f'../datasets/feature_engineered_datasets/regression_{dataset}_{method}_{fold}.parquet')
                 task_hint = 'regression'
             except:
                 try:
@@ -74,18 +77,24 @@ for dataset_file in dataset_files:
             path = "logs/autogluon_" + dataset + "_" + method + "_" + fold + ".parquet"
 
             if task_hint == 'regression':
-                predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="root_mean_squared_error").fit(
-                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=memory_limit)
+                predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint,
+                                             eval_metric="root_mean_squared_error").fit(
+                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality",
+                    memory_limit=memory_limit)
                 eval_dict = predictor.evaluate(test_data)
                 leaderboard = predictor.leaderboard(test_data)
             elif task_hint == 'binary':
-                predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="roc_auc").fit(
-                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=memory_limit)
+                predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint,
+                                             eval_metric="roc_auc").fit(
+                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality",
+                    memory_limit=memory_limit)
                 eval_dict = predictor.evaluate(test_data)
                 leaderboard = predictor.leaderboard(test_data)
             elif task_hint == 'multiclass':
-                predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint, eval_metric="log_loss").fit(
-                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality", memory_limit=memory_limit)
+                predictor = TabularPredictor(label=label, verbosity=0, problem_type=task_hint,
+                                             eval_metric="log_loss").fit(
+                    train_data=train_data, time_limit=time_limit, num_cpus=num_cpus, presets="best_quality",
+                    memory_limit=memory_limit)
                 eval_dict = predictor.evaluate(test_data)
                 leaderboard = predictor.leaderboard(test_data)
             leaderboard.to_parquet(f"../autogluon/results/leaderboard/leaderboard_{dataset}_{method}_{fold}.parquet")
