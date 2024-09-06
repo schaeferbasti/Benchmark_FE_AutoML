@@ -33,7 +33,7 @@ from src.feature_engineering.H2O.H2O import get_h2o_features
 from src.feature_engineering.MACFE.MACFE import get_macfe_features
 from src.feature_engineering.MAFESE.MAFESE import get_mafese_features
 from src.feature_engineering.MLJAR.MLJAR import get_mljar_features
-from src.feature_engineering.NFS.NFS import get_nfs_features
+# from src.feature_engineering.NFS.NFS import get_nfs_features
 from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
 
 
@@ -636,42 +636,6 @@ def main(args):
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
 
-            elif method.startswith("nfs"):
-                print("NFS Data")
-                option = method[-2:]
-                try:
-                    int(option)
-                except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
-                pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
-                print(name)
-                file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x, test_x = get_nfs_features(train_x, train_y, test_x, test_y, task_hint)
-                    evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
-                                                 on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    if history.df() is None:
-                        df = pd.DataFrame()
-                    else:
-                        df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
             elif method.startswith("openfe"):
                 print("OpenFE Data")
                 option = method[-2:]
@@ -707,6 +671,43 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
+            """
+                    elif method.startswith("nfs"):
+                        print("NFS Data")
+                        option = method[-2:]
+                        try:
+                            int(option)
+                        except ValueError:
+                            option = method[-1:]
+                        int(option)
+                        method.replace(option, "")
+                        pipeline_name = pipeline.name
+                        train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                        print(name)
+                        file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
+                        file = working_dir / file_name
+                        if rerun or not os.path.isfile(file):
+                            train_x, test_x = get_nfs_features(train_x, train_y, test_x, test_y, task_hint)
+                            evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
+                                                         on_trial_exception, task_hint)
+                            history = pipeline.optimize(
+                                target=evaluator.fn,
+                                metric=metric_definition,
+                                optimizer=optimizer_cls,
+                                seed=inner_fold_seed,
+                                max_trials=max_trials,
+                                timeout=max_time,
+                                display=display,
+                                wait=wait_for_all_workers_to_finish,
+                                n_workers=n_workers,
+                                on_trial_exception=on_trial_exception
+                            )
+                            if history.df() is None:
+                                df = pd.DataFrame()
+                            else:
+                                df = history.df()
+                            safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
+            """
         except Exception as e:
             print(e)
 
