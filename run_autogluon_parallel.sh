@@ -19,8 +19,8 @@
 
 directory_path="../datasets/feature_engineered_datasets/"
 
-file_count=$(ls -1 "$directory_path" | wc -l)
-#SBATCH --array=0-$((file_count-1))
+dir_count=$(find "$directory_path" -mindepth 1 -maxdepth 1 -type d | wc -l)
+#SBATCH --array=0-$((dir_count-1))
 
 echo "Workingdir: $PWD"
 echo "Started at $(date)"
@@ -41,7 +41,7 @@ export PYTHONPATH=$PWD/src:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 
-methods=($(ls "$directory_path"))
+methods=($(find "$directory_path" -mindepth 1 -maxdepth 1 -type d))
 method="${methods[$SLURM_ARRAY_TASK_ID]}"
 
 start=`date +%s`
