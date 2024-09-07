@@ -17,21 +17,20 @@
 
 #SBATCH --propagate=NONE
 
-# Define job array
-#SBATCH --array=0-1351  # Adjust based on the number of methods
+directory_path="../datasets/feature_engineered_datasets/"
+
+file_count=$(ls -1 "$directory_path" | wc -l)
+#SBATCH --array=0-$((file_count-1))
 
 echo "Workingdir: $PWD"
 echo "Started at $(date)"
 
-# SLURM variables
 echo "Running job $SLURM_JOB_NAME using $SLURM_JOB_CPUS_PER_NODE cpus per node with given JID $SLURM_JOB_ID on queue $SLURM_JOB_PARTITION"
 
-# Activate your environment
 source ~/miniconda3/bin/activate
 conda activate amltk_env
 echo "conda amltk_env activated"
 
-# Install requirements
 python3 -m pip install --upgrade pip
 pip install -r requirements.txt
 echo "Requirements installed"
@@ -41,15 +40,10 @@ echo "Requirements installed"
 export PYTHONPATH=$PWD/src:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
-# Define methods array
-directory_path="../datasets/feature_engineered_datasets/"
 
-# List all files in the directory and store them in an array
 methods=($(ls "$directory_path"))
-# Get the method name based on SLURM_ARRAY_TASK_ID
-method=${methods[$SLURM_ARRAY_TASK_ID]}
+method="${methods[$SLURM_ARRAY_TASK_ID]}"
 
-# Run the job with the specified method
 start=`date +%s`
 
 echo "Running Method: $method"
