@@ -14,7 +14,7 @@ warnings.simplefilter(action='ignore', category=UndefinedMetricWarning)
 
 def main(args):
     folder = args.method
-    dataset_files = sorted(os.listdir("../datasets/feature_engineered_datasets/" + folder))
+    dataset_files = sorted(os.listdir("src/datasets/feature_engineered_datasets/" + folder))
     eval_df = pd.DataFrame()
     method = None
     dataset = None
@@ -33,7 +33,7 @@ def main(args):
             f"\n****************************************\n {dataset} - {method} - {fold} \n****************************************")
         try:
             execution_times = pd.read_parquet(
-                f"../datasets/feature_engineered_datasets/exec_times/exec_times_{dataset}_{method}_{fold}.parquet")
+                f"src/datasets/feature_engineered_datasets/exec_times/exec_times_{dataset}_{method}_{fold}.parquet")
             result = execution_times[(execution_times['Dataset'] == dataset) & (execution_times['Method'] == method)]
             exec_time = result['Time'].values[0]
         except FileNotFoundError:
@@ -47,7 +47,7 @@ def main(args):
         leaderboard = pd.DataFrame()
         eval_dict = None
         if time_limit >= 0:
-            data = pd.read_parquet(f'../datasets/feature_engineered_datasets/{task_hint}_{dataset}_{method}_{fold}.parquet')
+            data = pd.read_parquet(f'src/datasets/feature_engineered_datasets/{task_hint}_{dataset}_{method}_{fold}.parquet')
             label = data.columns[-1]
             X = data.drop(label, axis=1)
             y = data[label]
@@ -88,7 +88,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run feature engineering methods')
+    parser = argparse.ArgumentParser(description='Run autogluon')
     parser.add_argument('--method', type=str, required=True, help='Feature engineering method to use')
     args = parser.parse_args()
     main(args)

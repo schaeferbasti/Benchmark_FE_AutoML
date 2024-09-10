@@ -17,7 +17,7 @@
 
 #SBATCH --propagate=NONE
 
-directory_path="../datasets/feature_engineered_datasets/"
+directory_path="src/datasets/feature_engineered_datasets/"
 
 dir_count=$(find "$directory_path" -mindepth 1 -maxdepth 1 -type d | wc -l)
 #SBATCH --array=0-$((dir_count-1))
@@ -41,13 +41,14 @@ export PYTHONPATH=$PWD/src:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 
+# shellcheck disable=SC2207
 methods=($(find "$directory_path" -mindepth 1 -maxdepth 1 -type d))
 method="${methods[$SLURM_ARRAY_TASK_ID]}"
 
 start=`date +%s`
 
 echo "Running Method: $method"
-python3 src/feature_engineering/run_feature_engineering_parallel.py --method $method
+python3 src/autogluon/run_autogluon_parallel.py --method $method
 
 end=`date +%s`
 runtime=$((end-start))
