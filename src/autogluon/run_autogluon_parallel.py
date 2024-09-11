@@ -1,6 +1,7 @@
 import argparse
 import warnings
 import os
+from pathlib import Path
 
 import pandas as pd
 from src.autogluon.method.tabular.src.autogluon.tabular import (TabularDataset, TabularPredictor)
@@ -14,7 +15,8 @@ warnings.simplefilter(action='ignore', category=UndefinedMetricWarning)
 
 def main(args):
     folder = args.method
-    dataset_files = sorted(os.listdir("src/datasets/feature_engineered_datasets/" + folder))
+    path = f'src/datasets/feature_engineered_datasets/' + folder
+    dataset_files = sorted(os.listdir(Path(path)))
     eval_df = pd.DataFrame()
     method = None
     dataset = None
@@ -28,30 +30,31 @@ def main(args):
         parts.remove(method)
         parts.remove(fold)
         dataset = '_'.join(parts)
-        fold = parts[-1]
         print(
             f"\n****************************************\n {dataset} - {method} - {fold} \n****************************************")
         try:
-            execution_times = pd.read_parquet(
-                f"src/datasets/feature_engineered_datasets/exec_times/exec_times_{dataset}_{method}_{fold}.parquet")
+            exec_path = f"src/datasets/feature_engineered_datasets/exec_times/exec_times_{dataset}_{method}_{fold}.parquet"
+            execution_times = pd.read_parquet(Path(exec_path))
             result = execution_times[(execution_times['Dataset'] == dataset) & (execution_times['Method'] == method)]
             exec_time = result['Time'].values[0]
         except FileNotFoundError:
             exec_time = 0  # no FE method executed on dataset -> raw dataset
-
         num_cpus = 8
         memory_limit = 32
         time_limit = 14400 - exec_time  # 4h in seconds - time needed for feature engineering
-        print(f"Time limit: {time_limit}")
+        print(f"Time limit: {time_limit}, Exec time: {exec_time}")
 
         leaderboard = pd.DataFrame()
         eval_dict = None
         if time_limit >= 0:
-            data = pd.read_parquet(f'src/datasets/feature_engineered_datasets/{task_hint}_{dataset}_{method}_{fold}.parquet')
+            print("Read Data")
+            data_path = f'src/datasets/feature_engineered_datasets/{task_hint}_{dataset}_{method}/{task_hint}_{dataset}_{method}_{fold}.parquet'
+            data = pd.read_parquet(Path(data_path))
             label = data.columns[-1]
             X = data.drop(label, axis=1)
             y = data[label]
-            train_x, train_y, test_x, test_y = get_splits(X, y, fold)
+            print("Split data")
+            train_x, train_y, test_x, test_y = get_splits(X, y, int(fold))
             train_x, test_x = preprocess_data(train_x, test_x)
             train_y = preprocess_target(train_y)
             test_y = preprocess_target(test_y)
@@ -61,6 +64,7 @@ def main(args):
             train_data = TabularDataset(train_data)
             test_data = TabularDataset(test_data)
 
+            print("Use Tabular Predictor")
             if task_hint == 'regression':
                 predictor = TabularPredictor(label=label, verbosity=4, problem_type=task_hint,
                                              eval_metric="root_mean_squared_error").fit(
@@ -82,9 +86,13 @@ def main(args):
                     memory_limit=memory_limit)
                 eval_dict = predictor.evaluate(test_data)
                 leaderboard = predictor.leaderboard(test_data)
-            leaderboard.to_parquet(f"../autogluon/results/leaderboard/leaderboard_{dataset}_{method}_{fold}.parquet")
+            print("Write leaderboard + Append eval_df")
+            path_leaderboard = f"src/autogluon/results/leaderboard/leaderboard_{dataset}_{method}_{fold}.parquet"
+            leaderboard.to_parquet(Path(path_leaderboard))
             eval_df = eval_df._append(pd.DataFrame(eval_dict, index=[0]))
-    eval_df.to_parquet(f"../autogluon/results/evaldict/evaldict_{dataset}_{method}.parquet")
+    print("Write eval_df")
+    eval_path = f"src/autogluon/results/evaldict/evaldict_{dataset}_{method}.parquet"
+    eval_df.to_parquet(Path(eval_path))
 
 
 if __name__ == "__main__":
