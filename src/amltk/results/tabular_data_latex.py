@@ -35,6 +35,22 @@ def highlight_max_in_row(row):
         for val, valid in zip(row[1:], valid_values)
     ]
 
+def highlight_higher_than_original(row):
+    """
+    Helper function to apply LaTeX bold formatting to the max value in a row,
+    while formatting numbers to 4 decimal places.
+    """
+    # Handle cases where some values may be NaN or the string "Failed"
+    valid_values = row[1:].apply(lambda x: float(x.split(' ')[0]) if isinstance(x, str) and "±" in x else float('nan'))
+    original_value = valid_values[-1]
+
+    # Apply LaTeX formatting and round values to 4 decimal places
+    return [
+        f"\\textbf{{{format_value(val)}}}" if valid > original_value and not pd.isna(valid)
+        else format_value(val)
+        for val, valid in zip(row[1:], valid_values)
+    ]
+
 
 def format_latex_row(dataset, row):
     """
@@ -49,8 +65,9 @@ def generate_latex_table(df):
     """
     Generates a LaTeX table from the given DataFrame.
     """
-    # Apply the highlighting function to each row (skipping the first column)
-    df_highlighted = df.apply(highlight_max_in_row, axis=1)
+    # Apply the highlighting function to each row (either highlight highest value for each row or highlight all values higher than the original
+    # df_highlighted = df.apply(highlight_max_in_row, axis=1)
+    df_highlighted = df.apply(highlight_higher_than_original, axis=1)
 
     # Begin LaTeX table structure
     latex_str_1 = r"""\begin{landscape}
