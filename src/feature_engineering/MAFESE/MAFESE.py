@@ -6,10 +6,28 @@ from mafese import Data
 from mafese import UnsupervisedSelector
 from mafese import get_dataset
 
+from src.datasets.Datasets import preprocess_data
+
+
 def get_mafese_features(train_x, train_y, test_x, test_y, name, num_features) -> tuple[
     pd.DataFrame,
     pd.DataFrame
 ]:
+    train_x = pd.DataFrame(train_x)
+    for column in train_x.select_dtypes(include=['object', 'category']).columns:
+        train_x[column], uniques = pd.factorize(train_x[column])
+    test_x = pd.DataFrame(test_x)
+    for column in test_x.select_dtypes(include=['object', 'category']).columns:
+        test_x[column], uniques = pd.factorize(test_x[column])
+    train_y = pd.DataFrame(train_y)
+    for column in train_y.select_dtypes(include=['object', 'category']).columns:
+        train_y[column], uniques = pd.factorize(train_y[column])
+    test_y = pd.DataFrame(test_y)
+    for column in test_y.select_dtypes(include=['object', 'category']).columns:
+        test_y[column], uniques = pd.factorize(test_y[column])
+
+    train_x, test_x = preprocess_data(train_x, test_x)
+
     X = pd.concat([train_x, test_x], axis=0).values
     y = pd.concat([train_y, test_y], axis=0).values
     data = Data(X, y, name)

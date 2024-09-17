@@ -3,6 +3,7 @@
 import pandas as pd
 from scipy.io import arff
 
+from src.datasets.Datasets import preprocess_data
 from src.feature_engineering.CorrelationBasedFS.MUFS import MUFS
 
 
@@ -14,6 +15,7 @@ def get_correlationbased_features(train_x, train_y, test_x) -> tuple[
         train_x[column], uniques = pd.factorize(train_x[column])
     for column in test_x.select_dtypes(include=['object', 'category']).columns:
         test_x[column], uniques = pd.factorize(test_x[column])
+    train_x, test_x = preprocess_data(train_x, test_x)
     train_y = pd.DataFrame(train_y)
     for column in train_y.select_dtypes(include=['object', 'category']).columns:
         train_y[column], uniques = pd.factorize(train_y[column])

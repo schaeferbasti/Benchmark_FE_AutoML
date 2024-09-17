@@ -18,7 +18,7 @@
 #SBATCH --propagate=NONE
 
 # Define job array
-#SBATCH --array=0-101  # Adjust based on the number of methods
+#SBATCH --array=0-59  # Adjust based on the number of methods
 
 echo "Workingdir: $PWD"
 echo "Started at $(date)"
@@ -42,7 +42,7 @@ export PYTHONPATH=$PWD/src:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 # Define methods array
-methods=("autofeat15" "autofeat23" "autofeat24" "autofeat28" "autofeat29" "bioautoml1" "bioautoml14" "bioautoml5" "boruta36" "cfs5" "cfs15" "featurewiz1" "featurewiz5" "featurewiz14" "featurewiz15" "featurewiz16" "featurewiz17" "featurewiz18" "featurewiz21" "featurewiz22" "featurewiz23" "featurewiz24" "featurewiz27" "featurewiz28" "featurewiz29" "featurewiz31" "featurewiz35" "featurewiz36" "h2o1" "h2o5" "featuretools1" "featuretools5" "featuretools14" "featuretools15" "featuretools16" "featuretools17" "featuretools18" "featuretools21" "featuretools22" "featuretools23" "featuretools24" "featuretools27" "featuretools28" "featuretools29" "featuretools31" "featuretools35" "featuretools36" "macfe1" "macfe5" "macfe14" "macfe15" "macfe16" "macfe17" "macfe18" "macfe21" "macfe22" "macfe23" "macfe24" "macfe27" "macfe28" "macfe29" "macfe31" "macfe35" "macfe36" "mafese1" "mafese5" "mafese14" "mafese15" "mafese16" "mafese17" "mafese18" "mafese21" "mafese22" "mafese23" "mafese24" "mafese27" "mafese28" "mafese29" "mafese31" "mafese35" "mafese36" "openfe1" "openfe5" "openfe14" "openfe15" "openfe16" "openfe17" "openfe18" "openfe21" "openfe22" "openfe23" "openfe24" "openfe27" "openfe28" "openfe29" "openfe31" "openfe35" "openfe36")
+methods=("bioautoml1" "bioautoml14" "bioautoml5" "cfs5" "featuretools1" "featuretools5" "featuretools14" "featuretools15" "featuretools16" "featuretools17" "featuretools18" "featuretools21" "featuretools22" "featuretools23" "featuretools24" "featuretools27" "featuretools28" "featuretools29" "featuretools31" "featuretools35" "featuretools36" "mafese1" "mafese5" "mafese14" "mafese15" "mafese16" "mafese17" "mafese18" "mafese21" "mafese22" "mafese23" "mafese24" "mafese27" "mafese28" "mafese29" "mafese31" "mafese35" "mafese36" "featurewiz1" "featurewiz5" "featurewiz14" "featurewiz15" "featurewiz16" "featurewiz17" "featurewiz18" "featurewiz21" "featurewiz22" "featurewiz23" "featurewiz24" "featurewiz27" "featurewiz28" "featurewiz29" "featurewiz31" "featurewiz35" "featurewiz36" "openfe29" "openfe36")
 # Get the method name based on SLURM_ARRAY_TASK_ID
 method=${methods[$SLURM_ARRAY_TASK_ID]}
 
