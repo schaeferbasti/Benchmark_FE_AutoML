@@ -133,7 +133,7 @@ def preprocess_dataset(df):
 
 
 def get_TRMs():
-    with open("../feature_engineering/MACFE/data/TRM_set.pkl", 'rb') as f:
+    with open("src/feature_engineering/MACFE/data/TRM_set.pkl", 'rb') as f:
         TRM_set = pickle.load(f)
     TRM_dataset = list()
     for i in range(len(TRM_set)):
@@ -141,7 +141,7 @@ def get_TRMs():
             np.append(TRM_set[i]['encoding'].ravel(), TRM_set[i]['top_t_index']))
     TRM_dataset = np.array(TRM_dataset)
 
-    with open('../feature_engineering/MACFE/data/TRM_binary_set_maxf1f2.pkl', 'rb') as f:
+    with open('src/feature_engineering/MACFE/data/TRM_binary_set_maxf1f2.pkl', 'rb') as f:
         TRM_binary_set = pickle.load(f)
     TRM_binary_dataset = list()
     for i in range(len(TRM_binary_set)):
@@ -149,7 +149,7 @@ def get_TRMs():
             np.append(TRM_binary_set[i]['encoding'].ravel(), TRM_binary_set[i]['top_t_index']))
     TRM_binary_dataset = np.array(TRM_binary_dataset)
 
-    with open('../feature_engineering/MACFE/data/TRM_scaler_set.pkl', 'rb') as f:
+    with open('src/feature_engineering/MACFE/data/TRM_scaler_set.pkl', 'rb') as f:
         TRM_scaler_set = pickle.load(f)
     TRM_scaler_dataset = list()
     for i in range(len(TRM_scaler_set)):
