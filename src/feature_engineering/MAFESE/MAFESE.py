@@ -13,6 +13,7 @@ def get_mafese_features(train_x, train_y, test_x, test_y, name, num_features) ->
     pd.DataFrame,
     pd.DataFrame
 ]:
+    """
     train_x = pd.DataFrame(train_x)
     for column in train_x.select_dtypes(include=['object', 'category']).columns:
         train_x[column], uniques = pd.factorize(train_x[column])
@@ -25,6 +26,9 @@ def get_mafese_features(train_x, train_y, test_x, test_y, name, num_features) ->
     test_y = pd.DataFrame(test_y)
     for column in test_y.select_dtypes(include=['object', 'category']).columns:
         test_y[column], uniques = pd.factorize(test_y[column])
+    train_y = pd.Series(train_y.iloc[0])
+    test_y = pd.Series(test_y.iloc[0])
+    """
 
     train_x, test_x = preprocess_data(train_x, test_x)
 
