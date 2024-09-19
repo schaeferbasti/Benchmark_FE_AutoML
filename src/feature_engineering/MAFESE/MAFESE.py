@@ -45,7 +45,7 @@ def get_mafese_features(train_x, train_y, test_x, test_y, name, num_features) ->
     data.y_test = scaler_y.transform(data.y_test)
 
     # Feature Selector
-    feat_selector = UnsupervisedSelector(problem='classification', method='DR', n_features=num_features)
+    feat_selector = UnsupervisedSelector(problem='classification', method='DR', n_features=None)
     feat_selector.fit(data.X_train, data.y_train)
 
     X_train_selected = feat_selector.transform(data.X_train)
