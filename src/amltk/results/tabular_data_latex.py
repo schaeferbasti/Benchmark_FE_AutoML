@@ -73,9 +73,9 @@ def generate_latex_table(df):
     latex_str_1 = r"""\begin{landscape}
 \begin{table}
 \tiny
-\begin{tabular}{l""" + "c" * (len(df.columns) - 1) + "}\n\\toprule\n"
+\begin{tabular*}{\pagewidth}{@{\extracolsep{\fill}} l|cccccc @{}}\n\toprule\n"""
     latex_str_2 = r"""
-\begin{tabular}{l""" + "c" * (len(df.columns) - 1) + "}\n\\toprule\n"
+\begin{tabular*}{\pagewidth}{@{\extracolsep{\fill}} l|ccccccc @{}}\n\\toprule\n"""
 
     # Add column headers (excluding the first column)
     latex_str_1 += choose_cols("Dataset & " + " & ".join(df.columns[1:]) + " \\\\\n\\midrule\n", 1)
@@ -89,9 +89,9 @@ def generate_latex_table(df):
         latex_str_2 += latex_row_2
     # End LaTeX table structure
     latex_str_1 += r"""\bottomrule
-\end{tabular}"""
+\end{tabular*}"""
     latex_str_2 += r"""\bottomrule
-\end{tabular}
+\end{tabular*}
 \label{tab:small-benchmark}
 \caption{Overview of the comparison between the performance of the \AMLTK{} pipeline with feature engineered version of the original datasets vs. the original raw dataset.}
 \end{table}
