@@ -66,7 +66,7 @@ def generate_latex_table(df):
     Generates a LaTeX table from the given DataFrame.
     """
     # Apply the highlighting function to each row (either highlight highest value for each row or highlight all values higher than the original
-    # df_highlighted = df.apply(highlight_max_in_row, axis=1)
+    df_highlighted = df.apply(highlight_max_in_row, axis=1)
     df_highlighted = df.apply(highlight_higher_than_original, axis=1)
 
     # Begin LaTeX table structure
