@@ -6,15 +6,12 @@ from pathlib import Path
 import argparse
 import os
 
-import pandas as pd
 from amltk.optimization import Metric
 from amltk.pipeline import Choice, Sequential, Split
 from sklearn.metrics import get_scorer
 from sklearn.preprocessing import *
 
 from src.amltk.classifiers.Classifiers import *
-
-from src.amltk.classifiers.Classifiers import get_rf_classifier
 from src.datasets.Datasets import *
 from src.amltk.evaluation.Evaluator import get_cv_evaluator
 from src.amltk.optimizer.RandomSearch import RandomSearch
@@ -23,19 +20,13 @@ from src.feature_engineering.autofeat.Autofeat import get_autofeat_features
 from src.feature_engineering.AutoGluon.AutoGluon import get_autogluon_features
 from src.feature_engineering.BioAutoML.BioAutoML import get_bioautoml_features
 from src.feature_engineering.Boruta.Boruta import get_boruta_features
-# CAAFE
 from src.feature_engineering.CorrelationBasedFS.CorrelationBasedFS import get_correlationbased_features
-# DIFER
-# ExploreKit
-from src.feature_engineering.Featuretools.Featuretools import get_featuretools_features
 from src.feature_engineering.Featurewiz.Featurewiz import get_featurewiz_features
 from src.feature_engineering.H2O.H2O import get_h2o_features
 from src.feature_engineering.MACFE.MACFE import get_macfe_features
 from src.feature_engineering.MAFESE.MAFESE import get_mafese_features
 from src.feature_engineering.MLJAR.MLJAR import get_mljar_features
-# from src.feature_engineering.NFS.NFS import get_nfs_features
 from src.feature_engineering.OpenFE.OpenFE import get_openFE_features
-
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -82,47 +73,24 @@ def safe_dataframe(df, working_dir, dataset_name, fold_number, method_name, clas
     df.to_parquet(results_to)
 
 
-rf_classifier = get_rf_classifier()
-rf_pipeline = Sequential(preprocessing, rf_classifier, name="rf_pipeline")
-
-# works on dataset 2 (not for continuous data)
-mlp_classifier = get_mlp_classifier()
-mlp_pipeline = Sequential(preprocessing, mlp_classifier, name="mlp_pipeline")
-
-# works on dataset 2 (not on continuous data)
-svc_classifier = get_svc_classifier()
-svc_pipeline = Sequential(preprocessing, svc_classifier, name="svc_pipeline")
-
-knn_classifier = get_knn_classifier()
-knn_pipeline = Sequential(preprocessing, knn_classifier, name="knn_pipeline")
-
 lgbm_classifier = get_lgbm_classifier()
 lgbm_classifier_pipeline = Sequential(preprocessing, lgbm_classifier, name="lgbm_classifier_pipeline")
 
 
 def main(args):
-    method = args.method
+    method_dataset = args.method_dataset
 
-    rerun = False  # Decide if you want to re-execute the methods on a dataset or use the existing files
+    rerun = True  # Decide if you want to re-execute the methods on a dataset or use the existing files
     debugging = False  # Decide if you want ot raise trial exceptions
     feat_eng_steps = 2  # Number of feature engineering steps for autofeat
     feat_sel_steps = 5  # Number of feature selection steps for autofeat
-    n_jobs = 1  # Number of jobs for OpenFE
     num_features = 500  # Number of features for MLJAR
-    estimations = 50    # Number of estimations for BioAutoML, default = 50
-    working_dir = Path("src/amltk/results/next_try")  # Path
+    estimations = 50  # Number of estimations for BioAutoML
+    working_dir = Path("src/amltk/results/files")  # Path
     random_seed = 42  # Set seed
-    folds = 10  # Set number of folds (normal 10, test 1)
-
-    # Choose set of datasets
-    all_datasets = [1, 5, 14, 15, 16, 17, 18, 21, 22, 23, 24, 27, 28, 29, 31, 35, 36]  # 17
-    small_datasets = [1, 5, 14, 16, 17, 18, 21, 27, 31, 35, 36]
-    smallest_datasets = [14, 16, 17, 21, 35]  # n ~ 1000, p ~ 15
-    big_datasets = [15, 22, 23, 24, 28, 29]
-    test_new_method_datasets = [18]  # [16]
+    folds = 10  # Set number of repetitions
 
     optimizer_cls = RandomSearch
-    # pipelines = [lgbm_classifier_pipeline, knn_pipeline, svc_pipeline, mlp_pipeline, rf_classifier]
     pipeline = lgbm_classifier_pipeline
 
     metric_definition = Metric(
@@ -132,43 +100,40 @@ def main(args):
         fn=get_scorer("roc_auc_ovo")
     )
 
-    per_process_memory_limit = None  # (4, "GB")  # NOTE: May have issues on Mac
-    per_process_walltime_limit = None  # (60, "s")
-
     if debugging:
         max_trials = 1  # don't care about quality of the found model
-        max_time = 600  # 10 minutes
-        n_workers = 20
-        # raise an error with traceback, something went wrong
+        max_time = 300  # 5 minutes
+        n_workers = 4
+        # Raise an error with traceback, something went wrong
         on_trial_exception = "raise"
         display = True
         wait_for_all_workers_to_finish = False
     else:
-        max_trials = 100000  # trade-off between exploration and resource usage
+        max_trials = 100000
         max_time = 3600  # one hour
         n_workers = 4
-        # Just mark the trial as fail and move on to the next one
+        # Mark the trial as fail and move on to the next one
         on_trial_exception = "continue"
         display = True
         wait_for_all_workers_to_finish = False
 
+    # Iterate over 10 folds (10 repetitions)
     for fold in range(folds):
         print(f"\n\n\n*******************************\n Fold {fold}\n*******************************\n")
         inner_fold_seed = random_seed + fold
-        # for pipeline in pipelines:
         try:
-            if method.startswith("original"):
+            # Run AMLTK for Original Dataset
+            if method_dataset.startswith("original"):
                 print("Original Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
-                print(name)
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 existing_file = "src/amltk/results/files/" + file_name
                 if rerun or not os.path.isfile(existing_file):
@@ -191,33 +156,34 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("autofeat"):
+            # Do Feature Engineering with Autofeat and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("autofeat"):
                 print("autofeat Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
                 try:
-                    train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                    train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                     print(name)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
-                        train_x, test_x = get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps, feat_sel_steps)
+                        train_x, test_x = get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps,
+                                                                feat_sel_steps)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
                 except:
-                    train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                    train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                     print(name)
                     file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                     file = working_dir / file_name
                     if rerun or not os.path.isfile(file):
-                        train_x, test_x = get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps-1,
+                        train_x, test_x = get_autofeat_features(train_x, train_y, test_x, task_hint, feat_eng_steps - 1,
                                                                 feat_sel_steps)
                         evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
                                                      on_trial_exception, task_hint)
@@ -238,18 +204,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("autogluon"):
+            # Do Feature Engineering with Autogluon and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("autogluon"):
                 print("autogluon Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -274,18 +240,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("bioautoml"):
+            # Do Feature Engineering with BioAutoML and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("bioautoml"):
                 print("BioAutoML Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -312,18 +278,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("boruta"):
+            # Do Feature Engineering with Boruta and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("boruta"):
                 print("boruta Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -348,53 +314,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-            elif method.startswith("cfs"):
-                print("CFS Data")
-                option = method[-2:]
-                try:
-                    int(option)
-                except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
-                pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
-                print(name)
-                file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x, test_x = get_correlationbased_features(train_x, train_y, test_x)
-                    evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
-                                                 on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    if history.df() is None:
-                        df = pd.DataFrame()
-                    else:
-                        df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("correlationBasedFS"):
+            # Do Feature Engineering with CorrelationBasedFS and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("cfs"):
                 print("CorrelationBasedFS Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -419,54 +350,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("featuretools"):
-                print("Featuretools Data")
-                option = method[-2:]
-                try:
-                    int(option)
-                except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
-                pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
-                print(name)
-                file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
-                file = working_dir / file_name
-                if rerun or not os.path.isfile(file):
-                    train_x, test_x = get_featuretools_features(train_x, train_y, test_x, test_y, name)
-                    evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
-                                                 on_trial_exception, task_hint)
-                    history = pipeline.optimize(
-                        target=evaluator.fn,
-                        metric=metric_definition,
-                        optimizer=optimizer_cls,
-                        seed=inner_fold_seed,
-                        max_trials=max_trials,
-                        timeout=max_time,
-                        display=display,
-                        wait=wait_for_all_workers_to_finish,
-                        n_workers=n_workers,
-                        on_trial_exception=on_trial_exception
-                    )
-                    if history.df() is None:
-                        df = pd.DataFrame()
-                    else:
-                        df = history.df()
-                    safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("featurewiz"):
+            # Do Feature Engineering with Featurewiz and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("featurewiz"):
                 print("Featurewiz Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -491,18 +386,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("h2o"):
+            # Do Feature Engineering with H2O and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("h2o"):
                 print("H2O Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -527,19 +422,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-
-            elif method.startswith("macfe"):
+            # Do Feature Engineering with MACFE and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("macfe"):
                 print("MACFE Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -564,18 +458,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("mafese"):
+            # Do Feature Engineering with MAFESE and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("mafese"):
                 print("MAFESE Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -600,18 +494,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("mljar"):
+            # Do Feature Engineering with MLJAR and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("mljar"):
                 print("MLJAR Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -636,18 +530,18 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-
-            elif method.startswith("openfe"):
+            # Do Feature Engineering with OpenFE and run AMLTK for feature-engineered Dataset
+            elif method_dataset.startswith("openfe"):
                 print("OpenFE Data")
-                option = method[-2:]
+                dataset = method_dataset[-2:]
                 try:
-                    int(option)
+                    int(dataset)
                 except ValueError:
-                    option = method[-1:]
-                int(option)
-                method.replace(option, "")
+                    dataset = method_dataset[-1:]
+                dataset = int(dataset)
+                method = method_dataset.replace(dataset, "")
                 pipeline_name = pipeline.name
-                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
+                train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=dataset)
                 print(name)
                 file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
                 file = working_dir / file_name
@@ -672,43 +566,6 @@ def main(args):
                     else:
                         df = history.df()
                     safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-            """
-                    elif method.startswith("nfs"):
-                        print("NFS Data")
-                        option = method[-2:]
-                        try:
-                            int(option)
-                        except ValueError:
-                            option = method[-1:]
-                        int(option)
-                        method.replace(option, "")
-                        pipeline_name = pipeline.name
-                        train_x, train_y, test_x, test_y, task_hint, name = get_dataset(option=int(option))
-                        print(name)
-                        file_name = f"results_{name}_{method}_{pipeline_name}_{fold}.parquet"
-                        file = working_dir / file_name
-                        if rerun or not os.path.isfile(file):
-                            train_x, test_x = get_nfs_features(train_x, train_y, test_x, test_y, task_hint)
-                            evaluator = get_cv_evaluator(train_x, train_y, test_x, test_y, inner_fold_seed,
-                                                         on_trial_exception, task_hint)
-                            history = pipeline.optimize(
-                                target=evaluator.fn,
-                                metric=metric_definition,
-                                optimizer=optimizer_cls,
-                                seed=inner_fold_seed,
-                                max_trials=max_trials,
-                                timeout=max_time,
-                                display=display,
-                                wait=wait_for_all_workers_to_finish,
-                                n_workers=n_workers,
-                                on_trial_exception=on_trial_exception
-                            )
-                            if history.df() is None:
-                                df = pd.DataFrame()
-                            else:
-                                df = history.df()
-                            safe_dataframe(df, working_dir, name, fold, method, pipeline_name)
-            """
         except Exception as e:
             print(e)
 

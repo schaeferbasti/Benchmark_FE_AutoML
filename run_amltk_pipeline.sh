@@ -1,21 +1,21 @@
 #!/bin/bash
 
 # Define the partition on which the job shall run.
-#SBATCH --partition mlhiwidlc_gpu-rtx2080    # short: -p <partition_name>
+#SBATCH --partition xxx
 
 # Define a name for your job
-#SBATCH --job-name AMLTK_Pipeline             # short: -J <job name>
+#SBATCH --job-name AMLTK_Pipeline
 
 # Define the files to write the outputs of the job to.
 #SBATCH --output logs/%x-%A.out   # STDOUT  %x and %A will be replaced by the job name and job id, respectively. short: -o logs/%x-%A.out
 #SBATCH --error logs/%x-%A.err    # STDERR  short: -e logs/%x-%A.out
 
 # Define the amount of memory required per node
-#SBATCH --mem 48GB
-#SBATCH --cpus-per-task=8 # cores
-#SBATCH --gres=localtmp:100 # DISK
+#SBATCH --mem 32GB
+#SBATCH --cpus-per-task=8
+#SBATCH --gres=localtmp:100
 
-#SBATCH --propagate=NONE # to avoid a bug
+#SBATCH --propagate=NONE
 
 echo "Workingdir: $PWD";
 echo "Started at $(date)";

@@ -1,23 +1,7 @@
 import numpy as np
 import pandas as pd
 import openml
-from pandas import DataFrame
-from sklearn.datasets import fetch_california_housing
 from sklearn.impute import SimpleImputer
-from sklearn.model_selection import train_test_split
-from ucimlrepo import fetch_ucirepo
-
-
-def get_california_housing_dataset() -> tuple[
-    pd.DataFrame,
-    pd.DataFrame,
-    pd.DataFrame,
-    pd.DataFrame,
-]:
-    data = fetch_california_housing(as_frame=True).frame
-    label = data[['MedHouseVal']]
-    train_x, test_x, train_y, test_y = train_test_split(data, label, test_size=0.2, random_state=1)
-    return train_x, train_y, test_x, test_y
 
 
 def get_openml_dataset(
@@ -41,72 +25,6 @@ def get_openml_dataset(
     train_x, train_y = X.iloc[train_idx], y.iloc[train_idx]
     test_x, test_y = X.iloc[test_idx], y.iloc[test_idx]
     return train_x, train_y, test_x, test_y
-
-
-def get_balance_scale_dataset() -> tuple[
-    pd.DataFrame,
-    pd.DataFrame,
-    pd.DataFrame,
-    pd.DataFrame,
-]:
-    balance_scale = fetch_ucirepo(id=12)
-    X = balance_scale.data.features
-    y = balance_scale.data.targets
-    train_x, test_x, train_y, test_y = train_test_split(X, y, test_size=20)
-    return train_x, train_y, test_x, test_y
-
-
-def get_black_friday_dataset() -> tuple[
-    pd.DataFrame,
-    pd.DataFrame,
-    pd.DataFrame,
-    pd.DataFrame,
-]:
-    train = pd.read_csv(r'datasets/black-friday/train.csv', delimiter=',', header=None, skiprows=1,
-                        names=['User_ID', 'Product_ID', 'Gender', 'Age', 'Occupation', 'City_Category',
-                               'Stay_In_Current_City_Years', 'Marital_Status', 'Product_Category_1',
-                               'Product_Category_2', 'Product_Category_3', 'Purchase'])
-    train_y = train[['Purchase']]
-    train_x = train.drop(['Purchase'], axis=1)
-    test = pd.read_csv(r'datasets/black-friday/test.csv', delimiter=',', header=None, skiprows=1,
-                       names=['User_ID', 'Product_ID', 'Gender', 'Age', 'Occupation', 'City_Category',
-                              'Stay_In_Current_City_Years', 'Marital_Status', 'Product_Category_1',
-                              'Product_Category_2', 'Product_Category_3', 'Purchase'])
-    test_y = test[['Purchase']]
-    test_x = test.drop(['Purchase'], axis=1)
-
-    return train_x, train_y, test_x, test_y
-
-
-def preprocess_data(train_x, test_x) -> (pd.DataFrame, pd.DataFrame):
-    cols = train_x.columns
-    cat_columns = train_x.select_dtypes(['category']).columns
-    obj_columns = train_x.select_dtypes(['object']).columns
-    train_x[cat_columns] = train_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
-    test_x[cat_columns] = test_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
-    train_x[obj_columns] = train_x[obj_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
-    test_x[obj_columns] = test_x[obj_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
-    imp_nan = SimpleImputer(missing_values=np.nan, strategy='mean')
-    train_x = imp_nan.fit_transform(train_x)
-    test_x = imp_nan.transform(test_x)
-    imp_m1 = SimpleImputer(missing_values=-1, strategy='mean')
-    train_x = imp_m1.fit_transform(train_x)
-    test_x = imp_m1.transform(test_x)
-    train_x = pd.DataFrame(train_x).fillna(0)
-    test_x = pd.DataFrame(test_x).fillna(0)
-    train_x.columns = cols
-    test_x.columns = cols
-    return train_x, test_x
-
-
-def preprocess_target(label) -> DataFrame:
-    label = pd.DataFrame(label)
-    cols = label.columns
-    imp_nan = SimpleImputer(missing_values=np.nan, strategy='mean')
-    label = imp_nan.fit_transform(label)
-    label = pd.DataFrame(label).fillna(0)
-    label.columns = cols
-    return label
 
 
 def get_amlb_dataset(openml_task_id, split) -> tuple[
@@ -444,66 +362,35 @@ def get_dataset(option) -> tuple[
         return train_x, train_y, test_x, test_y, task_hint, name
 
 
-def get_old_dataset(option) -> tuple[
-    pd.DataFrame,
-    pd.DataFrame,
-    pd.DataFrame | pd.Series,
-    pd.DataFrame | pd.Series,
-    str,
-    str
-]:
-    """ Not working datasets """
-    # california-housing dataset from OpenFE example (no)
-    if option == 1:
-        name = "california_housing_dataset"
-        task_hint = "regression"
-        train_x, train_y, test_x, test_y = get_california_housing_dataset()
-        return train_x, train_y, test_x, test_y, task_hint, name
-    # cylinder-bands dataset from OpenFE benchmark (no)
-    elif option == 2:
-        name = "cylinder_bands_dataset"
-        task_hint = "classification"
-        openml_task_id = 1797
-        outer_fold_number = 0
-        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
-        return train_x, train_y, test_x, test_y, task_hint, name
-    # balance-scale dataset from OpenFE benchmark (no)
-    elif option == 3:
-        name = "balance_scale_dataset"
-        task_hint = "classification"
-        train_x, train_y, test_x, test_y = get_balance_scale_dataset()
-        return train_x, train_y, test_x, test_y, task_hint, name
-    # black-friday dataset from AMLB (no, too big)
-    elif option == 4:
-        name = "black_friday_dataset"
-        task_hint = "classification"
-        train_x, train_y, test_x, test_y = get_black_friday_dataset()
-        return train_x, train_y, test_x, test_y, task_hint, name
-    # boston dataset (no)
-    elif option == 5:
-        name = "boston_dataset"
-        task_hint = "regression"
-        openml_task_id = 359950
-        outer_fold_number = 0
-        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
-        return train_x, train_y, test_x, test_y, task_hint, name
-    # sensory dataset (no)
-    elif option == 6:
-        name = "sensory_dataset"
-        task_hint = "regression"
-        openml_task_id = 359931
-        outer_fold_number = 0
-        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
-        return train_x, train_y, test_x, test_y, task_hint, name
-    # eucalyptus dataset (no)
-    elif option == 7:
-        name = "eucalyptus_dataset"
-        task_hint = "classification"
-        openml_task_id = 359954
-        outer_fold_number = 0
-        train_x, train_y, test_x, test_y = get_openml_dataset(openml_task_id=openml_task_id, fold=outer_fold_number)
-        openml.tasks.get_task(openml_task_id=openml_task_id)
-        return train_x, train_y, test_x, test_y, task_hint, name
+def preprocess_data(train_x, test_x) -> (pd.DataFrame, pd.DataFrame):
+    cols = train_x.columns
+    cat_columns = train_x.select_dtypes(['category']).columns
+    obj_columns = train_x.select_dtypes(['object']).columns
+    train_x[cat_columns] = train_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+    test_x[cat_columns] = test_x[cat_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+    train_x[obj_columns] = train_x[obj_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+    test_x[obj_columns] = test_x[obj_columns].apply(lambda x: pd.factorize(x, use_na_sentinel=True)[0])
+    imp_nan = SimpleImputer(missing_values=np.nan, strategy='mean')
+    train_x = imp_nan.fit_transform(train_x)
+    test_x = imp_nan.transform(test_x)
+    imp_m1 = SimpleImputer(missing_values=-1, strategy='mean')
+    train_x = imp_m1.fit_transform(train_x)
+    test_x = imp_m1.transform(test_x)
+    train_x = pd.DataFrame(train_x).fillna(0)
+    test_x = pd.DataFrame(test_x).fillna(0)
+    train_x.columns = cols
+    test_x.columns = cols
+    return train_x, test_x
+
+
+def preprocess_target(label) -> pd.DataFrame:
+    label = pd.DataFrame(label)
+    cols = label.columns
+    imp_nan = SimpleImputer(missing_values=np.nan, strategy='mean')
+    label = imp_nan.fit_transform(label)
+    label = pd.DataFrame(label).fillna(0)
+    label.columns = cols
+    return label
 
 def construct_dataframe(train_x, train_y, test_x, test_y):
     df_train = pd.concat([train_x, train_y], axis=1)
