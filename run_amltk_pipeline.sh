@@ -25,6 +25,7 @@ echo "Running job $SLURM_JOB_NAME using $SLURM_JOB_CPUS_PER_NODE cpus per node w
 
 # Activate your environment
 # You can also comment out this line, and activate your environment in the login node before submitting the job
+# shellcheck disable=SC1090
 source ~/miniconda3/bin/activate # Adjust to your path of Miniconda installation
 if conda info --envs | grep -q amltk_env; then echo "amltk_env already exists"; else conda create -y -n amltk_env; fi
 conda activate amltk_env
@@ -40,10 +41,13 @@ export PYTHONPATH=$PWD/src:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 # Running the job
+# shellcheck disable=SC2006
 start=`date +%s`
 
-python3 src/amltk/run_amltk_pipeline.py $SLURM_ARRAY_TASK_ID $*
+# shellcheck disable=SC2048
+python3 src/amltk/run_amltk_pipeline.py "$SLURM_ARRAY_TASK_ID" "$*"
 
+# shellcheck disable=SC2006
 end=`date +%s`
 runtime=$((end-start))
 

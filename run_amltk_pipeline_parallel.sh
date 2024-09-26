@@ -27,6 +27,7 @@ echo "Started at $(date)"
 echo "Running job $SLURM_JOB_NAME using $SLURM_JOB_CPUS_PER_NODE cpus per node with given JID $SLURM_JOB_ID on queue $SLURM_JOB_PARTITION"
 
 # Activate your environment
+# shellcheck disable=SC1090
 source ~/miniconda3/bin/activate
 conda activate amltk_env
 echo "conda amltk_env activated"
@@ -47,11 +48,13 @@ methods_datasets=("original1" "original5" "original14" "original15" "original17"
 method_dataset=${methods_datasets[$SLURM_ARRAY_TASK_ID]}
 
 # Run the job with the specified method
+# shellcheck disable=SC2006
 start=`date +%s`
 
 echo "Running Method: $method_dataset"
 python3 src/amltk/run_amltk_pipeline_parallel.py --method_dataset "$method_dataset"
 
+# shellcheck disable=SC2006
 end=`date +%s`
 runtime=$((end-start))
 

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Define the partition on which the job shall run.
-#SBATCH --partition mlhiwidlc_gpu-rtx2080    # short: -p <partition_name>
+#SBATCH --partition xxx
 
 # Define a name for your job
-#SBATCH --job-name Autogluon_Pipeline             # short: -J <job name>
+#SBATCH --job-name Autogluon_Pipeline
 
 # Define the files to write the outputs of the job to.
 #SBATCH --output logs/%x-%A.out   # STDOUT  %x and %A will be replaced by the job name and job id, respectively. short: -o logs/%x-%A.out
@@ -12,8 +12,8 @@
 
 # Define the amount of memory required per node
 #SBATCH --mem 32GB
-#SBATCH --cpus-per-task=8 # cores
-#SBATCH --gres=localtmp:100 # DISK
+#SBATCH --cpus-per-task=8
+#SBATCH --gres=localtmp:100
 
 #SBATCH --propagate=NONE # to avoid a bug
 
@@ -25,6 +25,7 @@ echo "Running job $SLURM_JOB_NAME using $SLURM_JOB_CPUS_PER_NODE cpus per node w
 
 # Activate your environment
 # You can also comment out this line, and activate your environment in the login node before submitting the job
+# shellcheck disable=SC1090
 source ~/miniconda3/bin/activate # Adjust to your path of Miniconda installation
 if conda info --envs | grep -q amltk_env; then echo "autogluon_env already exists"; else conda create -y -n autogluon_env; fi
 conda activate autogluon_env
@@ -40,10 +41,13 @@ export PYTHONPATH=$PWD/src:$PYTHONPATH
 echo "PYTHONPATH set to $PYTHONPATH"
 
 # Running the job
+# shellcheck disable=SC2006
 start=`date +%s`
 
-python3 src/autogluon/run_autogluon.py $SLURM_ARRAY_TASK_ID $*
+# shellcheck disable=SC2048
+python3 src/autogluon/run_autogluon.py "$SLURM_ARRAY_TASK_ID" "$*"
 
+# shellcheck disable=SC2006
 end=`date +%s`
 runtime=$((end-start))
 
